@@ -1,7 +1,7 @@
 /** @format */
 
 module.exports = {
-  purge: ["./src/**/*.{js,jsx,ts,tsx}", "./public/index.html"],
+  content: ["./src/**/*.html", "./src/**/*.js", "./src/**/*.css"],
   theme: {
     extend: {
       backgroundColor: {
