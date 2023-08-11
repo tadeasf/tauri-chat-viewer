@@ -4,7 +4,7 @@ const express = require("express");
 const { MongoClient } = require("mongodb");
 const cors = require("cors");
 const app = express();
-const port = process.env.PORT || 3335;
+const port = process.env.PORT || 3023;
 const multer = require("multer");
 const fs = require("fs").promises;
 const upload = multer({ dest: "uploads/" }).array("files");
@@ -15,6 +15,7 @@ const { combine_and_convert_json_files } = require("./json_combiner");
 app.use(
   cors({
     origin: [
+      "app://.",
       "https://kocouratko.cz",
       "http://kocouratko.cz",
       "http://localhost:5009",

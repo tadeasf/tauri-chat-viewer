@@ -1,11 +1,12 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/schema.json",
   "build": {
-    "beforeBuildCommand": "npm run build",
-    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build-react",
+    "beforeDevCommand": "npm run start",
     "devPath": "http://localhost:5009",
     "distDir": "../build"
   },
+
   "package": {
     "productName": "fb_chat_viewer",
     "version": "0.1.0"
@@ -29,7 +30,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.tauri.dev",
+      "identifier": "com.tadeas.chat.viewer.dev",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
@@ -56,10 +57,10 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 600,
+        "height": 1200,
         "resizable": true,
         "title": "chat_viewer",
-        "width": 800
+        "width": 1600
       }
     ]
   }
