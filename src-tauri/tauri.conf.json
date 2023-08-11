@@ -1,43 +1,52 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/schema.json",
   "build": {
-    "beforeBuildCommand": "npm run build-react",
-    "beforeDevCommand": "npm run start",
-    "devPath": "http://localhost:5009",
+    "beforeBuildCommand": "npm run build",
+    "beforeDevCommand": "npm run dev",
+    "devPath": "http://localhost:3000",
     "distDir": "../build"
   },
+
   "package": {
-    "productName": "Chat Viewer",
+    "productName": "Kocouřátčí Messenger",
     "version": "1.0.0"
   },
   "tauri": {
     "allowlist": {
-      "path": {
-        "all": false
-      }
+      "all": false
     },
     "bundle": {
       "active": true,
       "category": "SocialNetworking",
-      "copyright": "Tadeáš Fořt",
-      "publisher": "Tadeáš Fořt",
+      "copyright": "",
       "deb": {
         "depends": []
       },
       "externalBin": [],
-      "icon": ["icons/icon.png", "icons/icon.icns", "icons/icon.ico"],
-      "identifier": "com.tadeas.chat.viewer.dev",
+      "icon": [
+        "icons/32x32.png",
+        "icons/128x128.png",
+        "icons/128x128@2x.png",
+        "icons/icon.icns",
+        "icons/icon.ico"
+      ],
+      "identifier": "com.kocouratci.messenger.viewer.dev",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
         "exceptionDomain": "",
         "frameworks": [],
-        "providerShortName": "Tadeáš Fořt",
-        "signingIdentity": null,
-        "license": "LICENSE"
+        "providerShortName": null,
+        "signingIdentity": null
       },
-      "shortDescription": "Simple app for viewing chat history made by Tadeáš Fořt",
-      "targets": "dmg"
+      "resources": [],
+      "shortDescription": "",
+      "targets": "all",
+      "windows": {
+        "certificateThumbprint": null,
+        "digestAlgorithm": "sha256",
+        "timestampUrl": ""
+      }
     },
     "security": {
       "csp": null
@@ -47,19 +56,11 @@
     },
     "windows": [
       {
-        "title": "Chat Viewer",
         "fullscreen": false,
-        "maximizable": true,
-        "resizable": true,
-        "center": true,
-        "fileDropEnabled": true,
-        "skipTaskbar": true,
-        "hiddenTitle": true,
-        "tabbingIdentifier": "chat-viewer",
         "height": 1200,
-        "width": 1600,
-        "minHeight": 600,
-        "minWidth": 800
+        "resizable": true,
+        "title": "kocouratci_messenger",
+        "width": 1600
       }
     ]
   }
