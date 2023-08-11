@@ -29,7 +29,7 @@ import {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
-} from "components/ui/dropdown-menu";
+} from "./components/ui/dropdown-menu";
 
 const photosMap = {
   martina: martina,
