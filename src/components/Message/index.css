@@ -1,3 +1,11 @@
+/**
+ * Based on TailwindCSS recommendations,
+ *   consider using classes instead of the `@apply` directive
+ *
+ * @format
+ * @see https://tailwindcss.com/docs/reusing-styles#avoiding-premature-abstraction
+ */
+
 /** @format */
 .message-container {
   @apply relative flex flex-col items-start;

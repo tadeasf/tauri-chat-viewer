@@ -1,45 +1,43 @@
-/** @format */
+/**
+ * Based on TailwindCSS recommendations,
+ *   consider using classes instead of the `@apply` directive
+ *
+ * @format
+ * @see https://tailwindcss.com/docs/reusing-styles#avoiding-premature-abstraction
+ */
 
+/** @format */
 * {
   @apply box-border m-0 p-0;
   font-family: "Anonymous Pro", monospace;
 }
-.container {
-  @apply w-full h-screen relative text-[whitesmoke] flex flex-col items-center justify-center box-border pt-0;
-  background: #353a3c;
-}
-
 .header,
 .collection-container {
   @apply w-full flex justify-center flex-nowrap shrink-0;
 }
 .header {
-  @apply flex items-start mt-[0.5em] mb-[2em];
+  @apply flex items-start mt-[0.5em] mb-[2em]; /* change this from center or flex-end to flex-start */
 }
-
 .chat-container {
-  @apply mb-[2em];
+  @apply mb-[2em] w-full max-h-[80%] border text-[whitesmoke] shadow-[0px_3px_1px_-2px_rgba(0,0,0,0.2),0px_2px_2px_0px_rgba(0,0,0,0.14),0px_1px_5px_0px_rgba(0,0,0,0.12)] flex flex-col overflow-auto rounded-[0.5em] border-solid border-[#5e7a86];
 }
-
 .footer {
   @apply mb-[2em];
 }
 .collection-container {
   @apply m-0;
 }
-
 .reset-button,
 .button,
 .search-term {
   @apply inline-flex text-white bg-[#30383b] transition-all duration-[0.3s] ease-in-out items-center justify-center shadow-[0px_3px_1px_-2px_rgba(0,0,0,0.2),0px_2px_2px_0px_rgba(0,0,0,0.14),0px_1px_5px_0px_rgba(0,0,0,0.12)] rounded-[0.5em] border-[none];
 }
-
 .reset-button {
   @apply text-[2.5em] mr-[1em] mt-[0.1em] px-[0.5em] py-[0.25em];
 }
 .button,
 .search-term {
-  @apply text-[0.875em] self-start m-[0.25em] px-[0.5em] py-[0.25em];
+  @apply text-[0.875em] self-start m-[0.25em] px-[0.5em] py-[0.25em]; /* change this from center or flex-end to flex-start */
 }
 .reset-button:hover,
 .button:hover,
@@ -52,7 +50,6 @@
   @apply bg-[#33373a];
 }
 .chat-container {
-  @apply w-full max-h-[80%] border text-[whitesmoke] shadow-[0px_3px_1px_-2px_rgba(0,0,0,0.2),0px_2px_2px_0px_rgba(0,0,0,0.14),0px_1px_5px_0px_rgba(0,0,0,0.12)] flex flex-col overflow-auto rounded-[0.5em] border-solid border-[#5e7a86];
   background: #1a1d1e;
 }
 .chat-header,
@@ -71,19 +68,6 @@
 }
 .loading-bar {
   @apply w-full h-[0.25em] bg-[#b70e0e] animate-[loading_3s_infinite_ease-in-out] opacity-70 rounded-[1em];
-}
-@keyframes loading {
-  0% {
-    transform: translateX(-100%);
-    opacity: 0.2;
-  }
-  50% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateX(100%);
-    opacity: 0.2;
-  }
 }
 .send-box {
   @apply grow text-white text-[0.875em] px-[0.5em] py-0 rounded-[1.5em] border-[none];

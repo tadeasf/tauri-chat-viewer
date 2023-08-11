@@ -24,6 +24,7 @@
     "react-virtualized-auto-sizer": "^1.0.7",
     "react-window": "^1.8.8",
     "sass": "^1.65.1",
+    "tailwindcss": "^3.3.3",
     "uuid": "^9.0.0",
     "web-vitals": "^1.1.2"
   },

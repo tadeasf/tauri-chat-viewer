@@ -448,7 +448,7 @@ function App() {
 
   return (
     <ErrorBoundary>
-      <div className="container">
+      <div className="flex flex-col h-screen bg-red-b70">
         <div className="header">
           <div className="header-container">
             <div>
