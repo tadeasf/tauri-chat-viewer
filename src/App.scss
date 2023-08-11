@@ -1,14 +1,34 @@
-$basic-transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+/**
+ * This file is part of Chat Viewer.
+ * 
+ * Chat Viewer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * Chat Viewer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with Chat Viewer. If not, see <https://www.gnu.org/licenses/>.
+ *
+ * @format
+ */
+
+$basic-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 $basic-bg-color: #30383b;
 $hover-bg-color: #262a2b;
 $active-bg-color: #33373a;
-$material-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
+$material-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2),
+  0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
 
-@import url('https://fonts.googleapis.com/css2?family=Anonymous+Pro:wght@400;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Anonymous+Pro:wght@400;700&display=swap");
 
 * {
   box-sizing: border-box;
-  font-family: 'Anonymous Pro', monospace;
+  font-family: "Anonymous Pro", monospace;
   margin: 0;
   padding: 0;
 }
@@ -27,7 +47,8 @@ $material-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0
   padding-top: 0;
 }
 
-.header, .collection-container {
+.header,
+.collection-container {
   width: 100%;
   display: flex;
   justify-content: center; // Position buttons side by side
@@ -54,7 +75,9 @@ $material-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0
   margin: 0; // Remove vertical margin
 }
 
-.reset-button, .button, .search-term {
+.reset-button,
+.button,
+.search-term {
   display: inline-flex;
   color: #fff;
   background-color: $basic-bg-color;
@@ -73,18 +96,23 @@ $material-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0
   padding: 0.25em 0.5em; // Reduce padding
 }
 
-.button, .search-term {
-font-size: 0.875em; // Reduce font size
-margin: 0.25em; // Reduce margin
-padding: 0.25em 0.5em; // Reduce padding
-align-self: flex-start; /* change this from center or flex-end to flex-start */
+.button,
+.search-term {
+  font-size: 0.875em; // Reduce font size
+  margin: 0.25em; // Reduce margin
+  padding: 0.25em 0.5em; // Reduce padding
+  align-self: flex-start; /* change this from center or flex-end to flex-start */
 }
-.reset-button:hover, .button:hover, .search-term:hover {
+.reset-button:hover,
+.button:hover,
+.search-term:hover {
   background-color: $hover-bg-color;
   cursor: pointer;
 }
 
-.reset-button:active, .button:active, .search-term:active {
+.reset-button:active,
+.button:active,
+.search-term:active {
   background-color: $active-bg-color;
 }
 
@@ -101,7 +129,8 @@ align-self: flex-start; /* change this from center or flex-end to flex-start */
   overflow: auto;
 }
 
-.chat-header, .chat-footer {
+.chat-header,
+.chat-footer {
   padding: 0.5em; // Reduce padding
   display: flex;
   align-items: center;
@@ -124,7 +153,7 @@ align-self: flex-start; /* change this from center or flex-end to flex-start */
   display: flex;
   flex-direction: column;
   gap: 1em;
-  
+
   &.loading {
     display: flex;
     align-items: center;
@@ -165,7 +194,8 @@ align-self: flex-start; /* change this from center or flex-end to flex-start */
   font-size: 0.875em; // Reduce font size
 }
 
-.header-container, .footer-container {
+.header-container,
+.footer-container {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -181,7 +211,6 @@ align-self: flex-start; /* change this from center or flex-end to flex-start */
   gap: 1em;
 }
 
-
 @media (max-width: 600px) {
   .container {
     padding: 0.25em; // Reduce padding
@@ -194,17 +223,19 @@ align-self: flex-start; /* change this from center or flex-end to flex-start */
     padding: 0.25em 0.5em; // Reduce padding
   }
 
-  .button, .search-term {
-  font-size: 0.75em; // Reduce font size
-  padding: 0.125em 0.25em; // Reduce padding
-  margin: 0.125em; // Reduce margin
+  .button,
+  .search-term {
+    font-size: 0.75em; // Reduce font size
+    padding: 0.125em 0.25em; // Reduce padding
+    margin: 0.125em; // Reduce margin
   }
 
   .chat-container {
     border-radius: 0.25em;
   }
 
-  .chat-header, .chat-footer {
+  .chat-header,
+  .chat-footer {
     padding: 0.25em; // Reduce padding
     margin-top: 0.5em;
   }
@@ -221,4 +252,3 @@ align-self: flex-start; /* change this from center or flex-end to flex-start */
     height: 0.125em; // Reduce the height of the loading bar
   }
 }
-

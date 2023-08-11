@@ -1,4 +1,19 @@
 /** @format */
+/* This file is part of Chat Viewer.
+ *
+ * Chat Viewer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Chat Viewer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Chat Viewer. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import "./App.scss";
@@ -115,7 +130,9 @@ function App() {
   useEffect(() => {
     const fetchCollections = async () => {
       try {
-        const response = await fetch("http://localhost:3023/collections");
+        const response = await fetch(
+          "https://server.kocouratko.eu/collections"
+        );
         const data = await response.json();
         setCollections(data);
       } catch (error) {
@@ -136,7 +153,7 @@ function App() {
 
     try {
       const response = await fetch(
-        `http://localhost:3023/messages/${collectionName}`
+        `https://server.kocouratko.eu/messages/${collectionName}`
       );
       const data = await response.json();
 
@@ -166,7 +183,7 @@ function App() {
       }
 
       const photoResponse = await fetch(
-        `http://localhost:3023/messages/${collectionName}/photo`
+        `https://server.kocouratko.eu/messages/${collectionName}/photo`
       );
       const photoData = await photoResponse.json();
       console.log("PHOTO DATA IS:", photoData);
@@ -330,7 +347,7 @@ function App() {
 
     try {
       const response = await fetch(
-        `http://localhost:3023/delete/${collectionName}`,
+        `https://server.kocouratko.eu/delete/${collectionName}`,
         { method: "DELETE" }
       );
 
@@ -367,7 +384,7 @@ function App() {
         formData.append("files", files[i]);
       }
 
-      const response = await fetch("http://localhost:3023/upload", {
+      const response = await fetch("https://server.kocouratko.eu/upload", {
         method: "POST",
         body: formData,
       });
@@ -398,7 +415,7 @@ function App() {
   // Function to refresh collections
   const refreshCollections = async () => {
     try {
-      const response = await fetch("http://localhost:3023/collections");
+      const response = await fetch("https://server.kocouratko.eu/collections");
       if (response.ok) {
         const data = await response.json();
         setCollections(data);

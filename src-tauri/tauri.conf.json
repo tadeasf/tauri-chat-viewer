@@ -6,49 +6,38 @@
     "devPath": "http://localhost:5009",
     "distDir": "../build"
   },
-
   "package": {
-    "productName": "fb_chat_viewer",
-    "version": "0.1.0"
+    "productName": "Chat Viewer",
+    "version": "1.0"
   },
   "tauri": {
     "allowlist": {
       "path": {
-        "all": true
+        "all": false
       }
     },
     "bundle": {
       "active": true,
-      "category": "DeveloperTool",
-      "copyright": "",
+      "category": "SocialNetworking",
+      "copyright": "Tadeáš Fořt",
+      "publisher": "Tadeáš Fořt",
       "deb": {
         "depends": []
       },
       "externalBin": [],
-      "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
-      ],
+      "icon": ["icons/icon.png", "icons/icon.icns", "icons/icon.ico"],
       "identifier": "com.tadeas.chat.viewer.dev",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
         "exceptionDomain": "",
         "frameworks": [],
-        "providerShortName": null,
-        "signingIdentity": null
+        "providerShortName": "Tadeáš Fořt",
+        "signingIdentity": null,
+        "license": "LICENSE"
       },
-      "resources": ["./../express-server"],
-      "shortDescription": "",
-      "targets": "all",
-      "windows": {
-        "certificateThumbprint": null,
-        "digestAlgorithm": "sha256",
-        "timestampUrl": ""
-      }
+      "shortDescription": "Simple app for viewing chat history made by Tadeáš Fořt",
+      "targets": "dmg"
     },
     "security": {
       "csp": null
@@ -58,11 +47,20 @@
     },
     "windows": [
       {
+        "title": "Chat Viewer",
         "fullscreen": false,
-        "height": 1200,
+        "maximizable": true,
         "resizable": true,
-        "title": "chat_viewer",
-        "width": 1600
+        "center": true,
+        "fileDropEnabled": true,
+        "transparent": true,
+        "skipTaskbar": true,
+        "hiddenTitle": true,
+        "tabbingIdentifier": "chat-viewer",
+        "height": 1200,
+        "width": 1600,
+        "minHeight": 600,
+        "minWidth": 800
       }
     ]
   }
