@@ -1,1 +1,5 @@
+style reformatting:
+dropdown styles etc -> we need to change this
+Messages.js -> apply styles in return statements
+
 report web vitals -> implement local performance analysis

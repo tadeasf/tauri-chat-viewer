@@ -450,10 +450,10 @@ function App() {
     <ErrorBoundary>
       <div className="font-anonymous box-border m-0 p-0">
         <div className="flex flex-col h-screen bg-gray-303">
-          <div className="w-full flex justify-center flex-no-wrap flex-shrink-0 items-start my-5">
+          <div className="w-full flex justify-center flex-nowrap shrink-0 flex items-start mt-2 mb-8">
             <div className="flex flex-row items-center justify-between gap-3">
               <div>
-                <div className="w-full flex justify-center flex-no-wrap flex-shrink-0">
+                <div className="w-full flex justify-center flex-nowrap shrink-0 m-0">
                   <Select
                     value={collectionOptions.find(
                       (option) => option.value === collectionName
@@ -472,123 +472,119 @@ function App() {
                   />
                 </div>
               </div>
-              <div className="search-container">
-                <div className="flex flex-row items-center justify-between">
-                  <p>
-                    <span className="search-term">
-                      {searchContent !== ""
-                        ? `Found ${
-                            currentResultIndex + 1
-                          }/${numberOfResultsContent} of: ${searchContent}`
-                        : `Total number of messages: ${numberOfResults}`}
-                    </span>
-                  </p>
-                  <input
-                    className="content-input button"
-                    type="text"
-                    placeholder="Search by content"
-                    value={searchContent}
-                    onChange={(e) => setSearchContent(e.target.value)}
-                    onKeyDown={handleContentKeyPress}
-                  />
-                </div>
+
+              <div className="flex flex-row items-center justify-between">
+                <p>
+                  <span className="inline-flex text-white bg-gray-303 transition-all duration-300 ease-in-out items-center justify-center shadow-custom rounded-2 border-none text-lg self-start m-1 px-2 py-1">
+                    {searchContent !== ""
+                      ? `Found ${
+                          currentResultIndex + 1
+                        }/${numberOfResultsContent} of: ${searchContent}`
+                      : `Total number of messages: ${numberOfResults}`}
+                  </span>
+                </p>
+                <input
+                  className="inline-flex text-white bg-gray-303 transition-all duration-300 ease-in-out items-center justify-center shadow-custom rounded-2 border-none text-lg self-start m-1 px-2 py-1"
+                  type="text"
+                  placeholder="Search by content"
+                  value={searchContent}
+                  onChange={(e) => setSearchContent(e.target.value)}
+                  onKeyDown={handleContentKeyPress}
+                />
               </div>
             </div>
           </div>
-          <div className="w-full bg-gray-1a1 flex flex-col overflow-auto mb-8 max-h-[80%] border border-gray-5e7 text-gray-f0f rounded-md shadow-custom">
-            <div className="chat">
-              <div className="chat-header">
-                <img
-                  src={randomPhoto}
-                  alt="user-profile"
-                  className="chat-photo"
-                />
-                <p>{user ? user : "Select a collection..."}</p>
-                <button className="reset-button" onClick={refresh}>
-                  &#8635;
-                </button>
-              </div>
-              {isLoading ? (
-                <div className="chat-body loading">
-                  <div className="loading-bar" />
-                </div>
-              ) : (
-                <div
-                  className="chat-body"
-                  ref={chatBodyRef}
-                  style={{
-                    height: "calc(100vh - 150px)",
-                    position: "relative",
-                  }}
-                >
-                  {filteredMessages.length > 0 ? (
-                    <AutoSizer>
-                      {({ height, width }) => (
-                        <List
-                          height={height}
-                          itemCount={filteredMessages.length}
-                          itemSize={getRowHeight}
-                          width={width}
-                          ref={listRef}
-                          // Add this prop to control scrolling
-                          scrollToAlignment="center"
-                        >
-                          {({ index, style }) => {
-                            const messageArray = filteredMessages[index];
-                            const isLastMessage =
-                              index === filteredMessages.length - 1;
-                            return (
-                              <div
-                                style={{ ...style, ...hiddenScrollbarStyle }}
-                                key={index}
-                              >
-                                <Message
-                                  message={messageArray}
-                                  author={
-                                    !!(messageArray.sender_name === author)
-                                  }
-                                  time={messageArray.timestamp_ms}
-                                  key={messageArray.timestamp_ms}
-                                  isLastMessage={isLastMessage}
-                                  type={messageArray.type}
-                                  searchTerm={searchTerm}
-                                  setRowHeight={setRowHeight}
-                                  index={index}
-                                  isHighlighted={
-                                    index === highlightedMessageIndex
-                                  } // Add this prop
-                                />
-                              </div>
-                            );
-                          }}
-                        </List>
-                      )}
-                    </AutoSizer>
-                  ) : (
-                    <p>No messages found</p>
-                  )}
-                </div>
-              )}
+          <div className="mb-8 w-full max-h-[80%] border text-zinc-100 shadow-custom flex flex-col overflow-auto rounded-2 border-gray-5e7 bg-gray-1a1">
+            <div className="flex items-center justify-between p-2 bg-gray-232">
+              <img
+                src={randomPhoto}
+                alt="user-profile"
+                className="h-20 w-20 object-cover ml-12 mr-10 rounded-full"
+              />
+              <p>{user ? user : "Select a collection..."}</p>
+              <button
+                className="inline-flex text-white bg-gray-303 transition-all duration-300 ease-in-out items-center justify-center shadow-custom rounded-2 border-none text-5xl mr-4 mt-1 px-2 py-1"
+                onClick={refresh}
+              >
+                &#8635;
+              </button>
             </div>
-          </div>
-          <div className="footer">
-            <div className="footer-container">
-              <div className="delete-container">
-                <Select
-                  onChange={(selectedOption) => {
-                    handleDelete(selectedOption.value);
-                  }}
-                  options={collectionOptions}
-                  placeholder="Delete a collection"
-                  isSearchable={true}
-                  isMulti={false}
-                  isClearable={true}
-                  styles={dropdownStyles}
-                  menuPortalTarget={document.body}
-                />
+            {isLoading ? (
+              <div className="flex items-center justify-center">
+                <div className="w-full h-1 bg-red-b70 animate-pulse opacity-70 rounded-xl" />
               </div>
+            ) : (
+              <div
+                className="flex-grow overflow-auto flex flex-col gap-4 p-2"
+                ref={chatBodyRef}
+                style={{
+                  height: "calc(100vh - 150px)",
+                  position: "relative",
+                }}
+              >
+                {filteredMessages.length > 0 ? (
+                  <AutoSizer>
+                    {({ height, width }) => (
+                      <List
+                        height={height}
+                        itemCount={filteredMessages.length}
+                        itemSize={getRowHeight}
+                        width={width}
+                        ref={listRef}
+                        // Add this prop to control scrolling
+                        scrollToAlignment="center"
+                      >
+                        {({ index, style }) => {
+                          const messageArray = filteredMessages[index];
+                          const isLastMessage =
+                            index === filteredMessages.length - 1;
+                          return (
+                            <div
+                              style={{ ...style, ...hiddenScrollbarStyle }}
+                              key={index}
+                            >
+                              <Message
+                                message={messageArray}
+                                author={!!(messageArray.sender_name === author)}
+                                time={messageArray.timestamp_ms}
+                                key={messageArray.timestamp_ms}
+                                isLastMessage={isLastMessage}
+                                type={messageArray.type}
+                                searchTerm={searchTerm}
+                                setRowHeight={setRowHeight}
+                                index={index}
+                                isHighlighted={
+                                  index === highlightedMessageIndex
+                                } // Add this prop
+                              />
+                            </div>
+                          );
+                        }}
+                      </List>
+                    )}
+                  </AutoSizer>
+                ) : (
+                  <p>No messages found</p>
+                )}
+              </div>
+            )}
+          </div>
+          <div className="mb-[2em]">
+            <div className="flex flex-row items-center justify-between gap-4">
+              <Select
+                onChange={(selectedOption) => {
+                  handleDelete(selectedOption.value);
+                }}
+                options={collectionOptions}
+                placeholder="Delete a collection"
+                isSearchable={true}
+                isMulti={false}
+                isClearable={true}
+                styles={dropdownStyles}
+                menuPortalTarget={document.body}
+              />
               <input
-                className="upload-input button"
+                className="inline-flex text-white bg-gray-303 transition-all duration-300 ease-in-out items-center justify-center shadow-custom rounded-2 border-none text-lg self-start m-1 px-2 py-1"
                 type="file"
                 multiple // Add the multiple attribute
                 onChange={(e) => uploadFile(e.target.files)} // Replace with your actual upload function
