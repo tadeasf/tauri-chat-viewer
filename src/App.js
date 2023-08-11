@@ -21,10 +21,10 @@ import Message from "./components/Message/Message";
 import { ErrorBoundary } from "react-error-boundary";
 import { VariableSizeList as List } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
-import Select from "react-select";
 import martina from "./assets/martina.jpg";
 import {
   DropdownMenu,
+  DropdownMenuItem,
   DropdownMenuContent,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
@@ -518,18 +518,22 @@ function App() {
           </div>
           <div className="mb-[2em]">
             <div className="flex flex-row items-center justify-between gap-4">
-              <Select
-                onChange={(selectedOption) => {
-                  handleDelete(selectedOption.value);
-                }}
-                options={collectionOptions}
-                placeholder="Delete a collection"
-                isSearchable={true}
-                isMulti={false}
-                isClearable={true}
-                styles={dropdownStyles}
-                menuPortalTarget={document.body}
-              />
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button>Delete a collection</button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  {collectionOptions.map((option) => (
+                    <DropdownMenuItem
+                      key={option.value}
+                      onSelect={() => handleDelete(option.value)}
+                    >
+                      {option.label}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+
               <input
                 className="inline-flex text-white bg-gray-303 transition-all duration-300 ease-in-out items-center justify-center shadow-custom rounded-2 border-none text-lg self-start m-1 px-2 py-1"
                 type="file"
