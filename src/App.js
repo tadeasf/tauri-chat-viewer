@@ -23,6 +23,13 @@ import { VariableSizeList as List } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
 import Select from "react-select";
 import martina from "./assets/martina.jpg";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "components/ui/dropdown-menu";
 
 const photosMap = {
   martina: martina,
@@ -276,67 +283,6 @@ function App() {
     }
   };
 
-  const dropdownStyles = {
-    control: (provided) => ({
-      ...provided,
-      border: "1px solid #3B474C",
-      boxShadow:
-        "0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12)",
-      backgroundColor: "#30383b",
-      cursor: "pointer",
-      "min-width": "15em",
-    }),
-    menu: (provided) => ({
-      ...provided,
-      border: "1px solid #3B474C",
-      boxShadow:
-        "0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12)",
-      backgroundColor: "#30383b",
-      "max-width": "20em",
-      "min-width": "15em",
-    }),
-    menuPortal: (provided) => ({
-      ...provided,
-      zIndex: 9999,
-    }),
-    option: (provided) => ({
-      ...provided,
-      backgroundColor: "#30383b",
-      color: "white",
-      cursor: "pointer",
-      border: "0.5em solid #1E2629",
-      padding: "0.5em",
-      "margin-left": "1.5em",
-      "margin-right": "0.5em",
-      "margin-top": "0.2em",
-      "margin-bottom": "0.2em",
-      "min-width": "10em",
-      "max-width": "80%",
-      "text-align": "center",
-      "justify-content": "center",
-    }),
-    singleValue: (provided) => ({
-      ...provided,
-      color: "white",
-    }),
-    placeholder: (provided) => ({
-      ...provided,
-      color: "white",
-    }),
-    indicatorSeparator: (provided) => ({
-      ...provided,
-      color: "white",
-    }),
-    dropdownIndicator: (provided) => ({
-      ...provided,
-      color: "white",
-    }),
-    input: (provided) => ({
-      ...provided,
-      color: "white",
-    }),
-  };
-
   const handleDelete = async (collectionName) => {
     setIsLoading(true);
 
@@ -449,22 +395,27 @@ function App() {
             <div className="flex flex-row items-center justify-between gap-3">
               <div>
                 <div className="w-full flex justify-center flex-nowrap shrink-0 m-0">
-                  <Select
-                    value={collectionOptions.find(
-                      (option) => option.value === collectionName
-                    )}
-                    onChange={(selectedOption) => {
-                      setCollectionName(selectedOption.value);
-                      handleSend(selectedOption.value);
-                    }}
-                    options={collectionOptions}
-                    placeholder="Select a collection"
-                    isSearchable={true}
-                    isMulti={false}
-                    isClearable={true}
-                    styles={dropdownStyles}
-                    menuPortalTarget={document.body}
-                  />
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      {/* You can style or modify this button as needed */}
+                      <button>Select a collection</button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <DropdownMenuRadioGroup
+                        value={collectionName}
+                        onValueChange={setCollectionName}
+                      >
+                        {collectionOptions.map((option) => (
+                          <DropdownMenuRadioItem
+                            key={option.value}
+                            value={option.value}
+                          >
+                            {option.label}
+                          </DropdownMenuRadioItem>
+                        ))}
+                      </DropdownMenuRadioGroup>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               </div>
 
