@@ -15,7 +15,7 @@
  * along with Chat Viewer. If not, see <https://www.gnu.org/licenses/>.
  */
 import React, { useState } from "react";
-import "./index.scss";
+import "./index.css";
 import { DateTime } from "luxon";
 
 const Message = ({ message, time, type, author, uuid, isHighlighted }) => {

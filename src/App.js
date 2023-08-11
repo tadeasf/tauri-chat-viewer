@@ -16,7 +16,7 @@
  */
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import "./App.scss";
+import "./App.css";
 import Message from "./components/Message/Message";
 import { ErrorBoundary } from "react-error-boundary";
 import { VariableSizeList as List } from "react-window";
