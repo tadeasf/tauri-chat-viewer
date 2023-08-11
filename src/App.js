@@ -16,7 +16,7 @@
  */
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import "./App.css";
+import "./template-styles.css";
 import Message from "./components/Message/Message";
 import { ErrorBoundary } from "react-error-boundary";
 import { VariableSizeList as List } from "react-window";
@@ -448,41 +448,41 @@ function App() {
 
   return (
     <ErrorBoundary>
-      <div className="flex flex-col h-screen bg-gray-303">
-        <div className="header">
-          <div className="header-container">
-            <div>
-              <div className="collection-container">
-                <Select
-                  value={collectionOptions.find(
-                    (option) => option.value === collectionName
-                  )}
-                  onChange={(selectedOption) => {
-                    setCollectionName(selectedOption.value);
-                    handleSend(selectedOption.value);
-                  }}
-                  options={collectionOptions}
-                  placeholder="Select a collection"
-                  isSearchable={true}
-                  isMulti={false}
-                  isClearable={true}
-                  styles={dropdownStyles}
-                  menuPortalTarget={document.body}
-                />
+      <div className="font-anonymous box-border m-0 p-0">
+        <div className="flex flex-col h-screen bg-gray-303">
+          <div className="w-full flex justify-center flex-no-wrap flex-shrink-0 items-start my-5">
+            <div className="flex flex-row items-center justify-between gap-3">
+              <div>
+                <div className="w-full flex justify-center flex-no-wrap flex-shrink-0">
+                  <Select
+                    value={collectionOptions.find(
+                      (option) => option.value === collectionName
+                    )}
+                    onChange={(selectedOption) => {
+                      setCollectionName(selectedOption.value);
+                      handleSend(selectedOption.value);
+                    }}
+                    options={collectionOptions}
+                    placeholder="Select a collection"
+                    isSearchable={true}
+                    isMulti={false}
+                    isClearable={true}
+                    styles={dropdownStyles}
+                    menuPortalTarget={document.body}
+                  />
+                </div>
               </div>
-            </div>
-            <div className="search-container">
-              <div className="search-controls">
-                <p>
-                  <span className="search-term">
-                    {searchContent !== ""
-                      ? `Found ${
-                          currentResultIndex + 1
-                        }/${numberOfResultsContent} of: ${searchContent}`
-                      : `Total number of messages: ${numberOfResults}`}
-                  </span>
-                </p>
-                <div className="content-input-container">
+              <div className="search-container">
+                <div className="flex flex-row items-center justify-between">
+                  <p>
+                    <span className="search-term">
+                      {searchContent !== ""
+                        ? `Found ${
+                            currentResultIndex + 1
+                          }/${numberOfResultsContent} of: ${searchContent}`
+                        : `Total number of messages: ${numberOfResults}`}
+                    </span>
+                  </p>
                   <input
                     className="content-input button"
                     type="text"
@@ -495,100 +495,105 @@ function App() {
               </div>
             </div>
           </div>
-        </div>
-        <div className="chat-container">
-          <div className="chat">
-            <div className="chat-header">
-              <img
-                src={randomPhoto}
-                alt="user-profile"
-                className="chat-photo"
-              />
-              <p>{user ? user : "Select a collection..."}</p>
-              <button className="reset-button" onClick={refresh}>
-                &#8635;
-              </button>
+          <div className="w-full bg-gray-1a1 flex flex-col overflow-auto mb-8 max-h-[80%] border border-gray-5e7 text-gray-f0f rounded-md shadow-custom">
+            <div className="chat">
+              <div className="chat-header">
+                <img
+                  src={randomPhoto}
+                  alt="user-profile"
+                  className="chat-photo"
+                />
+                <p>{user ? user : "Select a collection..."}</p>
+                <button className="reset-button" onClick={refresh}>
+                  &#8635;
+                </button>
+              </div>
+              {isLoading ? (
+                <div className="chat-body loading">
+                  <div className="loading-bar" />
+                </div>
+              ) : (
+                <div
+                  className="chat-body"
+                  ref={chatBodyRef}
+                  style={{
+                    height: "calc(100vh - 150px)",
+                    position: "relative",
+                  }}
+                >
+                  {filteredMessages.length > 0 ? (
+                    <AutoSizer>
+                      {({ height, width }) => (
+                        <List
+                          height={height}
+                          itemCount={filteredMessages.length}
+                          itemSize={getRowHeight}
+                          width={width}
+                          ref={listRef}
+                          // Add this prop to control scrolling
+                          scrollToAlignment="center"
+                        >
+                          {({ index, style }) => {
+                            const messageArray = filteredMessages[index];
+                            const isLastMessage =
+                              index === filteredMessages.length - 1;
+                            return (
+                              <div
+                                style={{ ...style, ...hiddenScrollbarStyle }}
+                                key={index}
+                              >
+                                <Message
+                                  message={messageArray}
+                                  author={
+                                    !!(messageArray.sender_name === author)
+                                  }
+                                  time={messageArray.timestamp_ms}
+                                  key={messageArray.timestamp_ms}
+                                  isLastMessage={isLastMessage}
+                                  type={messageArray.type}
+                                  searchTerm={searchTerm}
+                                  setRowHeight={setRowHeight}
+                                  index={index}
+                                  isHighlighted={
+                                    index === highlightedMessageIndex
+                                  } // Add this prop
+                                />
+                              </div>
+                            );
+                          }}
+                        </List>
+                      )}
+                    </AutoSizer>
+                  ) : (
+                    <p>No messages found</p>
+                  )}
+                </div>
+              )}
             </div>
-            {isLoading ? (
-              <div className="chat-body loading">
-                <div className="loading-bar" />
-              </div>
-            ) : (
-              <div
-                className="chat-body"
-                ref={chatBodyRef}
-                style={{ height: "calc(100vh - 150px)", position: "relative" }}
-              >
-                {filteredMessages.length > 0 ? (
-                  <AutoSizer>
-                    {({ height, width }) => (
-                      <List
-                        height={height}
-                        itemCount={filteredMessages.length}
-                        itemSize={getRowHeight}
-                        width={width}
-                        ref={listRef}
-                        // Add this prop to control scrolling
-                        scrollToAlignment="center"
-                      >
-                        {({ index, style }) => {
-                          const messageArray = filteredMessages[index];
-                          const isLastMessage =
-                            index === filteredMessages.length - 1;
-                          return (
-                            <div
-                              style={{ ...style, ...hiddenScrollbarStyle }}
-                              key={index}
-                            >
-                              <Message
-                                message={messageArray}
-                                author={!!(messageArray.sender_name === author)}
-                                time={messageArray.timestamp_ms}
-                                key={messageArray.timestamp_ms}
-                                isLastMessage={isLastMessage}
-                                type={messageArray.type}
-                                searchTerm={searchTerm}
-                                setRowHeight={setRowHeight}
-                                index={index}
-                                isHighlighted={
-                                  index === highlightedMessageIndex
-                                } // Add this prop
-                              />
-                            </div>
-                          );
-                        }}
-                      </List>
-                    )}
-                  </AutoSizer>
-                ) : (
-                  <p>No messages found</p>
-                )}
-              </div>
-            )}
           </div>
-        </div>
-        <div className="footer">
-          <div className="footer-container">
-            <div className="delete-container">
-              <Select
-                onChange={(selectedOption) => {
-                  handleDelete(selectedOption.value);
-                }}
-                options={collectionOptions}
-                placeholder="Delete a collection"
-                isSearchable={true}
-                isMulti={false}
-                isClearable={true}
-                styles={dropdownStyles}
-                menuPortalTarget={document.body}
+          <div className="footer">
+            <div className="footer-container">
+              <div className="delete-container">
+                <Select
+                  onChange={(selectedOption) => {
+                    handleDelete(selectedOption.value);
+                  }}
+                  options={collectionOptions}
+                  placeholder="Delete a collection"
+                  isSearchable={true}
+                  isMulti={false}
+                  isClearable={true}
+                  styles={dropdownStyles}
+                  menuPortalTarget={document.body}
+                />
+              </div>
+              <input
+                className="upload-input button"
+                type="file"
+                multiple // Add the multiple attribute
+                onChange={(e) => uploadFile(e.target.files)} // Replace with your actual upload function
               />
             </div>
-            <input
-              className="upload-input button"
-              type="file"
-              multiple // Add the multiple attribute
-              onChange={(e) => uploadFile(e.target.files)} // Replace with your actual upload function
-            />
           </div>
         </div>
       </div>
