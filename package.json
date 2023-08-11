@@ -27,12 +27,19 @@
     "uuid": "^9.0.0",
     "web-vitals": "^1.1.2"
   },
+  "//": {
+    "dev-react": "self-sufficient, start the react dev server and code, motherfucker, code!",
+    "build-react": "create a production build of the web app",
+    "server": "starts express server which serves production build",
+    "start": "create the production build and start the express server for serving in one elegant command",
+    "tauri": "use tauri to create dmg package - either develop or build"
+  },
   "scripts": {
-    "start": "concurrently \"npm run serve-react\" \"npm run server\"",
-    "serve-react": "serve -s build",
     "dev-react": "react-scripts start",
-    "server": "nodemon server.js",
     "build-react": "GENERATE_SOURCEMAP=false react-scripts build",
+    "serve-react": "serve -s build",
+    "server": "nodemon server.js",
+    "start": "concurrently \"npm run serve-react\" \"npm run server\"",
     "tauri": "tauri"
   },
   "eslintConfig": {

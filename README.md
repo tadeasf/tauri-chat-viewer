@@ -2,7 +2,18 @@
 
 # How To Develop
 
-The workflow of the app works like this:
+You have two available workflows with this app. You can either go for production
+build or development build.
+
+## Development
+
+    With development workflow you need react-scripts to start dev server.
+
+    ``` bash
+    npm run dev-react
+    ```
+
+## Production
 
     First you need to build the React app
 
@@ -10,7 +21,7 @@ The workflow of the app works like this:
     npm run build-react
     ```
 
-    Second you need to start up the express server which either serves the production build or use morgan for development mode when NODE_ENV variable isn't defined in .env file. If you want to build+start up server in one command you can use provided start script
+    Second you need to start up the express server which serves the production build. You gotta start both the express server as well as react server in order to play with the production build of the app
 
     ``` bash
     npm run server
@@ -25,5 +36,5 @@ The workflow of the app works like this:
     ```
 
 Why are we serving the build files ? It's just one of many options how you can
-develop web apps with automatic re-rendering on save. It's neat. Don't ask too
-many questions. It's not good for you.
+check production build of the web app. It's neat. Don't ask too many questions.
+It's not good for you.
