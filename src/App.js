@@ -16,20 +16,18 @@
  */
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import "./template-styles.css";
 import Message from "./components/Message/Message";
 import { ErrorBoundary } from "react-error-boundary";
 import { VariableSizeList as List } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
 import martina from "./assets/martina.jpg";
 import {
-  DropdownMenu,
-  DropdownMenuItem,
-  DropdownMenuContent,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuTrigger,
-} from "./components/ui/dropdown-menu";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "./components/ui/popover";
+import { Button } from "./components/ui/button";
+import { Card } from "./components/ui/card";
 
 const photosMap = {
   martina: martina,
@@ -44,10 +42,10 @@ function App() {
   const [uploadedMessages, setUploadedMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [collectionName, setCollectionName] = useState("");
+  const [collections, setCollections] = useState([]);
   const chatBodyRef = useRef();
   const [randomPhoto, setRandomPhoto] = useState(null);
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
-  const [collections, setCollections] = useState([]);
   const [numberOfResults, setNumberOfResults] = useState(0);
   const listRef = useRef(); // Add this ref
   const rowHeights = useRef({}); // Add this ref
@@ -390,45 +388,40 @@ function App() {
   return (
     <ErrorBoundary>
       <div className="font-anonymous box-border m-0 p-0">
-        <div className="flex flex-col h-screen bg-gray-303">
+        <Card className="flex flex-col h-screen bg-gray-303">
           <div className="w-full flex justify-center flex-nowrap shrink-0 flex items-start mt-2 mb-8">
             <div className="flex flex-row items-center justify-between gap-3">
-              <div>
-                <div className="w-full flex justify-center flex-nowrap shrink-0 m-0">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      {/* You can style or modify this button as needed */}
-                      <button>Select a collection</button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuRadioGroup
-                        value={collectionName}
-                        onValueChange={setCollectionName}
-                      >
-                        {collectionOptions.map((option) => (
-                          <DropdownMenuRadioItem
-                            key={option.value}
-                            value={option.value}
-                          >
-                            {option.label}
-                          </DropdownMenuRadioItem>
-                        ))}
-                      </DropdownMenuRadioGroup>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
+              <div className="w-full flex justify-center flex-nowrap shrink-0 m-0">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button>Select a collection</Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuRadioGroup
+                      value={collectionName}
+                      onValueChange={setCollectionName}
+                    >
+                      {collectionOptions.map((option) => (
+                        <DropdownMenuRadioItem
+                          key={option.value}
+                          value={option.value}
+                        >
+                          {option.label}
+                        </DropdownMenuRadioItem>
+                      ))}
+                    </DropdownMenuRadioGroup>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
 
               <div className="flex flex-row items-center justify-between">
-                <p>
-                  <span className="inline-flex text-white bg-gray-303 transition-all duration-300 ease-in-out items-center justify-center shadow-custom rounded-2 border-none text-lg self-start m-1 px-2 py-1">
-                    {searchContent !== ""
-                      ? `Found ${
-                          currentResultIndex + 1
-                        }/${numberOfResultsContent} of: ${searchContent}`
-                      : `Total number of messages: ${numberOfResults}`}
-                  </span>
-                </p>
+                <span className="inline-flex text-white bg-gray-303 transition-all duration-300 ease-in-out items-center justify-center shadow-custom rounded-2 border-none text-lg self-start m-1 px-2 py-1">
+                  {searchContent !== ""
+                    ? `Found ${
+                        currentResultIndex + 1
+                      }/${numberOfResultsContent} of: ${searchContent}`
+                    : `Total number of messages: ${numberOfResults}`}
+                </span>
                 <input
                   className="inline-flex text-white bg-gray-303 transition-all duration-300 ease-in-out items-center justify-center shadow-custom rounded-2 border-none text-lg self-start m-1 px-2 py-1"
                   type="text"
@@ -440,7 +433,8 @@ function App() {
               </div>
             </div>
           </div>
-          <div className="mb-8 w-full max-h-[80%] border text-zinc-100 shadow-custom flex flex-col overflow-auto rounded-2 border-gray-5e7 bg-gray-1a1">
+
+          <Card className="mb-8 w-full max-h-[80%] text-zinc-100 shadow-custom flex flex-col overflow-auto rounded-2 border-gray-5e7 bg-gray-1a1">
             <div className="flex items-center justify-between p-2 bg-gray-232">
               <img
                 src={randomPhoto}
@@ -448,13 +442,11 @@ function App() {
                 className="h-20 w-20 object-cover ml-12 mr-10 rounded-full"
               />
               <p>{user ? user : "Select a collection..."}</p>
-              <button
-                className="inline-flex text-white bg-gray-303 transition-all duration-300 ease-in-out items-center justify-center shadow-custom rounded-2 border-none text-5xl mr-4 mt-1 px-2 py-1"
-                onClick={refresh}
-              >
+              <Button onClick={refresh} className="text-5xl mr-4 mt-1">
                 &#8635;
-              </button>
+              </Button>
             </div>
+
             {isLoading ? (
               <div className="flex items-center justify-center">
                 <div className="w-full h-1 bg-red-b70 animate-pulse opacity-70 rounded-xl" />
@@ -463,10 +455,7 @@ function App() {
               <div
                 className="flex-grow overflow-auto flex flex-col gap-4 p-2"
                 ref={chatBodyRef}
-                style={{
-                  height: "calc(100vh - 150px)",
-                  position: "relative",
-                }}
+                style={{ height: "calc(100vh - 150px)", position: "relative" }}
               >
                 {filteredMessages.length > 0 ? (
                   <AutoSizer>
@@ -477,7 +466,6 @@ function App() {
                         itemSize={getRowHeight}
                         width={width}
                         ref={listRef}
-                        // Add this prop to control scrolling
                         scrollToAlignment="center"
                       >
                         {({ index, style }) => {
@@ -502,7 +490,7 @@ function App() {
                                 index={index}
                                 isHighlighted={
                                   index === highlightedMessageIndex
-                                } // Add this prop
+                                }
                               />
                             </div>
                           );
@@ -515,12 +503,13 @@ function App() {
                 )}
               </div>
             )}
-          </div>
+          </Card>
+
           <div className="mb-[2em]">
             <div className="flex flex-row items-center justify-between gap-4">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button>Delete a collection</button>
+                  <Button>Delete a collection</Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
                   {collectionOptions.map((option) => (
@@ -537,12 +526,12 @@ function App() {
               <input
                 className="inline-flex text-white bg-gray-303 transition-all duration-300 ease-in-out items-center justify-center shadow-custom rounded-2 border-none text-lg self-start m-1 px-2 py-1"
                 type="file"
-                multiple // Add the multiple attribute
-                onChange={(e) => uploadFile(e.target.files)} // Replace with your actual upload function
+                multiple
+                onChange={(e) => uploadFile(e.target.files)}
               />
             </div>
           </div>
-        </div>
+        </Card>
       </div>
     </ErrorBoundary>
   );

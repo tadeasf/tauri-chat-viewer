@@ -1,22 +1,8 @@
 /** @format */
-/* This file is part of Chat Viewer.
- *
- * Chat Viewer is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Chat Viewer is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Chat Viewer. If not, see <https://www.gnu.org/licenses/>.
- */
+
 import React, { useState } from "react";
-import "./../../template-styles.css";
 import { DateTime } from "luxon";
+import { Card } from "./../ui/card";
 
 const Message = ({ message, time, type, author, uuid, isHighlighted }) => {
   const [visibility, setVisibility] = useState(false);
@@ -77,45 +63,46 @@ const Message = ({ message, time, type, author, uuid, isHighlighted }) => {
             author ? "message-sent-container" : ""
           }`}
         >
-          <div
-            className={`message ${author ? "message-sent" : "message-received"}
-            ${isHighlighted ? "message-highlighted" : ""}`}
+          <Card
             onClick={handleClick}
+            className={`message ${
+              author ? "message-sent" : "message-received"
+            } ${isHighlighted ? "message-highlighted" : ""}`}
           >
-            <div
-              className="sender-name"
-              style={
-                visibility
-                  ? {
-                      display: "block",
-                      fontSize: "1em",
-                      padding: "0.5em",
-                      justifyContent: "center",
-                      fontStyle: "italic",
-                    }
-                  : { display: "none" }
-              }
-            >
-              {message.sender_name}
-            </div>
-            {whatKindIs()}
-            <div
-              className="time-ago"
-              style={
-                visibility
-                  ? {
-                      display: "block",
-                      fontSize: "0.85em",
-                      padding: "0.5em",
-                      justifyContent: "center",
-                      fontStyle: "italic",
-                    }
-                  : { display: "none" }
-              }
-            >
-              <p>{DateTime.fromSeconds(time / 1000).toLocaleString()}</p>
-            </div>
-          </div>
+            {visibility && (
+              <h3 style={{ fontSize: "1em", padding: "0.5em" }}>
+                {message.sender_name}
+              </h3>
+            )}
+            {type === "Image" ? (
+              // Using regular img tag since shadcn doesn't have a direct Image component
+              <img
+                src={`data:image/jpeg;base64,${message.content}`}
+                alt="Message content"
+              />
+            ) : type === "Generic" || type === null ? (
+              message.content ? (
+                <p>{message.content}</p>
+              ) : (
+                <p style={errorFile}>Content isn't available</p>
+              )
+            ) : (
+              <a href={message.share.link} target="_blank" rel="noreferrer">
+                {message.share.link}
+              </a>
+            )}
+            {visibility && (
+              <p
+                style={{
+                  fontSize: "0.85em",
+                  padding: "0.5em",
+                  fontStyle: "italic",
+                }}
+              >
+                {DateTime.fromSeconds(time / 1000).toLocaleString()}
+              </p>
+            )}
+          </Card>
         </div>
       ) : null}
     </>
