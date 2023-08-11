@@ -276,11 +276,6 @@ function App() {
     }
   };
 
-  const hiddenScrollbarStyle = {
-    scrollbarWidth: "none", // for Firefox
-    msOverflowStyle: "none", // for Internet Explorer and Edge
-  };
-
   const dropdownStyles = {
     control: (provided) => ({
       ...provided,
@@ -540,7 +535,8 @@ function App() {
                             index === filteredMessages.length - 1;
                           return (
                             <div
-                              style={{ ...style, ...hiddenScrollbarStyle }}
+                              className="no-scrollbar"
+                              style={{ ...style }}
                               key={index}
                             >
                               <Message
