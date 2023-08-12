@@ -1,22 +1,24 @@
-/** @format */
-/* This file is part of Chat Viewer.
+/**
+ * This file is part of Kocouřátčí Messenger.
  *
- * Chat Viewer is free software: you can redistribute it and/or modify
+ * Kocouřátčí Messenger is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Chat Viewer is distributed in the hope that it will be useful,
+ * Kocouřátčí Messenger is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Chat Viewer. If not, see <https://www.gnu.org/licenses/>.
+ * along with Kocouřátčí Messenger. If not, see <https://www.gnu.org/licenses/>.
+ *
+ * @format
  */
 
 import { useState, useEffect, useRef } from "react";
-import Message from "./components/Message/Message";
+import Message from "./components/ui/Message";
 import { ErrorBoundary } from "react-error-boundary";
 import { ModeToggle } from "./components/ModeToggle";
 import { VariableSizeList as List } from "react-window";
