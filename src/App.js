@@ -27,14 +27,6 @@ import { Label } from "./components/ui/label";
 import { Badge } from "./components/ui/badge";
 import martina from "./assets/martina.jpg";
 import {
-  DropdownMenu,
-  DropdownMenuItem,
-  DropdownMenuContent,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuTrigger,
-} from "./components/ui/dropdown-menu";
-import {
   Command,
   CommandEmpty,
   CommandGroup,
@@ -182,11 +174,6 @@ function App() {
 
     fetchCollections();
   }, []);
-
-  const collectionOptions = collections.map((collection) => ({
-    label: collection,
-    value: collection,
-  }));
 
   const handleSend = async (collectionName) => {
     setIsLoading(true);
@@ -425,7 +412,7 @@ function App() {
 
   return (
     <ErrorBoundary>
-      <ThemeProvider>
+      <ThemeProvider defaultTheme="system" enableSystem={true}>
         <div className="font-anonymous box-border bg-background">
           <Card className="flex flex-col h-screen bg-background">
             <div className="w-full bg-background flex flex-wrap justify-center items-center mt-5 mb-5 gap-x-4 gap-y-4">

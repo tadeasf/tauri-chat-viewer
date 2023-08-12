@@ -18,7 +18,8 @@
     "bundle": {
       "active": true,
       "category": "SocialNetworking",
-      "copyright": "",
+      "copyright": "Tadeáš Fořt",
+      "publisher": "Tadeáš Fořt",
       "deb": {
         "depends": []
       },
@@ -31,17 +32,18 @@
         "icons/icon.ico"
       ],
       "identifier": "com.kocouratci.messenger.viewer.dev",
-      "longDescription": "",
+      "longDescription": "Simple app for viewing chat history made by Tadeáš Fořt. It uses React and sass in order to create a simple UI. This UI then shows information provided by a remote express backend. The backend is connected to a MongoDB database which stores the chat history. You can upload .json message files in bulk to the backend which then correctly decodes them and saves them to mongodb.",
       "macOS": {
         "entitlements": null,
         "exceptionDomain": "",
         "frameworks": [],
         "providerShortName": null,
-        "signingIdentity": null
+        "signingIdentity": null,
+        "license": "./../LICENSE"
       },
       "resources": [],
-      "shortDescription": "",
-      "targets": "all",
+      "shortDescription": "Simple app for viewing chat history made by Tadeáš Fořt",
+      "targets": "dmg",
       "windows": {
         "certificateThumbprint": null,
         "digestAlgorithm": "sha256",
@@ -56,11 +58,19 @@
     },
     "windows": [
       {
+        "title": "Kocouřátčí Messenger",
         "fullscreen": false,
-        "height": 1200,
+        "maximizable": true,
         "resizable": true,
-        "title": "kocouratci_messenger",
-        "width": 1600
+        "center": true,
+        "fileDropEnabled": true,
+        "skipTaskbar": true,
+        "hiddenTitle": true,
+        "tabbingIdentifier": "kocouratci-messenger",
+        "height": 1200,
+        "width": 1600,
+        "minHeight": 600,
+        "minWidth": 800
       }
     ]
   }

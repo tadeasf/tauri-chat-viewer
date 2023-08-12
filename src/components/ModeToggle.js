@@ -8,11 +8,11 @@ import { MoonIcon, SunIcon } from "@radix-ui/react-icons";
 import { Button } from "./ui/button";
 
 export function ModeToggle() {
-  const { theme, setTheme } = useTheme();
+  const { setTheme, resolvedTheme } = useTheme();
 
   // Toggle between light and dark theme
   const toggleTheme = () => {
-    if (theme === "dark") {
+    if (resolvedTheme === "dark") {
       setTheme("light");
     } else {
       setTheme("dark");
@@ -21,7 +21,7 @@ export function ModeToggle() {
 
   return (
     <Button variant="outline" size="icon" onClick={toggleTheme}>
-      {theme === "dark" ? (
+      {resolvedTheme === "dark" ? (
         <MoonIcon className="h-[1.2rem] w-[1.2rem]" />
       ) : (
         <SunIcon className="h-[1.2rem] w-[1.2rem]" />
