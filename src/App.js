@@ -63,20 +63,21 @@ const App = observer(() => {
     currentResultIndex,
     firstPress,
   } = MessageStore;
-  const { isLoading, collections, collectionName, isPhotoAvailable } =
-    CollectionStore;
-
+  const [isLoading, setIsLoading] = useState(false);
+  const [collectionName, setCollectionName] = useState("");
   const chatBodyRef = useRef();
+  const [collections, setCollections] = useState([]);
   const listRef = useRef();
   const rowHeights = useRef({}); // Add this ref
   const [open, setOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const fileInputRef = useRef(null);
+  const [isPhotoAvailable, setIsPhotoAvailable] = useState(false);
   const isPhotoAvailableRef = useRef(false);
 
   const handleOnSelect = async (value) => {
     await hardReset();
-    CollectionStore.collectionName = value;
+    setCollectionName(value);
     MessageStore.handleSend(value); // Assuming handleSend is a method in MessageStore
   };
 
@@ -125,18 +126,15 @@ const App = observer(() => {
 
   const refresh = async () => {
     // Check if there's no collection and no uploaded messages
-    if (
-      !CollectionStore.collectionName &&
-      MessageStore.uploadedMessages.length === 0
-    ) {
+    if (!collectionName && uploadedMessages.length === 0) {
       console.warn(
         "No collection selected and no messages uploaded. Cannot refresh."
       );
-      CollectionStore.isLoading = false;
+      setIsLoading(false);
       return;
     }
 
-    CollectionStore.isLoading = true;
+    setIsLoading(true); // Set isLoading to true when refresh is triggered
     MessageStore.page = 1;
     MessageStore.debouncedSearchTerm = "";
     MessageStore.contentSearchIndex = -1;
@@ -150,21 +148,21 @@ const App = observer(() => {
     MessageStore.currentResultIndex = 0;
     MessageStore.scrollToTop();
 
-    if (MessageStore.uploadedMessages.length > 0) {
-      MessageStore.filteredMessages = MessageStore.uploadedMessages;
-      MessageStore.numberOfResults = MessageStore.uploadedMessages.length;
+    if (uploadedMessages.length > 0) {
+      MessageStore.filteredMessages = uploadedMessages;
+      MessageStore.numberOfResults = uploadedMessages.length;
       MessageStore.searchTerm = "";
-      CollectionStore.isLoading = false;
-    } else if (CollectionStore.collectionName) {
-      await MessageStore.handleSend(CollectionStore.collectionName);
-      CollectionStore.isLoading = false;
+      setIsLoading(false); // Set isLoading to false when the messages are updated
+    } else if (collectionName) {
+      await MessageStore.handleSend(collectionName);
+      setIsLoading(false); // Set isLoading to false after handleSend is completed
     } else {
-      CollectionStore.isLoading = false;
+      setIsLoading(false); // Set isLoading to false if no messages and no collectionName
     }
   };
 
   const hardReset = async () => {
-    CollectionStore.isLoading = true;
+    setIsLoading(true);
 
     // Reset states related to pagination, search, and UI behavior
     MessageStore.page = 1;
@@ -181,18 +179,18 @@ const App = observer(() => {
     MessageStore.scrollToTop();
 
     // Reset collection and user
-    CollectionStore.collectionName = "";
+    setCollectionName(null);
     MessageStore.user = "";
 
     // Reset messages
     MessageStore.filteredMessages = []; // Clear the displayed messages
     MessageStore.uploadedMessages = []; // Clear the uploaded messages cache
 
-    CollectionStore.isLoading = false;
+    setIsLoading(false);
   };
 
   const handleDelete = async (collectionName) => {
-    CollectionStore.isLoading = true;
+    setIsLoading(true);
 
     try {
       const response = await fetch(
