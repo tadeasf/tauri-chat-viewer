@@ -22,6 +22,22 @@ import { VariableSizeList as List } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
 import martina from "./assets/martina.jpg";
 import {
+  DropdownMenu,
+  DropdownMenuItem,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "./components/ui/dropdown-menu";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "./components/ui/command";
+import {
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -42,10 +58,10 @@ function App() {
   const [uploadedMessages, setUploadedMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [collectionName, setCollectionName] = useState("");
-  const [collections, setCollections] = useState([]);
   const chatBodyRef = useRef();
   const [randomPhoto, setRandomPhoto] = useState(null);
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+  const [collections, setCollections] = useState([]);
   const [numberOfResults, setNumberOfResults] = useState(0);
   const listRef = useRef(); // Add this ref
   const rowHeights = useRef({}); // Add this ref
@@ -61,6 +77,10 @@ function App() {
     setContentSearchIndex(0);
     setScrollToIndex(0);
     setHighlightedMessageIndex(-1);
+  };
+
+  const handleOnSelect = (value) => {
+    setCollectionName(value);
   };
 
   const handleContentKeyPress = (e) => {
@@ -392,26 +412,34 @@ function App() {
           <div className="w-full flex justify-center flex-nowrap shrink-0 flex items-start mt-2 mb-8">
             <div className="flex flex-row items-center justify-between gap-3">
               <div className="w-full flex justify-center flex-nowrap shrink-0 m-0">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button>Select a collection</Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuRadioGroup
-                      value={collectionName}
-                      onValueChange={setCollectionName}
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="w-[150px] justify-start"
                     >
-                      {collectionOptions.map((option) => (
-                        <DropdownMenuRadioItem
-                          key={option.value}
-                          value={option.value}
-                        >
-                          {option.label}
-                        </DropdownMenuRadioItem>
-                      ))}
-                    </DropdownMenuRadioGroup>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                      {collectionName ? collectionName : "Select a collection"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="p-0" side="right" align="start">
+                    <Command>
+                      <CommandInput placeholder="Select collection..." />
+                      <CommandList>
+                        <CommandEmpty>No collections found.</CommandEmpty>
+                        <CommandGroup>
+                          {collections.map((collection) => (
+                            <CommandItem
+                              key={collection.value}
+                              onSelect={() => handleOnSelect(collection.value)}
+                            >
+                              {collection.label}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
               </div>
 
               <div className="flex flex-row items-center justify-between">
