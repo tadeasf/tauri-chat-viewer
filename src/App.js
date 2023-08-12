@@ -45,37 +45,40 @@ import { Button } from "./components/ui/button";
 import { Card } from "./components/ui/card";
 
 function App() {
-  const [author, setAuthor] = useState("");
-  const [user, setUser] = useState("");
-  const [filteredMessages, setFilteredMessages] = useState([]);
-  const [page, setPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [uploadedMessages, setUploadedMessages] = useState([]);
+  const { UserStore, ThemeStore, MessageStore } = useContext(storesContext);
+  const {
+    author,
+    user,
+    filteredMessages,
+    page,
+    searchTerm,
+    uploadedMessages,
+    debouncedSearchTerm,
+    numberOfResults,
+    scrollToIndex,
+    contentSearchIndex,
+    searchContent,
+    highlightedMessageIndex,
+    numberOfResultsContent,
+    currentResultIndex,
+    firstPress,
+  } = MessageStore;
   const [isLoading, setIsLoading] = useState(false);
   const [collectionName, setCollectionName] = useState("");
   const chatBodyRef = useRef();
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [collections, setCollections] = useState([]);
-  const [numberOfResults, setNumberOfResults] = useState(0);
-  const listRef = useRef(); // Add this ref
+  const listRef = useRef();
   const rowHeights = useRef({}); // Add this ref
-  const [scrollToIndex, setScrollToIndex] = useState(-1);
-  const [contentSearchIndex, setContentSearchIndex] = useState(-1);
-  const [searchContent, setSearchContent] = useState("");
-  const [highlightedMessageIndex, setHighlightedMessageIndex] = useState(-1);
-  const [numberOfResultsContent, setNumberOfResultsContent] = useState(0);
-  const [currentResultIndex, setCurrentResultIndex] = useState(0);
-  const [firstPress, setFirstPress] = useState(true);
   const [open, setOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const fileInputRef = useRef(null);
   const [isPhotoAvailable, setIsPhotoAvailable] = useState(false);
   const isPhotoAvailableRef = useRef(false);
-  const { UserStore, ThemeStore } = useContext(storesContext);
+
   const scrollToTop = () => {
-    setContentSearchIndex(0);
-    setScrollToIndex(0);
-    setHighlightedMessageIndex(-1);
+    MessageStore.setContentSearchIndex(0);
+    MessageStore.setScrollToIndex(0);
+    MessageStore.setHighlightedMessageIndex(-1);
   };
 
   const handleOnSelect = async (value) => {
@@ -88,11 +91,11 @@ function App() {
     if (e.key === "Enter") {
       if (firstPress) {
         scrollToContent(searchContent);
-        setFirstPress(false);
+        MessageStore.setFirstPress(false);
       } else {
         scrollToContent(searchContent);
         // Increment the current result index
-        setCurrentResultIndex((prevIndex) =>
+        MessageStore.setCurrentResultIndex((prevIndex) =>
           prevIndex + 1 < numberOfResultsContent ? prevIndex + 1 : 0
         );
       }
@@ -129,9 +132,9 @@ function App() {
 
     if (messageIndex !== -1) {
       console.log("Message found:", messageIndex);
-      setContentSearchIndex(messageIndex);
-      setScrollToIndex(messageIndex);
-      setHighlightedMessageIndex(messageIndex);
+      MessageStore.setContentSearchIndex(messageIndex);
+      MessageStore.setScrollToIndex(messageIndex);
+      MessageStore.setHighlightedMessageIndex(messageIndex);
     } else {
       console.error("No more messages with the given content found.");
     }
@@ -140,7 +143,7 @@ function App() {
   useEffect(() => {
     if (scrollToIndex !== -1 && listRef.current) {
       listRef.current.scrollToItem(scrollToIndex, "center");
-      setScrollToIndex(-1);
+      MessageStore.setScrollToIndex(-1);
     }
   }, [scrollToIndex]);
 
@@ -178,7 +181,7 @@ function App() {
 
   const handleSend = async (collectionName) => {
     setIsLoading(true);
-    setUser(null);
+    MessageStore.setUser("");
 
     try {
       const response = await fetch(
@@ -193,7 +196,7 @@ function App() {
       });
 
       // Cache the uploaded messages
-      setUploadedMessages(mappedMessages);
+      MessageStore.setUploadedMessages(mappedMessages);
 
       // Set the author and user states only if they are not already set
       if (!author || !user) {
@@ -204,9 +207,9 @@ function App() {
 
         uniqueSenders.forEach((sender) => {
           if (sender === "Tadeáš Fořt" || sender === "Tadeáš") {
-            setAuthor(sender);
+            MessageStore.setAuthor(sender);
           } else {
-            setUser(sender);
+            MessageStore.setUser(sender);
           }
         });
       }
@@ -253,14 +256,14 @@ function App() {
             return normalizedContent.includes(normalizedSearchTerm);
           });
     // Update numberOfResults
-    setNumberOfResults(filteredMsgs.length);
+    MessageStore.setNumberOfResults(filteredMsgs.length);
     // Slice messages array for pagination
     filteredMsgs = filteredMsgs.slice(
       Math.max(page - 2, 0) * messagesPerPage,
       page * messagesPerPage
     );
 
-    setFilteredMessages(filteredMsgs);
+    MessageStore.setFilteredMessages(filteredMsgs);
   }, [debouncedSearchTerm, uploadedMessages, page]);
 
   const refresh = async () => {
@@ -274,23 +277,23 @@ function App() {
     }
 
     setIsLoading(true); // Set isLoading to true when refresh is triggered
-    setPage(1);
-    setDebouncedSearchTerm(""); // Reset the debounced search term
-    setContentSearchIndex(-1);
-    setSearchContent("");
-    setHighlightedMessageIndex(-1);
-    setCurrentResultIndex(0);
-    setNumberOfResultsContent(0);
-    setScrollToIndex(-1);
-    setNumberOfResults(0);
-    setFirstPress(true);
-    setCurrentResultIndex(0);
+    MessageStore.setPage(1);
+    MessageStore.setDebouncedSearchTerm(""); // Reset the debounced search term
+    MessageStore.setContentSearchIndex(-1);
+    MessageStore.setSearchContent("");
+    MessageStore.setHighlightedMessageIndex(-1);
+    MessageStore.setCurrentResultIndex(0);
+    MessageStore.setNumberOfResultsContent(0);
+    MessageStore.setScrollToIndex(-1);
+    MessageStore.setNumberOfResults(0);
+    MessageStore.setFirstPress(true);
+    MessageStore.setCurrentResultIndex(0);
     scrollToTop();
 
     if (uploadedMessages.length > 0) {
-      setFilteredMessages(uploadedMessages);
-      setNumberOfResults(uploadedMessages.length);
-      setSearchTerm("");
+      MessageStore.setFilteredMessages(uploadedMessages);
+      MessageStore.setNumberOfResults(uploadedMessages.length);
+      MessageStore.setSearchTerm("");
       setIsLoading(false); // Set isLoading to false when the messages are updated
     } else if (collectionName) {
       await handleSend(collectionName);
@@ -304,26 +307,26 @@ function App() {
     setIsLoading(true);
 
     // Reset states related to pagination, search, and UI behavior
-    setPage(1);
-    setDebouncedSearchTerm("");
-    setContentSearchIndex(-1);
-    setSearchContent("");
-    setHighlightedMessageIndex(-1);
-    setCurrentResultIndex(0);
-    setNumberOfResultsContent(0);
-    setScrollToIndex(-1);
-    setNumberOfResults(0);
-    setFirstPress(true);
-    setCurrentResultIndex(0);
+    MessageStore.setPage(1);
+    MessageStore.setDebouncedSearchTerm("");
+    MessageStore.setContentSearchIndex(-1);
+    MessageStore.setSearchContent("");
+    MessageStore.setHighlightedMessageIndex(-1);
+    MessageStore.setCurrentResultIndex(0);
+    MessageStore.setNumberOfResultsContent(0);
+    MessageStore.setScrollToIndex(-1);
+    MessageStore.setNumberOfResults(0);
+    MessageStore.setFirstPress(true);
+    MessageStore.setCurrentResultIndex(0);
     scrollToTop();
 
     // Reset collection and user
     setCollectionName(null);
-    setUser(null);
+    MessageStore.setUser("");
 
     // Reset messages
-    setFilteredMessages([]); // Clear the displayed messages
-    setUploadedMessages([]); // Clear the uploaded messages cache
+    MessageStore.setFilteredMessages([]); // Clear the displayed messages
+    MessageStore.setUploadedMessages([]); // Clear the uploaded messages cache
 
     setIsLoading(false);
   };
@@ -432,7 +435,7 @@ function App() {
             return normalizedContent.includes(normalizedSearchContent);
           });
 
-    setNumberOfResultsContent(filteredMsgsByContent.length);
+    MessageStore.setNumberOfResultsContent(filteredMsgsByContent.length);
   }, [searchContent, uploadedMessages]);
 
   const handleFileChange = async (e) => {
@@ -508,7 +511,7 @@ function App() {
                 type="text"
                 placeholder="Seach messages..."
                 value={searchContent}
-                onChange={(e) => setSearchContent(e.target.value)}
+                onChange={(e) => MessageStore.setSearchContent(e.target.value)}
                 onKeyDown={handleContentKeyPress}
               />
               <Badge
