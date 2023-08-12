@@ -307,6 +307,7 @@ const App = observer(() => {
           body: formData,
         }
       );
+      console.log(collectionName);
 
       const data = await response.json();
       if (data.message === "Photo uploaded successfully") {

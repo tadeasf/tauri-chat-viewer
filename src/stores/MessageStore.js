@@ -96,6 +96,7 @@ class MessageStore {
       const response = await fetch(
         `https://server.kocouratko.eu/messages/${collectionName}`
       );
+      console.log(collectionName);
       const data = await response.json();
       this.uploadedMessages = data.map((message) => ({ ...message }));
 
