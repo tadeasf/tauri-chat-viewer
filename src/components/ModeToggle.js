@@ -19,21 +19,20 @@
 
 // components/ModeToggle.js
 
-import React from "react";
+import React, { useContext } from "react";
 import { useTheme } from "next-themes";
 import { MoonIcon, SunIcon } from "@radix-ui/react-icons";
 import { Button } from "./ui/button";
+import { storesContext } from "../stores/storesContext";
 
 export function ModeToggle() {
   const { setTheme, resolvedTheme } = useTheme();
+  const { ThemeStore } = useContext(storesContext);
 
   // Toggle between light and dark theme
   const toggleTheme = () => {
-    if (resolvedTheme === "dark") {
-      setTheme("light");
-    } else {
-      setTheme("dark");
-    }
+    ThemeStore.toggleTheme();
+    setTheme(ThemeStore.theme);
   };
 
   return (

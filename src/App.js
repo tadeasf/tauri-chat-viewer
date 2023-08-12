@@ -21,6 +21,7 @@ import { useState, useEffect, useRef } from "react";
 import Message from "./components/ui/Message";
 import { ErrorBoundary } from "react-error-boundary";
 import { ModeToggle } from "./components/ModeToggle";
+import { storesContext } from "./stores/storesContext";
 import { VariableSizeList as List } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { ThemeProvider } from "./components/theme-provider";
@@ -70,6 +71,7 @@ function App() {
   const fileInputRef = useRef(null);
   const [isPhotoAvailable, setIsPhotoAvailable] = useState(false);
   const isPhotoAvailableRef = useRef(false);
+  const { UserStore, ThemeStore } = useContext(storesContext);
 
   const scrollToTop = () => {
     setContentSearchIndex(0);
@@ -467,7 +469,7 @@ function App() {
 
   return (
     <ErrorBoundary>
-      <ThemeProvider defaultTheme="system" enableSystem={true}>
+      <ThemeProvider defaultTheme="{ThemeStore.theme}" enableSystem={true}>
         <div className="font-anonymous box-border bg-background">
           <Card className="flex flex-col h-screen bg-background">
             <div className="w-full bg-background flex flex-wrap justify-center items-center mt-5 mb-5 gap-x-4 gap-y-4">
