@@ -1,0 +1,96 @@
+$basic-transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+$basic-bg-color: #333;
+$hover-bg-color: #444;
+$active-bg-color: #555;
+$material-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
+
+@import url('https://fonts.googleapis.com/css2?family=Anonymous+Pro:wght@400;700&display=swap');
+
+.message-container {
+  position: relative;
+  font-family: 'Anonymous Pro', monospace;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; // default alignment for received messages
+}
+
+.message {
+  border: 1px solid #ccc;
+  padding: 0.75em;
+  border-radius: 1em;
+  width: fit-content;
+  margin: 0.5em 1em;
+  max-width: 85%;
+  min-width: 5%;
+  font-size: 1em;
+  box-shadow: $material-shadow;
+  display: flex;
+  flex-direction: column;
+
+  p {
+    font-size: 1.2em;
+    color: #f0f0f0;
+  }
+
+  img {
+    max-width: 20em;
+    max-height: 15em;
+    object-fit: cover;
+  }
+
+  .message-uuid {
+    margin-top: 0.125em;
+    font-size: 1em;
+    font-style: italic;
+    color: #aaa;
+  }
+}
+
+
+.message-received {
+  background-color: #1c4f7a;
+  align-self: flex-start;
+}
+
+.message-sent {
+  background-color: #3f3f42;
+  align-self: flex-end; // override alignment for sent messages
+}
+
+.time-ago {
+  transition: 1s;
+  text-align: flex-end;
+  color: #aaa;
+  margin-top: 0.125em;
+
+  p {
+    margin-top: 0.125em;
+    font-size: 1em;
+  }
+}
+
+.message-highlighted {
+  background-color: #9b2d2d;
+}
+
+@media (max-width: 768px) {
+  .message {
+    width: fit-content;
+    margin: 0.5em 1em;
+    font-size: 0.8em;
+    max-width: 95%;
+    min-width: 1%;
+    padding: 0.6em;
+  }
+}
+
+@media (max-width: 576px) {
+  .message {
+    width: fit-content;
+    margin: 0.5em 1em;
+    font-size: 0.6em;
+    max-width: 95%;
+    min-width: 1%;
+    padding: 0.6em;
+  }
+}

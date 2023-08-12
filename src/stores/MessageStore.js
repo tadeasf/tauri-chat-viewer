@@ -42,10 +42,10 @@ class MessageStore {
     this.highlightedMessageIndex = -1;
   }
 
-  setSearchTerm(value) {
+  setSearchTerm = (value) => {
     this.searchTerm = value; // This will immediately update the input value
     this.debouncedSetSearchTerm(value); // Pass the value to the debounced function
-  }
+  };
 
   debouncedSetSearchTerm = debounce(function (value) {
     this.debouncedSearchTerm = value;
@@ -76,7 +76,7 @@ class MessageStore {
   }
 
   // Scroll to a specific content in the message list
-  scrollToContent(content) {
+  scrollToContent = (content) => {
     const normalizedContent = this.removeDiacritics(content.toLowerCase());
     let messageIndex = -1;
 
@@ -106,7 +106,7 @@ class MessageStore {
     } else {
       console.error("No more messages with the given content found.");
     }
-  }
+  };
 
   // Send a message
   async handleSend(collectionName) {
