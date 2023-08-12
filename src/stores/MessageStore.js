@@ -3,7 +3,7 @@
 // src/stores/MessageStore.js
 
 import { makeAutoObservable } from "mobx";
-
+import collectionStore from "./CollectionStore";
 function debounce(func, wait) {
   let timeout;
   return function (...args) {
@@ -117,11 +117,16 @@ class MessageStore {
         `https://server.kocouratko.eu/messages/${collectionName}`
       );
       const data = await response.json();
+
+      // Store the original messages
       this.uploadedMessages = data.map((message) => ({
         ...message,
-        normalizedContent: this.removeDiacritics(
-          message.content?.toLowerCase() || ""
-        ),
+      }));
+
+      // Store the normalized messages for search purposes
+      this.normalizedMessages = data.map((message) => ({
+        ...message,
+        content: this.removeDiacritics(message.content?.toLowerCase() || ""),
       }));
 
       if (!this.author || !this.user) {
