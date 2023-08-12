@@ -45,7 +45,7 @@ import { Button } from "./components/ui/button";
 import { Card } from "./components/ui/card";
 
 const App = observer(() => {
-  const { UserStore, ThemeStore, MessageStore } = useContext(storesContext);
+  const { MessageStore, CollectionStore } = useContext(storesContext);
   const {
     author,
     user,
@@ -63,21 +63,20 @@ const App = observer(() => {
     currentResultIndex,
     firstPress,
   } = MessageStore;
-  const [isLoading, setIsLoading] = useState(false);
-  const [collectionName, setCollectionName] = useState("");
+  const { isLoading, collections, collectionName, isPhotoAvailable } =
+    CollectionStore;
+
   const chatBodyRef = useRef();
-  const [collections, setCollections] = useState([]);
   const listRef = useRef();
   const rowHeights = useRef({}); // Add this ref
   const [open, setOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const fileInputRef = useRef(null);
-  const [isPhotoAvailable, setIsPhotoAvailable] = useState(false);
   const isPhotoAvailableRef = useRef(false);
 
   const handleOnSelect = async (value) => {
     await hardReset();
-    setCollectionName(value);
+    CollectionStore.collectionName = value;
     MessageStore.handleSend(value); // Assuming handleSend is a method in MessageStore
   };
 
@@ -122,23 +121,22 @@ const App = observer(() => {
 
   useEffect(() => {
     MessageStore.filterMessagesBySearchTerm();
-  }, [
-    MessageStore.debouncedSearchTerm,
-    MessageStore.uploadedMessages,
-    MessageStore.page,
-  ]);
+  }, [MessageStore.uploadedMessages, MessageStore.page]);
 
   const refresh = async () => {
     // Check if there's no collection and no uploaded messages
-    if (!collectionName && uploadedMessages.length === 0) {
+    if (
+      !CollectionStore.collectionName &&
+      MessageStore.uploadedMessages.length === 0
+    ) {
       console.warn(
         "No collection selected and no messages uploaded. Cannot refresh."
       );
-      setIsLoading(false);
+      CollectionStore.isLoading = false;
       return;
     }
 
-    setIsLoading(true); // Set isLoading to true when refresh is triggered
+    CollectionStore.isLoading = true;
     MessageStore.page = 1;
     MessageStore.debouncedSearchTerm = "";
     MessageStore.contentSearchIndex = -1;
@@ -152,21 +150,21 @@ const App = observer(() => {
     MessageStore.currentResultIndex = 0;
     MessageStore.scrollToTop();
 
-    if (uploadedMessages.length > 0) {
-      MessageStore.filteredMessages = uploadedMessages;
-      MessageStore.numberOfResults = uploadedMessages.length;
+    if (MessageStore.uploadedMessages.length > 0) {
+      MessageStore.filteredMessages = MessageStore.uploadedMessages;
+      MessageStore.numberOfResults = MessageStore.uploadedMessages.length;
       MessageStore.searchTerm = "";
-      setIsLoading(false); // Set isLoading to false when the messages are updated
-    } else if (collectionName) {
-      await MessageStore.handleSend(collectionName);
-      setIsLoading(false); // Set isLoading to false after handleSend is completed
+      CollectionStore.isLoading = false;
+    } else if (CollectionStore.collectionName) {
+      await MessageStore.handleSend(CollectionStore.collectionName);
+      CollectionStore.isLoading = false;
     } else {
-      setIsLoading(false); // Set isLoading to false if no messages and no collectionName
+      CollectionStore.isLoading = false;
     }
   };
 
   const hardReset = async () => {
-    setIsLoading(true);
+    CollectionStore.isLoading = true;
 
     // Reset states related to pagination, search, and UI behavior
     MessageStore.page = 1;
@@ -183,18 +181,18 @@ const App = observer(() => {
     MessageStore.scrollToTop();
 
     // Reset collection and user
-    setCollectionName(null);
+    CollectionStore.collectionName = "";
     MessageStore.user = "";
 
     // Reset messages
     MessageStore.filteredMessages = []; // Clear the displayed messages
     MessageStore.uploadedMessages = []; // Clear the uploaded messages cache
 
-    setIsLoading(false);
+    CollectionStore.isLoading = false;
   };
 
   const handleDelete = async (collectionName) => {
-    setIsLoading(true);
+    CollectionStore.isLoading = true;
 
     try {
       const response = await fetch(
@@ -357,8 +355,8 @@ const App = observer(() => {
                 className="min-w-[10rem] max-w-[20rem] h-10"
                 type="text"
                 placeholder="Search messages..."
-                value={searchContent}
-                onChange={(e) => (MessageStore.searchContent = e.target.value)}
+                value={searchTerm}
+                onChange={(e) => MessageStore.setSearchTerm(e.target.value)}
                 onKeyDown={MessageStore.handleContentKeyPress}
               />
               <Badge

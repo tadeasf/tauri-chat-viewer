@@ -4,6 +4,15 @@
 
 import { makeAutoObservable } from "mobx";
 
+function debounce(func, wait) {
+  let timeout;
+  return function (...args) {
+    const context = this;
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(context, args), wait);
+  };
+}
+
 class MessageStore {
   // State Variables
   author = "";
@@ -33,9 +42,21 @@ class MessageStore {
     this.highlightedMessageIndex = -1;
   }
 
+  setSearchTerm(value) {
+    this.searchTerm = value; // This will immediately update the input value
+    this.debouncedSetSearchTerm(value); // Pass the value to the debounced function
+  }
+
+  debouncedSetSearchTerm = debounce(function (value) {
+    this.debouncedSearchTerm = value;
+  }, 300); // 300ms delay
+
   // Handle key presses when searching for content
   handleContentKeyPress = (e) => {
     if (e.key === "Enter") {
+      this.debouncedSearchTerm = this.searchTerm; // Set the debouncedSearchTerm to the current searchTerm value
+      this.filterMessagesBySearchTerm(); // Trigger the search/filter operation
+
       if (this.firstPress) {
         this.scrollToContent(this.searchContent);
         this.firstPress = false;
@@ -97,7 +118,12 @@ class MessageStore {
         `https://server.kocouratko.eu/messages/${collectionName}`
       );
       const data = await response.json();
-      this.uploadedMessages = data.map((message) => ({ ...message }));
+      this.uploadedMessages = data.map((message) => ({
+        ...message,
+        normalizedContent: this.removeDiacritics(
+          message.content?.toLowerCase() || ""
+        ),
+      }));
 
       if (!this.author || !this.user) {
         const uniqueSenders = [
@@ -143,11 +169,10 @@ class MessageStore {
       this.debouncedSearchTerm.length === 0
         ? messagesSorted
         : messagesSorted.filter((messageArray) => {
-            if (!messageArray.content) return false;
-            const normalizedContent = this.removeDiacritics(
-              messageArray.content.toLowerCase()
+            if (!messageArray.normalizedContent) return false;
+            return messageArray.normalizedContent.includes(
+              normalizedSearchTerm
             );
-            return normalizedContent.includes(normalizedSearchTerm);
           });
 
     this.numberOfResults = filteredMsgs.length;
@@ -159,7 +184,6 @@ class MessageStore {
     this.filteredMessages = filteredMsgs;
   }
 
-  // Filter messages based on content
   filterMessagesByContent() {
     const normalizedSearchContent = this.removeDiacritics(
       this.searchContent.toLowerCase()
@@ -169,11 +193,10 @@ class MessageStore {
       this.searchContent.length === 0
         ? this.uploadedMessages
         : this.uploadedMessages.filter((messageArray) => {
-            if (!messageArray.content) return false;
-            const normalizedContent = this.removeDiacritics(
-              messageArray.content.toLowerCase()
+            if (!messageArray.normalizedContent) return false;
+            return messageArray.normalizedContent.includes(
+              normalizedSearchContent
             );
-            return normalizedContent.includes(normalizedSearchContent);
           });
 
     this.numberOfResultsContent = filteredMsgsByContent.length;
