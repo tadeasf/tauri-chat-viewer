@@ -21,7 +21,7 @@ import { createRoot } from "react-dom/client";
 import "./globals.css";
 import App from "./App";
 import { storesContext } from "./stores/storesContext";
-import themeStore from "./stores/ThemeStore"; // <-- Note the change here
+import themeStore from "./stores/ThemeStore";
 import messageStore from "./stores/MessageStore";
 import collectionStore from "./stores/CollectionStore";
 

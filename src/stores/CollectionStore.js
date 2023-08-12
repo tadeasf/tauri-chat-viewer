@@ -106,7 +106,7 @@ class CollectionStore {
     }
   }
 
-  async hardReset() {
+  hardReset = async () => {
     this.isLoading = true;
 
     // Reset states related to pagination, search, and UI behavior
@@ -132,7 +132,7 @@ class CollectionStore {
     MessageStore.uploadedMessages = []; // Clear the uploaded messages cache
 
     this.isLoading = false;
-  }
+  };
 
   async handleDelete(collectionName) {
     this.isLoading = true;
@@ -148,7 +148,7 @@ class CollectionStore {
       if (response.status === 200) {
         // Use response.status instead of response
         this.collections = this.collections.filter(
-          (col) => col.value !== collectionName
+          (col) => col.value !== this.collectionName
         );
 
         alert(
@@ -170,7 +170,12 @@ class CollectionStore {
       const response = await fetch("https://server.kocouratko.eu/collections");
       if (response.ok) {
         const data = await response.json();
-        this.collections = data;
+        this.collections = data
+          .sort() // Sorts the collections alphabetically
+          .map((collection, index) => ({
+            id: index, // or any unique identifier
+            name: collection,
+          }));
       } else {
         console.error("Error fetching collections");
       }

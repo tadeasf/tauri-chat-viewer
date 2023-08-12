@@ -18,13 +18,13 @@
  */
 import { observer } from "mobx-react-lite";
 import { useContext, useEffect, useState, useRef } from "react";
-import Message from "./components/ui/Message";
 import { ErrorBoundary } from "react-error-boundary";
-import { ModeToggle } from "./components/ModeToggle";
 import { storesContext } from "./stores/storesContext";
+import { ModeToggle } from "./components/ModeToggle";
 import { VariableSizeList as List } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { ThemeProvider } from "./components/theme-provider";
+import Message from "./components/ui/Message";
 import { Input } from "./components/ui/input";
 import { Label } from "./components/ui/label";
 import { Badge } from "./components/ui/badge";
@@ -63,8 +63,17 @@ const App = observer(() => {
     currentResultIndex,
     firstPress,
   } = MessageStore;
-  const { isLoading, collections, collectionName, isPhotoAvailable } =
-    CollectionStore;
+  const {
+    isLoading,
+    collections,
+    collectionName,
+    isPhotoAvailable,
+    handleDelete,
+    uploadFile,
+    refreshCollections,
+    refresh,
+    handleFileChange,
+  } = CollectionStore;
 
   const chatBodyRef = useRef();
   const listRef = useRef();
@@ -75,7 +84,7 @@ const App = observer(() => {
   const isPhotoAvailableRef = useRef(false);
 
   const handleOnSelect = async (value) => {
-    await hardReset();
+    await CollectionStore.hardReset();
     CollectionStore.collectionName = value;
     MessageStore.handleSend(value); // Assuming handleSend is a method in MessageStore
   };
@@ -97,221 +106,19 @@ const App = observer(() => {
   };
 
   useEffect(() => {
-    const fetchCollections = async () => {
-      try {
-        const response = await fetch(
-          "https://server.kocouratko.eu/collections"
-        );
-        const data = await response.json();
-
-        // Map the data to the required format
-        const formattedCollections = data.map((collection) => ({
-          value: collection,
-          label: collection,
-        }));
-
-        setCollections(formattedCollections);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    fetchCollections();
+    CollectionStore.refreshCollections();
   }, []);
 
   useEffect(() => {
     MessageStore.filterMessagesBySearchTerm();
   }, [MessageStore.uploadedMessages, MessageStore.page]);
 
-  const refresh = async () => {
-    // Check if there's no collection and no uploaded messages
-    if (
-      !CollectionStore.collectionName &&
-      MessageStore.uploadedMessages.length === 0
-    ) {
-      console.warn(
-        "No collection selected and no messages uploaded. Cannot refresh."
-      );
-      CollectionStore.isLoading = false;
-      return;
-    }
-
-    CollectionStore.isLoading = true;
-    MessageStore.page = 1;
-    MessageStore.debouncedSearchTerm = "";
-    MessageStore.contentSearchIndex = -1;
-    MessageStore.searchContent = "";
-    MessageStore.highlightedMessageIndex = -1;
-    MessageStore.currentResultIndex = 0;
-    MessageStore.numberOfResultsContent = 0;
-    MessageStore.scrollToIndex = -1;
-    MessageStore.numberOfResults = 0;
-    MessageStore.firstPress = true;
-    MessageStore.currentResultIndex = 0;
-    MessageStore.scrollToTop();
-
-    if (MessageStore.uploadedMessages.length > 0) {
-      MessageStore.filteredMessages = MessageStore.uploadedMessages;
-      MessageStore.numberOfResults = MessageStore.uploadedMessages.length;
-      MessageStore.searchTerm = "";
-      CollectionStore.isLoading = false;
-    } else if (CollectionStore.collectionName) {
-      await MessageStore.handleSend(CollectionStore.collectionName);
-      CollectionStore.isLoading = false;
-    } else {
-      CollectionStore.isLoading = false;
-    }
-  };
-
-  const hardReset = async () => {
-    CollectionStore.isLoading = true;
-
-    // Reset states related to pagination, search, and UI behavior
-    MessageStore.page = 1;
-    MessageStore.debouncedSearchTerm = "";
-    MessageStore.contentSearchIndex = -1;
-    MessageStore.searchContent = "";
-    MessageStore.highlightedMessageIndex = -1;
-    MessageStore.currentResultIndex = 0;
-    MessageStore.numberOfResultsContent = 0;
-    MessageStore.scrollToIndex = -1;
-    MessageStore.numberOfResults = 0;
-    MessageStore.firstPress = true;
-    MessageStore.currentResultIndex = 0;
-    MessageStore.scrollToTop();
-
-    // Reset collection and user
-    CollectionStore.collectionName = "";
-    MessageStore.user = "";
-
-    // Reset messages
-    MessageStore.filteredMessages = []; // Clear the displayed messages
-    MessageStore.uploadedMessages = []; // Clear the uploaded messages cache
-
-    CollectionStore.isLoading = false;
-  };
-
-  const handleDelete = async (collectionName) => {
-    CollectionStore.isLoading = true;
-
-    try {
-      const response = await fetch(
-        `https://server.kocouratko.eu/delete/${collectionName}`,
-        { method: "DELETE" }
-      );
-
-      const responseData = await response.json();
-
-      if (response.status === 200) {
-        // Use response.status instead of response
-        setCollections(
-          collections.filter((col) => col.value !== collectionName)
-        );
-        alert(
-          `Collection deleted successfully!\nCollection name: ${responseData.collectionName}`
-        );
-      } else {
-        console.error("Error deleting collection");
-        alert(`${responseData.message}`);
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const uploadFile = async (files) => {
-    if (!files || files.length === 0) {
-      return;
-    }
-
-    setIsLoading(true);
-
-    try {
-      const formData = new FormData();
-
-      // Loop through the files and append them to the FormData
-      for (let i = 0; i < files.length; i++) {
-        formData.append("files", files[i]);
-      }
-
-      const response = await fetch("https://server.kocouratko.eu/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      const responseData = await response.json();
-
-      if (response.status === 200) {
-        // Fix the typo here
-        alert(
-          `Files uploaded successfully!\nCollection name: ${responseData.collectionName}\nMessage count: ${responseData.messageCount}`
-        );
-
-        // Refresh collections after the files have been uploaded
-        refreshCollections();
-      } else if (response.status === 409) {
-        alert(responseData.message);
-      } else {
-        alert(`Error uploading files: ${responseData.message}`);
-      }
-    } catch (error) {
-      console.error(error);
-      alert(`Error: ${error.message}`);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Function to refresh collections
-  const refreshCollections = async () => {
-    try {
-      const response = await fetch("https://server.kocouratko.eu/collections");
-      if (response.ok) {
-        const data = await response.json();
-        setCollections(data);
-      } else {
-        console.error("Error fetching collections");
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   useEffect(() => {
     MessageStore.filterMessagesByContent();
   }, [MessageStore.searchContent, MessageStore.uploadedMessages]);
 
-  const handleFileChange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const formData = new FormData();
-    formData.append("photo", file);
-
-    try {
-      const response = await fetch(
-        `https://server.kocouratko.eu/upload/photo/${collectionName}`,
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-
-      const data = await response.json();
-      if (data.message === "Photo uploaded successfully") {
-        setIsPhotoAvailable(true);
-      } else {
-        console.error(data.message);
-      }
-    } catch (error) {
-      console.error("Error uploading photo:", error);
-    }
-  };
-
   useEffect(() => {
-    isPhotoAvailableRef.current = isPhotoAvailable;
+    isPhotoAvailableRef.current = CollectionStore.isPhotoAvailable;
   }, [isPhotoAvailable]);
 
   return (
@@ -336,13 +143,13 @@ const App = observer(() => {
                       <CommandGroup>
                         {collections.map((collection) => (
                           <CommandItem
-                            key={collection.value}
+                            key={collection.id}
                             onSelect={() => {
-                              handleOnSelect(collection.value);
+                              handleOnSelect(collection.name);
                               setOpen(false);
                             }}
                           >
-                            {collection.label}
+                            {collection.name}
                           </CommandItem>
                         ))}
                       </CommandGroup>
@@ -397,24 +204,26 @@ const App = observer(() => {
                 />
 
                 <p className="text-2xl font text-popover-foreground hover:text-accent">
-                  {user ? user : "Select a collection..."}
+                  {MessageStore.user
+                    ? MessageStore.user
+                    : "Select a collection..."}
                 </p>
                 <div className="flex items-center justify-rnd p-1 space-x-5 mr-5">
                   <Button
-                    onClick={refresh}
+                    onClick={CollectionStore.refresh}
                     className="bg-secondary text-popover-foreground text-3xl rounded-full w-12 h-12 justify-center"
                   >
                     &#8635;
                   </Button>
                   <Button
-                    onClick={hardReset}
+                    onClick={CollectionStore.hardReset}
                     className="bg-secondary text-destructive text-3xl rounded-full w-12 h-12 justify-center"
                   >
                     &#8635;
                   </Button>
                 </div>
               </div>
-              {isLoading ? (
+              {CollectionStore.isLoading ? (
                 <div className="flex items-center justify-center">
                   <div className="w-full h-1 bg-red-b70 animate-pulse opacity-70 rounded-xl" />
                 </div>
@@ -427,21 +236,23 @@ const App = observer(() => {
                     position: "relative",
                   }}
                 >
-                  {filteredMessages.length > 0 ? (
+                  {MessageStore.filteredMessages.length > 0 ? (
                     <AutoSizer>
                       {({ height, width }) => (
                         <List
                           height={height}
-                          itemCount={filteredMessages.length}
+                          itemCount={MessageStore.filteredMessages.length}
                           itemSize={getRowHeight}
                           width={width}
                           ref={listRef}
                           scrollToAlignment="center"
                         >
                           {({ index, style }) => {
-                            const messageArray = filteredMessages[index];
+                            const messageArray =
+                              MessageStore.filteredMessages[index];
                             const isLastMessage =
-                              index === filteredMessages.length - 1;
+                              index ===
+                              MessageStore.filteredMessages.length - 1;
                             return (
                               <div
                                 className="no-scrollbar"
@@ -461,7 +272,8 @@ const App = observer(() => {
                                   setRowHeight={setRowHeight}
                                   index={index}
                                   isHighlighted={
-                                    index === highlightedMessageIndex
+                                    index ===
+                                    MessageStore.highlightedMessageIndex
                                   }
                                 />
                               </div>
@@ -491,15 +303,15 @@ const App = observer(() => {
                   <Command>
                     <CommandInput placeholder="Select collection to delete..." />
                     <CommandList>
-                      {collections.length === 0 && (
+                      {CollectionStore.collections.length === 0 && (
                         <CommandEmpty>No collections found.</CommandEmpty>
                       )}
                       <CommandGroup>
-                        {collections.map((collection) => (
+                        {CollectionStore.collections.map((collection) => (
                           <CommandItem
                             key={collection.value}
                             onSelect={() => {
-                              handleDelete(collection.value);
+                              CollectionStore.handleDelete(collection.value);
                               setDeleteOpen(false);
                             }}
                           >
@@ -519,7 +331,7 @@ const App = observer(() => {
                     id="jsonFile"
                     type="file"
                     accept=".json"
-                    onChange={(e) => uploadFile(e.target.files)}
+                    onChange={(e) => CollectionStore.uploadFile(e.target.files)}
                   />
                 </Label>
               </div>
