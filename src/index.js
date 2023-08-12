@@ -21,8 +21,8 @@ import { createRoot } from "react-dom/client";
 import "./globals.css";
 import App from "./App";
 import { storesContext } from "./stores/storesContext";
-import userStore from "./stores/UserStore"; // <-- Note the change here
-import themeStore from "./stores/ThemeStore"; // <-- Note the change here
+import collectionStore from "./stores/CollectionStore";
+import themeStore from "./stores/ThemeStore";
 import messageStore from "./stores/MessageStore";
 
 const container = document.getElementById("root");
@@ -31,7 +31,7 @@ const root = createRoot(container);
 root.render(
   <storesContext.Provider
     value={{
-      UserStore: userStore,
+      CollectionStore: collectionStore,
       ThemeStore: themeStore,
       MessageStore: messageStore,
     }}

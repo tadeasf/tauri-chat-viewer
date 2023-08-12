@@ -41,27 +41,33 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "./components/ui/popover";
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "./components/ui/dialog";
 import { Button } from "./components/ui/button";
 import { Card } from "./components/ui/card";
+import collectionStore from "./stores/CollectionStore";
 
 const App = observer(() => {
-  const { UserStore, ThemeStore, MessageStore } = useContext(storesContext);
+  const { MessageStore } = useContext(storesContext);
   const {
     author,
     user,
     filteredMessages,
-    page,
     searchTerm,
     uploadedMessages,
-    debouncedSearchTerm,
     numberOfResults,
     scrollToIndex,
-    contentSearchIndex,
     searchContent,
     highlightedMessageIndex,
     numberOfResultsContent,
     currentResultIndex,
-    firstPress,
   } = MessageStore;
   const [isLoading, setIsLoading] = useState(false);
   const [collectionName, setCollectionName] = useState("");
@@ -86,7 +92,7 @@ const App = observer(() => {
       listRef.current.scrollToItem(scrollToIndex, "center");
       MessageStore.scrollToIndex = -1;
     }
-  }, [scrollToIndex]);
+  }, [MessageStore, scrollToIndex]);
 
   function getRowHeight(index) {
     return rowHeights.current[index] || 110; // Add this function
@@ -126,6 +132,7 @@ const App = observer(() => {
     MessageStore.debouncedSearchTerm,
     MessageStore.uploadedMessages,
     MessageStore.page,
+    MessageStore,
   ]);
 
   const refresh = async () => {
@@ -283,7 +290,7 @@ const App = observer(() => {
 
   useEffect(() => {
     MessageStore.filterMessagesByContent();
-  }, [MessageStore.searchContent, MessageStore.uploadedMessages]);
+  }, [MessageStore, MessageStore.searchContent, MessageStore.uploadedMessages]);
 
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
@@ -315,6 +322,16 @@ const App = observer(() => {
   useEffect(() => {
     isPhotoAvailableRef.current = isPhotoAvailable;
   }, [isPhotoAvailable]);
+
+  // When the dialog is opened, set the current collection name
+  function handleDialogOpen() {
+    collectionStore.setCurrentCollectionName(collectionName);
+  }
+
+  // When the input value changes, update the newCollectionName in the store
+  function handleInputChange(event) {
+    collectionStore.setNewCollectionName(event.target.value);
+  }
 
   return (
     <ErrorBoundary>
@@ -392,7 +409,10 @@ const App = observer(() => {
                   alt="user-profile"
                   className="h-20 w-20 object-cover ml-12 mr-10 mt-3 mb-3 rounded-full p-2 bg-secondary"
                   onClick={() => {
-                    if (!isPhotoAvailable && collectionName) {
+                    if (isPhotoAvailable) {
+                      // Open the delete confirmation dialog
+                      // openDeleteDialog();
+                    } else if (collectionName) {
                       fileInputRef.current.click();
                     }
                   }}
@@ -479,7 +499,7 @@ const App = observer(() => {
               )}
             </Card>
 
-            <div className="flex flex-row items-center gap-$ m-auto">
+            <div className="flex flex-row items-center gap-4 m-auto">
               <Popover open={deleteOpen} onOpenChange={setDeleteOpen}>
                 <PopoverTrigger asChild>
                   <Button
@@ -525,6 +545,39 @@ const App = observer(() => {
                   />
                 </Label>
               </div>
+              <Dialog>
+                <DialogTrigger asChild onClick={handleDialogOpen}>
+                  <Button variant="secondary">Rename Collection</Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>Rename Collection</DialogTitle>
+                    <DialogDescription>
+                      Enter the new name for the collection.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4">
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="newCollectionName" className="text-right">
+                        New Name
+                      </Label>
+                      <Input
+                        id="newCollectionName"
+                        className="col-span-3"
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button
+                      type="submit"
+                      onClick={collectionStore.handleRename}
+                    >
+                      Save changes
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </div>
           </Card>
         </div>
