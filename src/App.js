@@ -17,7 +17,7 @@
  * @format
  */
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import Message from "./components/ui/Message";
 import { ErrorBoundary } from "react-error-boundary";
 import { ModeToggle } from "./components/ModeToggle";
@@ -72,7 +72,6 @@ function App() {
   const [isPhotoAvailable, setIsPhotoAvailable] = useState(false);
   const isPhotoAvailableRef = useRef(false);
   const { UserStore, ThemeStore } = useContext(storesContext);
-
   const scrollToTop = () => {
     setContentSearchIndex(0);
     setScrollToIndex(0);

@@ -16,27 +16,24 @@
  *
  * @format
  */
-
 import React from "react";
 import { createRoot } from "react-dom/client";
 import "./globals.css";
 import App from "./App";
 import { storesContext } from "./stores/storesContext";
+import userStore from "./stores/UserStore"; // <-- Note the change here
+import themeStore from "./stores/ThemeStore"; // <-- Note the change here
 
 const container = document.getElementById("root");
 const root = createRoot(container);
 
-const userStoreInstance = new UserStore();
-const themeStoreInstance = new ThemeStore();
-
 root.render(
   <storesContext.Provider
-    value={{ UserStore: userStoreInstance, ThemeStore: themeStoreInstance }}
+    value={{ UserStore: userStore, ThemeStore: themeStore }}
   >
     <App />
   </storesContext.Provider>
 );
-
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals

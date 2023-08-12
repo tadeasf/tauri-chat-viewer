@@ -1,10 +1,10 @@
 /** @format */
 
 import { createContext } from "react";
-import UserStore from "./UserStore";
-import ThemeStore from "./ThemeStore";
+import userStore from "./UserStore";
+import themeStore from "./ThemeStore";
 
 export const storesContext = createContext({
-  UserStore: new UserStore(),
-  ThemeStore: new ThemeStore(),
+  UserStore: userStore,
+  ThemeStore: themeStore,
 });
