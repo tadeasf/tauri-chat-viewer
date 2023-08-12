@@ -81,6 +81,7 @@ function App() {
 
   const handleOnSelect = (value) => {
     setCollectionName(value);
+    handleSend(value);
   };
 
   const handleContentKeyPress = (e) => {
@@ -159,7 +160,14 @@ function App() {
           "https://server.kocouratko.eu/collections"
         );
         const data = await response.json();
-        setCollections(data);
+
+        // Map the data to the required format
+        const formattedCollections = data.map((collection) => ({
+          value: collection,
+          label: collection,
+        }));
+
+        setCollections(formattedCollections);
       } catch (error) {
         console.error(error);
       }
@@ -407,8 +415,8 @@ function App() {
 
   return (
     <ErrorBoundary>
-      <div className="font-anonymous box-border m-0 p-0">
-        <Card className="flex flex-col h-screen bg-gray-303">
+      <div className="font-anonymous box-border m-0 p-0 bg-background text-foreground">
+        <Card className="flex flex-col h-screen">
           <div className="w-full flex justify-center flex-nowrap shrink-0 flex items-start mt-2 mb-8">
             <div className="flex flex-row items-center justify-between gap-3">
               <div className="w-full flex justify-center flex-nowrap shrink-0 m-0">
@@ -425,7 +433,9 @@ function App() {
                     <Command>
                       <CommandInput placeholder="Select collection..." />
                       <CommandList>
-                        <CommandEmpty>No collections found.</CommandEmpty>
+                        {collections.length === 0 && (
+                          <CommandEmpty>No collections found.</CommandEmpty>
+                        )}
                         <CommandGroup>
                           {collections.map((collection) => (
                             <CommandItem
@@ -443,7 +453,7 @@ function App() {
               </div>
 
               <div className="flex flex-row items-center justify-between">
-                <span className="inline-flex text-white bg-gray-303 transition-all duration-300 ease-in-out items-center justify-center shadow-custom rounded-2 border-none text-lg self-start m-1 px-2 py-1">
+                <span className="inline-flex text-white bg-background transition-all duration-300 ease-in-out items-center justify-center shadow-custom rounded-2 border-none text-lg self-start m-1 px-2 py-1">
                   {searchContent !== ""
                     ? `Found ${
                         currentResultIndex + 1
@@ -451,7 +461,7 @@ function App() {
                     : `Total number of messages: ${numberOfResults}`}
                 </span>
                 <input
-                  className="inline-flex text-white bg-gray-303 transition-all duration-300 ease-in-out items-center justify-center shadow-custom rounded-2 border-none text-lg self-start m-1 px-2 py-1"
+                  className="inline-flex text-white bg-background transition-all duration-300 ease-in-out items-center justify-center shadow-custom rounded-2 border-none text-lg self-start m-1 px-2 py-1"
                   type="text"
                   placeholder="Search by content"
                   value={searchContent}
@@ -552,7 +562,7 @@ function App() {
               </DropdownMenu>
 
               <input
-                className="inline-flex text-white bg-gray-303 transition-all duration-300 ease-in-out items-center justify-center shadow-custom rounded-2 border-none text-lg self-start m-1 px-2 py-1"
+                className="inline-flex text-white bg-background transition-all duration-300 ease-in-out items-center justify-center shadow-custom rounded-2 border-none text-lg self-start m-1 px-2 py-1"
                 type="file"
                 multiple
                 onChange={(e) => uploadFile(e.target.files)}

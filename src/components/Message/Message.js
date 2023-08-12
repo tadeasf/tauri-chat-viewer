@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import { DateTime } from "luxon";
-import { Card } from "./../ui/card";
 
 const Message = ({ message, time, type, author, uuid, isHighlighted }) => {
   const [visibility, setVisibility] = useState(false);
@@ -59,50 +58,54 @@ const Message = ({ message, time, type, author, uuid, isHighlighted }) => {
           style={
             visibility ? { display: "flex", zIndex: 1000 } : { display: "flex" }
           }
-          className={`message-container ${
-            author ? "message-sent-container" : ""
+          className={`message-container flex ${
+            author ? "justify-end" : "justify-start"
           }`}
         >
-          <Card
-            onClick={handleClick}
+          <div
             className={`message ${
-              author ? "message-sent" : "message-received"
-            } ${isHighlighted ? "message-highlighted" : ""}`}
+              author
+                ? "message-sent bg-primary text-primary-foreground ml-4"
+                : "message-received bg-accent text-accent-foreground mr-4"
+            } ${
+              isHighlighted ? "message-highlighted" : ""
+            } rounded-lg p-2.5 max-w-4/5`}
+            onClick={handleClick}
           >
-            {visibility && (
-              <h3 style={{ fontSize: "1em", padding: "0.5em" }}>
-                {message.sender_name}
-              </h3>
-            )}
-            {type === "Image" ? (
-              // Using regular img tag since shadcn doesn't have a direct Image component
-              <img
-                src={`data:image/jpeg;base64,${message.content}`}
-                alt="Message content"
-              />
-            ) : type === "Generic" || type === null ? (
-              message.content ? (
-                <p>{message.content}</p>
-              ) : (
-                <p style={errorFile}>Content isn't available</p>
-              )
-            ) : (
-              <a href={message.share.link} target="_blank" rel="noreferrer">
-                {message.share.link}
-              </a>
-            )}
-            {visibility && (
-              <p
-                style={{
-                  fontSize: "0.85em",
-                  padding: "0.5em",
-                  fontStyle: "italic",
-                }}
-              >
-                {DateTime.fromSeconds(time / 1000).toLocaleString()}
-              </p>
-            )}
-          </Card>
+            <div
+              className="sender-name"
+              style={
+                visibility
+                  ? {
+                      display: "block",
+                      fontSize: "1em",
+                      padding: "0.5em",
+                      justifyContent: "center",
+                      fontStyle: "italic",
+                    }
+                  : { display: "none" }
+              }
+            >
+              {message.sender_name}
+            </div>
+            {whatKindIs()}
+            <div
+              className="time-ago"
+              style={
+                visibility
+                  ? {
+                      display: "block",
+                      fontSize: "0.85em",
+                      padding: "0.5em",
+                      justifyContent: "center",
+                      fontStyle: "italic",
+                    }
+                  : { display: "none" }
+              }
+            >
+              <p>{DateTime.fromSeconds(time / 1000).toLocaleString()}</p>
+            </div>
+          </div>
         </div>
       ) : null}
     </>
