@@ -34,7 +34,7 @@ class MessageStore {
   }
 
   // Handle key presses when searching for content
-  handleContentKeyPress(e) {
+  handleContentKeyPress = (e) => {
     if (e.key === "Enter") {
       if (this.firstPress) {
         this.scrollToContent(this.searchContent);
@@ -47,7 +47,7 @@ class MessageStore {
             : 0;
       }
     }
-  }
+  };
 
   // Remove diacritics from a string
   removeDiacritics(str) {
@@ -85,17 +85,6 @@ class MessageStore {
     } else {
       console.error("No more messages with the given content found.");
     }
-  }
-
-  // Get the height of a row
-  getRowHeight(index) {
-    return this.rowHeights[index] || 110;
-  }
-
-  // Set the height of a row
-  setRowHeight(index, size) {
-    this.rowHeights = { ...this.rowHeights, [index]: size };
-    // Additional logic for resetting after index...
   }
 
   // Send a message

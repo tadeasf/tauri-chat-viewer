@@ -16,8 +16,8 @@
  *
  * @format
  */
-
-import { useState, useEffect, useRef, useContext } from "react";
+import { observer } from "mobx-react-lite";
+import { useContext, useEffect, useState, useRef } from "react";
 import Message from "./components/ui/Message";
 import { ErrorBoundary } from "react-error-boundary";
 import { ModeToggle } from "./components/ModeToggle";
@@ -44,7 +44,7 @@ import {
 import { Button } from "./components/ui/button";
 import { Card } from "./components/ui/card";
 
-function App() {
+const App = observer(() => {
   const { UserStore, ThemeStore, MessageStore } = useContext(storesContext);
   const {
     author,
@@ -75,75 +75,16 @@ function App() {
   const [isPhotoAvailable, setIsPhotoAvailable] = useState(false);
   const isPhotoAvailableRef = useRef(false);
 
-  const scrollToTop = () => {
-    MessageStore.setContentSearchIndex(0);
-    MessageStore.setScrollToIndex(0);
-    MessageStore.setHighlightedMessageIndex(-1);
-  };
-
   const handleOnSelect = async (value) => {
     await hardReset();
     setCollectionName(value);
-    handleSend(value);
-  };
-
-  const handleContentKeyPress = (e) => {
-    if (e.key === "Enter") {
-      if (firstPress) {
-        scrollToContent(searchContent);
-        MessageStore.setFirstPress(false);
-      } else {
-        scrollToContent(searchContent);
-        // Increment the current result index
-        MessageStore.setCurrentResultIndex((prevIndex) =>
-          prevIndex + 1 < numberOfResultsContent ? prevIndex + 1 : 0
-        );
-      }
-    }
-  };
-
-  const removeDiacritics = (str) => {
-    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-  };
-
-  const scrollToContent = (content) => {
-    const normalizedContent = removeDiacritics(content.toLowerCase());
-    console.log("Searching for:", normalizedContent);
-    let messageIndex = -1;
-
-    for (let i = 1; i <= uploadedMessages.length; i++) {
-      const currentIndex = (contentSearchIndex + i) % uploadedMessages.length;
-      const currentMessage = uploadedMessages[currentIndex];
-
-      if (!currentMessage.content) {
-        continue;
-      }
-
-      const normalizedMessageContent = removeDiacritics(
-        currentMessage.content.toLowerCase()
-      );
-      console.log("Checking message:", currentIndex, normalizedMessageContent);
-
-      if (normalizedMessageContent.includes(normalizedContent)) {
-        messageIndex = currentIndex;
-        break;
-      }
-    }
-
-    if (messageIndex !== -1) {
-      console.log("Message found:", messageIndex);
-      MessageStore.setContentSearchIndex(messageIndex);
-      MessageStore.setScrollToIndex(messageIndex);
-      MessageStore.setHighlightedMessageIndex(messageIndex);
-    } else {
-      console.error("No more messages with the given content found.");
-    }
+    MessageStore.handleSend(value); // Assuming handleSend is a method in MessageStore
   };
 
   useEffect(() => {
     if (scrollToIndex !== -1 && listRef.current) {
       listRef.current.scrollToItem(scrollToIndex, "center");
-      MessageStore.setScrollToIndex(-1);
+      MessageStore.scrollToIndex = -1;
     }
   }, [scrollToIndex]);
 
@@ -179,92 +120,13 @@ function App() {
     fetchCollections();
   }, []);
 
-  const handleSend = async (collectionName) => {
-    setIsLoading(true);
-    MessageStore.setUser("");
-
-    try {
-      const response = await fetch(
-        `https://server.kocouratko.eu/messages/${collectionName}`
-      );
-      const data = await response.json();
-
-      const mappedMessages = data.map((message) => {
-        return {
-          ...message,
-        };
-      });
-
-      // Cache the uploaded messages
-      MessageStore.setUploadedMessages(mappedMessages);
-
-      // Set the author and user states only if they are not already set
-      if (!author || !user) {
-        // Get the unique sender names from the data
-        const uniqueSenders = [
-          ...new Set(data.map((message) => message.sender_name)),
-        ];
-
-        uniqueSenders.forEach((sender) => {
-          if (sender === "Tadeáš Fořt" || sender === "Tadeáš") {
-            MessageStore.setAuthor(sender);
-          } else {
-            MessageStore.setUser(sender);
-          }
-        });
-      }
-
-      const photoResponse = await fetch(
-        `https://server.kocouratko.eu/messages/${collectionName}/photo`
-      );
-      const photoData = await photoResponse.json();
-      console.log("PHOTO DATA IS:", photoData);
-
-      if (photoData && photoData.isPhotoAvailable) {
-        setIsPhotoAvailable(true);
-      } else {
-        setIsPhotoAvailable(false);
-      }
-
-      setIsLoading(false);
-    } catch (error) {
-      console.error(error);
-      setIsLoading(false);
-    }
-  };
-
   useEffect(() => {
-    const normalizedSearchTerm = removeDiacritics(
-      debouncedSearchTerm.toLowerCase()
-    );
-    const messagesPerPage = 150000;
-
-    let messagesSorted = [...uploadedMessages];
-
-    // Sort messages by timestamp in descending order
-    messagesSorted.sort((a, b) => b.timestamp - a.timestamp);
-
-    let filteredMsgs =
-      debouncedSearchTerm.length === 0
-        ? messagesSorted
-        : messagesSorted.filter((messageArray) => {
-            if (!messageArray.content) return false;
-            const normalizedContent = removeDiacritics(
-              messageArray.content.toLowerCase()
-            );
-            // Return true if normalizedContent includes the normalizedSearchTerm
-            return normalizedContent.includes(normalizedSearchTerm);
-          });
-    // Update numberOfResults
-    MessageStore.setNumberOfResults(filteredMsgs.length);
-    // Slice messages array for pagination
-    filteredMsgs = filteredMsgs.slice(
-      Math.max(page - 2, 0) * messagesPerPage,
-      page * messagesPerPage
-    );
-
-    MessageStore.setFilteredMessages(filteredMsgs);
-  }, [debouncedSearchTerm, uploadedMessages, page]);
+    MessageStore.filterMessagesBySearchTerm();
+  }, [
+    MessageStore.debouncedSearchTerm,
+    MessageStore.uploadedMessages,
+    MessageStore.page,
+  ]);
 
   const refresh = async () => {
     // Check if there's no collection and no uploaded messages
@@ -277,26 +139,26 @@ function App() {
     }
 
     setIsLoading(true); // Set isLoading to true when refresh is triggered
-    MessageStore.setPage(1);
-    MessageStore.setDebouncedSearchTerm(""); // Reset the debounced search term
-    MessageStore.setContentSearchIndex(-1);
-    MessageStore.setSearchContent("");
-    MessageStore.setHighlightedMessageIndex(-1);
-    MessageStore.setCurrentResultIndex(0);
-    MessageStore.setNumberOfResultsContent(0);
-    MessageStore.setScrollToIndex(-1);
-    MessageStore.setNumberOfResults(0);
-    MessageStore.setFirstPress(true);
-    MessageStore.setCurrentResultIndex(0);
-    scrollToTop();
+    MessageStore.page = 1;
+    MessageStore.debouncedSearchTerm = "";
+    MessageStore.contentSearchIndex = -1;
+    MessageStore.searchContent = "";
+    MessageStore.highlightedMessageIndex = -1;
+    MessageStore.currentResultIndex = 0;
+    MessageStore.numberOfResultsContent = 0;
+    MessageStore.scrollToIndex = -1;
+    MessageStore.numberOfResults = 0;
+    MessageStore.firstPress = true;
+    MessageStore.currentResultIndex = 0;
+    MessageStore.scrollToTop();
 
     if (uploadedMessages.length > 0) {
-      MessageStore.setFilteredMessages(uploadedMessages);
-      MessageStore.setNumberOfResults(uploadedMessages.length);
-      MessageStore.setSearchTerm("");
+      MessageStore.filteredMessages = uploadedMessages;
+      MessageStore.numberOfResults = uploadedMessages.length;
+      MessageStore.searchTerm = "";
       setIsLoading(false); // Set isLoading to false when the messages are updated
     } else if (collectionName) {
-      await handleSend(collectionName);
+      await MessageStore.handleSend(collectionName);
       setIsLoading(false); // Set isLoading to false after handleSend is completed
     } else {
       setIsLoading(false); // Set isLoading to false if no messages and no collectionName
@@ -307,26 +169,26 @@ function App() {
     setIsLoading(true);
 
     // Reset states related to pagination, search, and UI behavior
-    MessageStore.setPage(1);
-    MessageStore.setDebouncedSearchTerm("");
-    MessageStore.setContentSearchIndex(-1);
-    MessageStore.setSearchContent("");
-    MessageStore.setHighlightedMessageIndex(-1);
-    MessageStore.setCurrentResultIndex(0);
-    MessageStore.setNumberOfResultsContent(0);
-    MessageStore.setScrollToIndex(-1);
-    MessageStore.setNumberOfResults(0);
-    MessageStore.setFirstPress(true);
-    MessageStore.setCurrentResultIndex(0);
-    scrollToTop();
+    MessageStore.page = 1;
+    MessageStore.debouncedSearchTerm = "";
+    MessageStore.contentSearchIndex = -1;
+    MessageStore.searchContent = "";
+    MessageStore.highlightedMessageIndex = -1;
+    MessageStore.currentResultIndex = 0;
+    MessageStore.numberOfResultsContent = 0;
+    MessageStore.scrollToIndex = -1;
+    MessageStore.numberOfResults = 0;
+    MessageStore.firstPress = true;
+    MessageStore.currentResultIndex = 0;
+    MessageStore.scrollToTop();
 
     // Reset collection and user
     setCollectionName(null);
-    MessageStore.setUser("");
+    MessageStore.user = "";
 
     // Reset messages
-    MessageStore.setFilteredMessages([]); // Clear the displayed messages
-    MessageStore.setUploadedMessages([]); // Clear the uploaded messages cache
+    MessageStore.filteredMessages = []; // Clear the displayed messages
+    MessageStore.uploadedMessages = []; // Clear the uploaded messages cache
 
     setIsLoading(false);
   };
@@ -420,23 +282,8 @@ function App() {
   };
 
   useEffect(() => {
-    const normalizedSearchContent = removeDiacritics(
-      searchContent.toLowerCase()
-    );
-
-    let filteredMsgsByContent =
-      searchContent.length === 0
-        ? uploadedMessages
-        : uploadedMessages.filter((messageArray) => {
-            if (!messageArray.content) return false;
-            const normalizedContent = removeDiacritics(
-              messageArray.content.toLowerCase()
-            );
-            return normalizedContent.includes(normalizedSearchContent);
-          });
-
-    MessageStore.setNumberOfResultsContent(filteredMsgsByContent.length);
-  }, [searchContent, uploadedMessages]);
+    MessageStore.filterMessagesByContent();
+  }, [MessageStore.searchContent, MessageStore.uploadedMessages]);
 
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
@@ -509,10 +356,10 @@ function App() {
               <Input
                 className="min-w-[10rem] max-w-[20rem] h-10"
                 type="text"
-                placeholder="Seach messages..."
+                placeholder="Search messages..."
                 value={searchContent}
-                onChange={(e) => MessageStore.setSearchContent(e.target.value)}
-                onKeyDown={handleContentKeyPress}
+                onChange={(e) => (MessageStore.searchContent = e.target.value)}
+                onKeyDown={MessageStore.handleContentKeyPress}
               />
               <Badge
                 variant="secondary"
@@ -684,6 +531,6 @@ function App() {
       </ThemeProvider>
     </ErrorBoundary>
   );
-}
+});
 
 export default App;
