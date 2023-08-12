@@ -15,6 +15,7 @@
     "allowlist": {
       "all": false
     },
+    "macOSPrivateApi": true,
     "bundle": {
       "active": true,
       "category": "SocialNetworking",
@@ -43,7 +44,7 @@
       },
       "resources": [],
       "shortDescription": "Simple app for viewing chat history made by Tadeáš Fořt",
-      "targets": "dmg",
+      "targets": "all",
       "windows": {
         "certificateThumbprint": null,
         "digestAlgorithm": "sha256",
@@ -66,6 +67,9 @@
         "fileDropEnabled": true,
         "skipTaskbar": true,
         "hiddenTitle": true,
+        "decorations": true,
+        "alwaysOnTop": false,
+        "transparent": false,
         "tabbingIdentifier": "kocouratci-messenger",
         "height": 1200,
         "width": 1600,

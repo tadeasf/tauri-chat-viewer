@@ -59,17 +59,17 @@ const Message = ({ message, time, type, author, uuid, isHighlighted }) => {
             visibility ? { display: "flex", zIndex: 1000 } : { display: "flex" }
           }
           className={`message-container flex ${
-            author ? "justify-end" : "justify-start"
+            author ? "justify-end" : "justify-start ml-5"
           }`}
         >
           <div
             className={`message ${
               author
-                ? "message-sent bg-backgroundsent text-secondary-foreground ml-4"
-                : "message-received bg-backgroundreceived text-accent-foreground mr-4"
+                ? "message-sent bg-backgroundsent hover:bg-backgroundreceived text-secondary-foreground max-w-[85%]"
+                : "message-received bg-backgroundreceived hover:bg-backgroundsent text-accent-foreground max-w-[85%]"
             } ${
               isHighlighted ? "bg-destructive" : ""
-            } rounded-lg p-2.5 max-w-4/5`}
+            } rounded-lg p-5 max-w-4/5`}
             onClick={handleClick}
           >
             <div
@@ -79,7 +79,7 @@ const Message = ({ message, time, type, author, uuid, isHighlighted }) => {
                   ? {
                       display: "block",
                       fontSize: "1em",
-                      padding: "0.5em",
+                      padding: "1em",
                       justifyContent: "center",
                       fontStyle: "italic",
                     }
@@ -95,8 +95,8 @@ const Message = ({ message, time, type, author, uuid, isHighlighted }) => {
                 visibility
                   ? {
                       display: "block",
-                      fontSize: "0.85em",
-                      padding: "0.5em",
+                      fontSize: "1em",
+                      padding: "1em",
                       justifyContent: "center",
                       fontStyle: "italic",
                     }
