@@ -55,7 +55,6 @@ class MessageStore {
   handleContentKeyPress = (e) => {
     if (e.key === "Enter") {
       this.debouncedSearchTerm = this.searchTerm; // Set the debouncedSearchTerm to the current searchTerm value
-      this.filterMessagesBySearchTerm(); // Trigger the search/filter operation
 
       if (this.firstPress) {
         this.scrollToContent(this.searchContent);
@@ -161,27 +160,20 @@ class MessageStore {
     const normalizedSearchTerm = this.removeDiacritics(
       this.debouncedSearchTerm.toLowerCase()
     );
-    const messagesPerPage = 150000;
-    let messagesSorted = [...this.uploadedMessages];
-    messagesSorted.sort((a, b) => b.timestamp - a.timestamp);
 
-    let filteredMsgs =
-      this.debouncedSearchTerm.length === 0
-        ? messagesSorted
-        : messagesSorted.filter((messageArray) => {
-            if (!messageArray.normalizedContent) return false;
-            return messageArray.normalizedContent.includes(
-              normalizedSearchTerm
-            );
-          });
-
-    this.numberOfResults = filteredMsgs.length;
-    filteredMsgs = filteredMsgs.slice(
-      Math.max(this.page - 2, 0) * messagesPerPage,
-      this.page * messagesPerPage
+    const firstMatchingMessageIndex = this.uploadedMessages.findIndex(
+      (message) => {
+        if (!message.normalizedContent) return false;
+        return message.normalizedContent.includes(normalizedSearchTerm);
+      }
     );
 
-    this.filteredMessages = filteredMsgs;
+    if (firstMatchingMessageIndex !== -1) {
+      this.scrollToIndex = firstMatchingMessageIndex;
+      this.highlightedMessageIndex = firstMatchingMessageIndex;
+    } else {
+      console.error("No messages with the given content found.");
+    }
   }
 
   filterMessagesByContent() {
