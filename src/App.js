@@ -18,8 +18,13 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import Message from "./components/Message/Message";
 import { ErrorBoundary } from "react-error-boundary";
+import { ModeToggle } from "./components/ModeToggle";
 import { VariableSizeList as List } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
+import { ThemeProvider } from "./components/theme-provider";
+import { Input } from "./components/ui/input";
+import { Label } from "./components/ui/label";
+import { Badge } from "./components/ui/badge";
 import martina from "./assets/martina.jpg";
 import {
   DropdownMenu,
@@ -72,6 +77,8 @@ function App() {
   const [numberOfResultsContent, setNumberOfResultsContent] = useState(0);
   const [currentResultIndex, setCurrentResultIndex] = useState(0);
   const [firstPress, setFirstPress] = useState(true);
+  const [open, setOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
   const scrollToTop = () => {
     setContentSearchIndex(0);
@@ -320,8 +327,11 @@ function App() {
 
       const responseData = await response.json();
 
-      if (response === 200) {
-        setCollections(collections.filter((col) => col !== collectionName));
+      if (response.status === 200) {
+        // Use response.status instead of response
+        setCollections(
+          collections.filter((col) => col.value !== collectionName)
+        );
         alert(
           `Collection deleted successfully!\nCollection name: ${responseData.collectionName}`
         );
@@ -415,162 +425,192 @@ function App() {
 
   return (
     <ErrorBoundary>
-      <div className="font-anonymous box-border m-0 p-0 bg-background text-foreground">
-        <Card className="flex flex-col h-screen">
-          <div className="w-full flex justify-center flex-nowrap shrink-0 flex items-start mt-2 mb-8">
-            <div className="flex flex-row items-center justify-between gap-3">
-              <div className="w-full flex justify-center flex-nowrap shrink-0 m-0">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="w-[150px] justify-start"
-                    >
-                      {collectionName ? collectionName : "Select a collection"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="p-0" side="right" align="start">
-                    <Command>
-                      <CommandInput placeholder="Select collection..." />
-                      <CommandList>
-                        {collections.length === 0 && (
-                          <CommandEmpty>No collections found.</CommandEmpty>
-                        )}
-                        <CommandGroup>
-                          {collections.map((collection) => (
-                            <CommandItem
-                              key={collection.value}
-                              onSelect={() => handleOnSelect(collection.value)}
-                            >
-                              {collection.label}
-                            </CommandItem>
-                          ))}
-                        </CommandGroup>
-                      </CommandList>
-                    </Command>
-                  </PopoverContent>
-                </Popover>
-              </div>
+      <ThemeProvider>
+        <div className="font-anonymous box-border bg-background">
+          <Card className="flex flex-col h-screen bg-background">
+            <div className="w-full bg-background flex flex-wrap justify-center items-center mt-5 mb-5 gap-x-4 gap-y-4">
+              <Popover open={open} onOpenChange={setOpen}>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className="justify-start">
+                    {collectionName ? collectionName : "Select a collection"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="p-0" side="right" align="start">
+                  <Command>
+                    <CommandInput placeholder="Select collection..." />
+                    <CommandList>
+                      {collections.length === 0 && (
+                        <CommandEmpty>No collections found.</CommandEmpty>
+                      )}
+                      <CommandGroup>
+                        {collections.map((collection) => (
+                          <CommandItem
+                            key={collection.value}
+                            onSelect={() => {
+                              handleOnSelect(collection.value);
+                              setOpen(false);
+                            }}
+                          >
+                            {collection.label}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
 
-              <div className="flex flex-row items-center justify-between">
-                <span className="inline-flex text-white bg-background transition-all duration-300 ease-in-out items-center justify-center shadow-custom rounded-2 border-none text-lg self-start m-1 px-2 py-1">
-                  {searchContent !== ""
-                    ? `Found ${
-                        currentResultIndex + 1
-                      }/${numberOfResultsContent} of: ${searchContent}`
-                    : `Total number of messages: ${numberOfResults}`}
-                </span>
-                <input
-                  className="inline-flex text-white bg-background transition-all duration-300 ease-in-out items-center justify-center shadow-custom rounded-2 border-none text-lg self-start m-1 px-2 py-1"
-                  type="text"
-                  placeholder="Search by content"
-                  value={searchContent}
-                  onChange={(e) => setSearchContent(e.target.value)}
-                  onKeyDown={handleContentKeyPress}
-                />
-              </div>
-            </div>
-          </div>
-
-          <Card className="mb-8 w-full max-h-[80%] text-zinc-100 shadow-custom flex flex-col overflow-auto rounded-2 border-gray-5e7 bg-gray-1a1">
-            <div className="flex items-center justify-between p-2 bg-gray-232">
-              <img
-                src={randomPhoto}
-                alt="user-profile"
-                className="h-20 w-20 object-cover ml-12 mr-10 rounded-full"
+              <Input
+                className="min-w-[10rem] max-w-[20rem] h-10"
+                type="text"
+                placeholder="Seach messages..."
+                value={searchContent}
+                onChange={(e) => setSearchContent(e.target.value)}
+                onKeyDown={handleContentKeyPress}
               />
-              <p>{user ? user : "Select a collection..."}</p>
-              <Button onClick={refresh} className="text-5xl mr-4 mt-1">
-                &#8635;
-              </Button>
-            </div>
-
-            {isLoading ? (
-              <div className="flex items-center justify-center">
-                <div className="w-full h-1 bg-red-b70 animate-pulse opacity-70 rounded-xl" />
-              </div>
-            ) : (
-              <div
-                className="flex-grow overflow-auto flex flex-col gap-4 p-2"
-                ref={chatBodyRef}
-                style={{ height: "calc(100vh - 150px)", position: "relative" }}
+              <Badge
+                variant="secondary"
+                className="py-1 text-sm leading-tight mr-10 min-w-[9rem] max-w-[300px]"
               >
-                {filteredMessages.length > 0 ? (
-                  <AutoSizer>
-                    {({ height, width }) => (
-                      <List
-                        height={height}
-                        itemCount={filteredMessages.length}
-                        itemSize={getRowHeight}
-                        width={width}
-                        ref={listRef}
-                        scrollToAlignment="center"
-                      >
-                        {({ index, style }) => {
-                          const messageArray = filteredMessages[index];
-                          const isLastMessage =
-                            index === filteredMessages.length - 1;
-                          return (
-                            <div
-                              className="no-scrollbar"
-                              style={{ ...style }}
-                              key={index}
-                            >
-                              <Message
-                                message={messageArray}
-                                author={!!(messageArray.sender_name === author)}
-                                time={messageArray.timestamp_ms}
-                                key={messageArray.timestamp_ms}
-                                isLastMessage={isLastMessage}
-                                type={messageArray.type}
-                                searchTerm={searchTerm}
-                                setRowHeight={setRowHeight}
-                                index={index}
-                                isHighlighted={
-                                  index === highlightedMessageIndex
-                                }
-                              />
-                            </div>
-                          );
-                        }}
-                      </List>
-                    )}
-                  </AutoSizer>
-                ) : (
-                  <p>No messages found</p>
-                )}
-              </div>
-            )}
-          </Card>
-
-          <div className="mb-[2em]">
-            <div className="flex flex-row items-center justify-between gap-4">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button>Delete a collection</Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  {collectionOptions.map((option) => (
-                    <DropdownMenuItem
-                      key={option.value}
-                      onSelect={() => handleDelete(option.value)}
-                    >
-                      {option.label}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              <input
-                className="inline-flex text-white bg-background transition-all duration-300 ease-in-out items-center justify-center shadow-custom rounded-2 border-none text-lg self-start m-1 px-2 py-1"
-                type="file"
-                multiple
-                onChange={(e) => uploadFile(e.target.files)}
-              />
+                {searchContent !== ""
+                  ? `Found ${
+                      currentResultIndex + 1
+                    }/${numberOfResultsContent} of: ${searchContent}`
+                  : `Total number of messages: ${numberOfResults}`}
+              </Badge>
+              <ModeToggle />
             </div>
-          </div>
-        </Card>
-      </div>
+
+            <Card className="w-full max-h-[85%] flex flex-col overflow-auto">
+              <div className="flex items-center justify-between p-5">
+                <img
+                  src={randomPhoto}
+                  alt="user-profile"
+                  className="h-20 w-20 object-cover ml-12 mr-10 rounded-full"
+                />
+                <p className="text-2xl font text-popover-foreground hover:text-accent">
+                  {user ? user : "Select a collection..."}
+                </p>
+                <Button
+                  onClick={refresh}
+                  className="bg-secondary text-popover-foreground text-3xl rounded-full w-12 h-12 flex items-center justify-center"
+                >
+                  &#8635;
+                </Button>
+              </div>
+
+              {isLoading ? (
+                <div className="flex items-center justify-center">
+                  <div className="w-full h-1 bg-red-b70 animate-pulse opacity-70 rounded-xl" />
+                </div>
+              ) : (
+                <div
+                  className="flex-grow overflow-auto flex flex-col gap-4 p-2"
+                  ref={chatBodyRef}
+                  style={{
+                    height: "calc(100vh - 150px)",
+                    position: "relative",
+                  }}
+                >
+                  {filteredMessages.length > 0 ? (
+                    <AutoSizer>
+                      {({ height, width }) => (
+                        <List
+                          height={height}
+                          itemCount={filteredMessages.length}
+                          itemSize={getRowHeight}
+                          width={width}
+                          ref={listRef}
+                          scrollToAlignment="center"
+                        >
+                          {({ index, style }) => {
+                            const messageArray = filteredMessages[index];
+                            const isLastMessage =
+                              index === filteredMessages.length - 1;
+                            return (
+                              <div
+                                className="no-scrollbar"
+                                style={{ ...style }}
+                                key={index}
+                              >
+                                <Message
+                                  message={messageArray}
+                                  author={
+                                    !!(messageArray.sender_name === author)
+                                  }
+                                  time={messageArray.timestamp_ms}
+                                  key={messageArray.timestamp_ms}
+                                  isLastMessage={isLastMessage}
+                                  type={messageArray.type}
+                                  searchTerm={searchTerm}
+                                  setRowHeight={setRowHeight}
+                                  index={index}
+                                  isHighlighted={
+                                    index === highlightedMessageIndex
+                                  }
+                                />
+                              </div>
+                            );
+                          }}
+                        </List>
+                      )}
+                    </AutoSizer>
+                  ) : (
+                    <p>No messages found</p>
+                  )}
+                </div>
+              )}
+            </Card>
+            <div className="flex flex-row items-center gap-$ m-auto">
+              <Popover open={deleteOpen} onOpenChange={setDeleteOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="justify-start bg-secondary hover:bg-background"
+                  >
+                    Delete a collection
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="p-0" side="right" align="start">
+                  <Command>
+                    <CommandInput placeholder="Select collection to delete..." />
+                    <CommandList>
+                      {collections.length === 0 && (
+                        <CommandEmpty>No collections found.</CommandEmpty>
+                      )}
+                      <CommandGroup>
+                        {collections.map((collection) => (
+                          <CommandItem
+                            key={collection.value}
+                            onSelect={() => {
+                              handleDelete(collection.value);
+                              setDeleteOpen(false);
+                            }}
+                          >
+                            {collection.label}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+               
+              <div className="flex bg-secondary rounded-md">
+                <Label htmlFor="jsonFile" className="bg-secondary rounded-md">
+                  <Input
+                    className="bg-secondary hover:bg-background rounded-md"
+                    id="jsonFile"
+                    type="file"
+                    accept=".json"
+                    onChange={(e) => uploadFile(e.target.files)}
+                  />
+                </Label>
+              </div>
+            </div>
+          </Card>
+        </div>
+      </ThemeProvider>
     </ErrorBoundary>
   );
 }
