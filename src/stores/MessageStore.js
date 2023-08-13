@@ -136,7 +136,7 @@ class MessageStore {
     const normalizedSearchTerm = this.removeDiacritics(
       this.debouncedSearchTerm.toLowerCase()
     );
-    const messagesPerPage = 150;
+    const messagesPerPage = 500000;
     let messagesSorted = [...this.uploadedMessages];
     messagesSorted.sort((a, b) => b.timestamp - a.timestamp);
 
