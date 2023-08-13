@@ -83,8 +83,9 @@ const App = observer(() => {
 
   const handleOnSelect = async (value) => {
     await hardReset();
-    setCollectionName(value);
-    MessageStore.handleSend(value); // Assuming handleSend is a method in MessageStore
+    const encodedCollectionName = encodeURIComponent(value);
+    setCollectionName(encodedCollectionName);
+    MessageStore.handleSend(encodedCollectionName); // Assuming handleSend is a method in MessageStore
   };
 
   useEffect(() => {
@@ -113,10 +114,9 @@ const App = observer(() => {
 
         // Map the data to the required format
         const formattedCollections = data.map((collection) => ({
-          value: collection,
-          label: collection,
+          name: collection.name,
+          messageCount: collection.messageCount,
         }));
-
         setCollections(formattedCollections);
       } catch (error) {
         console.error(error);
@@ -190,7 +190,7 @@ const App = observer(() => {
     MessageStore.scrollToTop();
 
     // Reset collection and user
-    setCollectionName(null);
+    setCollectionName("");
     MessageStore.user = "";
 
     // Reset messages
@@ -277,12 +277,15 @@ const App = observer(() => {
   const refreshCollections = async () => {
     try {
       const response = await fetch("https://server.kocouratko.eu/collections");
-      if (response.ok) {
-        const data = await response.json();
-        setCollections(data);
-      } else {
-        console.error("Error fetching collections");
-      }
+      const data = await response.json();
+
+      // Map the data to the required format
+      const formattedCollections = data.map((collection) => ({
+        name: collection.name,
+        messageCount: collection.messageCount,
+      }));
+
+      setCollections(formattedCollections);
     } catch (error) {
       console.error(error);
     }
@@ -343,7 +346,9 @@ const App = observer(() => {
               <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
                   <Button variant="outline" className="justify-start">
-                    {collectionName ? collectionName : "Select a collection"}
+                    {collectionName
+                      ? decodeURIComponent(collectionName)
+                      : "Select a collection"}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="p-0" side="right" align="start">
@@ -356,13 +361,14 @@ const App = observer(() => {
                       <CommandGroup>
                         {collections.map((collection) => (
                           <CommandItem
-                            key={collection.value}
+                            key={collection.name}
                             onSelect={() => {
-                              handleOnSelect(collection.value);
+                              handleOnSelect(collection.name); // Pass only the name
                               setOpen(false);
                             }}
                           >
-                            {collection.label}
+                            {decodeURIComponent(collection.name)} (
+                            {collection.messageCount} msgs)
                           </CommandItem>
                         ))}
                       </CommandGroup>
@@ -400,7 +406,7 @@ const App = observer(() => {
                 onChange={handleFileChange}
                 accept="image/*"
               />
-              <div className="flex items-center justify-between p-1">
+              <div className="flex items-center justify-between p-1 bg-backgroundtranslucent">
                 <img
                   src={
                     isPhotoAvailable
@@ -408,7 +414,7 @@ const App = observer(() => {
                       : "https://placehold.co/1280x1280/black/white"
                   }
                   alt="user-profile"
-                  className="h-20 w-20 object-cover ml-12 mr-10 mt-3 mb-3 rounded-full p-2 bg-secondary"
+                  className="h-28 w-28 object-cover ml-12 mr-10 mt-3 mb-3 rounded-full p-2 bg-secondary"
                   onClick={() => {
                     if (isPhotoAvailable) {
                       // Open the delete confirmation dialog
@@ -520,13 +526,13 @@ const App = observer(() => {
                       <CommandGroup>
                         {collections.map((collection) => (
                           <CommandItem
-                            key={collection.value}
+                            key={collection.name}
                             onSelect={() => {
-                              handleDelete(collection.value);
+                              handleDelete(collection.name);
                               setDeleteOpen(false);
                             }}
                           >
-                            {collection.label}
+                            {collection.name}
                           </CommandItem>
                         ))}
                       </CommandGroup>

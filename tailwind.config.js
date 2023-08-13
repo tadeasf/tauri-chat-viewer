@@ -27,16 +27,16 @@ module.exports = {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
+        background: "hsla(var(--background))",
         foreground: "hsl(var(--foreground))",
-        backgroundreceived: "hsl(var(--backgroundreceived))",
-        backgroundsent: "hsl(var(--backgroundsent))",
+        backgroundreceived: "hsla(var(--backgroundreceived))",
+        backgroundsent: "hsla(var(--backgroundsent))",
         primary: {
-          DEFAULT: "hsl(var(--primary))",
+          DEFAULT: "hsla(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
-          DEFAULT: "hsl(var(--secondary))",
+          DEFAULT: "hsla(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
         },
         destructive: {
