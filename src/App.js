@@ -487,8 +487,8 @@ const App = observer(() => {
                                   author={
                                     !!(messageArray.sender_name === author)
                                   }
-                                  time={messageArray.timestamp}
-                                  key={messageArray.timestamp}
+                                  time={messageArray.timestamp_ms}
+                                  key={messageArray.timestamp_ms}
                                   isLastMessage={isLastMessage}
                                   type={messageArray.type}
                                   searchTerm={searchTerm}
