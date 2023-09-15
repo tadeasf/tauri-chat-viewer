@@ -469,6 +469,11 @@ const App = observer(() => {
                         >
                           {({ index, style }) => {
                             const messageArray = filteredMessages[index];
+                            // console.log(
+                            //   "Sender Name:",
+                            //   messageArray.sender_name
+                            // );
+                            // console.log('Is Author:', author);
                             const isLastMessage =
                               index === filteredMessages.length - 1;
                             return (

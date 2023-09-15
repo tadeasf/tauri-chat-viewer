@@ -104,13 +104,17 @@ class MessageStore {
         const uniqueSenders = [
           ...new Set(data.map((message) => message.sender_name)),
         ];
+        const authorRegex = /tade/i; // Case-insensitive regex to match any form containing "tade"
+
         uniqueSenders.forEach((sender) => {
-          if (sender === "Tadeáš Fořt" || sender === "Tadeáš") {
+          if (authorRegex.test(sender)) {
             this.author = sender;
           } else {
             this.user = sender;
           }
         });
+        // console.log("Author:", this.author);
+        // console.log("Unique Senders:", uniqueSenders);
       }
 
       const photoResponse = await fetch(
