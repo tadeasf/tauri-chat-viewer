@@ -23,6 +23,10 @@ module.exports = {
       fontFamily: {
         anonymous: ['"Anonymous Pro"', "monospace"],
       },
+      fontSize: {
+        "r-lg": "1.5vw", // Responsive large
+        "r-xl": "2vw", // Responsive extra large
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

@@ -82,8 +82,8 @@ const Message = ({ message, time, type, author, uuid, isHighlighted }) => {
           <div
             className={`message ${
               author
-                ? "message-sent text-lg bg-backgroundsent hover:bg-backgroundreceived text-secondary-foreground max-w-[85%]"
-                : "message-received text-xl bg-backgroundreceived hover:bg-backgroundsent text-accent-foreground max-w-[85%]"
+                ? "message-sent text-r-lg bg-backgroundsent hover:bg-backgroundreceived text-secondary-foreground max-w-[85%]"
+                : "message-received text-r-xl bg-backgroundreceived hover:bg-backgroundsent text-accent-foreground max-w-[85%]"
             } ${
               isHighlighted ? "bg-destructive" : ""
             } rounded-lg p-5 max-w-4/5`}
