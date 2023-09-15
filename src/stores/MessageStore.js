@@ -142,7 +142,7 @@ class MessageStore {
     );
     const messagesPerPage = 500000;
     let messagesSorted = [...this.uploadedMessages];
-    messagesSorted.sort((a, b) => b.timestamp_ms - a.timestamp_ms);
+    messagesSorted.sort((a, b) => b.timestamp - a.timestamp);
 
     let filteredMsgs =
       this.debouncedSearchTerm.length === 0
