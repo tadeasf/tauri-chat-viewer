@@ -17,11 +17,27 @@
  * @format
  */
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { DateTime } from "luxon";
 
-const Message = ({ message, time, type, author, uuid, isHighlighted }) => {
+const Message = ({
+  message,
+  time,
+  type,
+  index,
+  setRowHeight,
+  author,
+  uuid,
+  isHighlighted,
+}) => {
   const [visibility, setVisibility] = useState(false);
+  const messageContainerRef = useRef(null);
+  useEffect(() => {
+    if (messageContainerRef.current) {
+      const height = messageContainerRef.current.offsetHeight;
+      setRowHeight(index, height);
+    }
+  }, [message, index, setRowHeight, visibility]); // Added visibility to the dependency array
 
   const errorFile = {
     fontWeight: "bold",
@@ -71,6 +87,7 @@ const Message = ({ message, time, type, author, uuid, isHighlighted }) => {
     <>
       {whatKindIs() ? (
         <div
+          ref={messageContainerRef} // Added the ref here
           data-uuid={uuid}
           style={
             visibility ? { display: "flex", zIndex: 1000 } : { display: "flex" }
@@ -82,11 +99,12 @@ const Message = ({ message, time, type, author, uuid, isHighlighted }) => {
           <div
             className={`message ${
               author
-                ? "message-sent text-r-lg bg-backgroundsent hover:bg-backgroundreceived text-secondary-foreground max-w-[85%]"
-                : "message-received text-r-xl bg-backgroundreceived hover:bg-backgroundsent text-accent-foreground max-w-[85%]"
+                ? "message-sent bg-backgroundsent hover:bg-backgroundreceived text-secondary-foreground max-w-[65%]"
+                : "message-received bg-backgroundreceived hover:bg-backgroundsent text-accent-foreground max-w-[85%]"
             } ${
               isHighlighted ? "bg-destructive" : ""
-            } rounded-lg p-5 max-w-4/5`}
+            } rounded-lg p-r-5 max-w-4/5`}
+            style={{ fontSize: author ? "1.15rem" : "1.25rem" }} // Set different font sizes
             onClick={handleClick}
           >
             <div

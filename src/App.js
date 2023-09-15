@@ -74,12 +74,12 @@ const App = observer(() => {
   const chatBodyRef = useRef();
   const [collections, setCollections] = useState([]);
   const listRef = useRef();
-  const rowHeights = useRef({}); // Add this ref
   const [open, setOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const fileInputRef = useRef(null);
   const [isPhotoAvailable, setIsPhotoAvailable] = useState(false);
   const isPhotoAvailableRef = useRef(false);
+  const rowHeights = useRef({});
 
   const handleOnSelect = async (value) => {
     await hardReset();
@@ -95,13 +95,19 @@ const App = observer(() => {
     }
   }, [MessageStore, scrollToIndex]);
 
-  function getRowHeight(index) {
-    return rowHeights.current[index] || 110; // Add this function
-  }
-  const setRowHeight = (index, size) => {
-    // Add this function
-    listRef.current.resetAfterIndex(0);
-    rowHeights.current = { ...rowHeights.current, [index]: size };
+  useEffect(() => {
+    // Reset row heights
+    rowHeights.current = {};
+    if (listRef.current) {
+      listRef.current.resetAfterIndex(0);
+    }
+  }, [filteredMessages, collectionName]);
+
+  const setRowHeight = (index, height) => {
+    rowHeights.current[index] = height;
+    if (listRef.current) {
+      listRef.current.resetAfterIndex(index);
+    }
   };
 
   useEffect(() => {
@@ -398,7 +404,7 @@ const App = observer(() => {
               <ModeToggle />
             </div>
 
-            <Card className="w-full max-h-[85%] flex flex-col overflow-auto">
+            <Card className="w-full max-h-[90%] flex flex-col overflow-auto">
               <input
                 type="file"
                 ref={fileInputRef}
@@ -425,7 +431,7 @@ const App = observer(() => {
                   }}
                 />
 
-                <p className="text-2xl font text-popover-foreground hover:text-accent">
+                <p className="text-xl font text-popover-foreground hover:text-accent">
                   {user ? user : "Select a collection..."}
                 </p>
                 <div className="flex items-center justify-rnd p-1 space-x-5 mr-5">
@@ -462,7 +468,9 @@ const App = observer(() => {
                         <List
                           height={height}
                           itemCount={filteredMessages.length}
-                          itemSize={getRowHeight}
+                          itemSize={(index) =>
+                            (rowHeights.current[index] || 110) + 20
+                          } // Add a 20px gap
                           width={width}
                           ref={listRef}
                           scrollToAlignment="center"

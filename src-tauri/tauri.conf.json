@@ -66,15 +66,19 @@
         "center": true,
         "fileDropEnabled": true,
         "skipTaskbar": true,
-        "hiddenTitle": true,
+        "hiddenTitle": false,
         "decorations": true,
-        "alwaysOnTop": false,
+        "alwaysOnTop": true,
         "transparent": false,
-        "tabbingIdentifier": "kocouratci-messenger",
-        "height": 1200,
-        "width": 1600,
-        "minHeight": 600,
-        "minWidth": 800
+        "tabbingIdentifier": "Kocouřátčí Messenger",
+        "height": 1300,
+        "width": 700,
+        "minHeight": 400,
+        "minWidth": 400,
+        "titleBarStyle": "Transparent",
+        "visible": true,
+        "focus": true,
+        "acceptFirstMouse": true
       }
     ]
   }
