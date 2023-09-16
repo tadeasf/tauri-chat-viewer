@@ -595,6 +595,7 @@ const App = observer(() => {
                     className="bg-secondary hover:bg-background rounded-md"
                     id="jsonFile"
                     type="file"
+                    multiple
                     accept=".json"
                     onChange={(e) => uploadFile(e.target.files)}
                   />
