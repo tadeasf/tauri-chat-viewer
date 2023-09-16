@@ -57,7 +57,6 @@ import collectionStore from "./stores/CollectionStore";
 const App = observer(() => {
   const { MessageStore } = useContext(storesContext);
   const {
-    author,
     user,
     filteredMessages,
     searchTerm,
@@ -85,7 +84,8 @@ const App = observer(() => {
     await hardReset();
     const encodedCollectionName = encodeURIComponent(value);
     setCollectionName(encodedCollectionName);
-    MessageStore.handleSend(encodedCollectionName); // Assuming handleSend is a method in MessageStore
+    MessageStore.handleSend(encodedCollectionName);
+    MessageStore.setCrossCollectionMessages([]);
   };
 
   useEffect(() => {
@@ -202,6 +202,7 @@ const App = observer(() => {
     // Reset messages
     MessageStore.filteredMessages = []; // Clear the displayed messages
     MessageStore.uploadedMessages = []; // Clear the uploaded messages cache
+    MessageStore.setCrossCollectionMessages([]);
 
     setIsLoading(false);
   };
@@ -343,6 +344,35 @@ const App = observer(() => {
     collectionStore.setNewCollectionName(event.target.value);
   }
 
+  const handleSearchAll = async () => {
+    const query = MessageStore.searchContent;
+
+    try {
+      const response = await fetch("https://server.kocouratko.eu/search", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ query }),
+      });
+
+      const data = await response.json();
+
+      // Update the MobX store
+      MessageStore.setCrossCollectionMessages(data);
+    } catch (error) {
+      console.error("Error during search:", error);
+    }
+  };
+
+  const messagesToDisplay =
+    MessageStore.crossCollectionMessages.length > 0
+      ? MessageStore.crossCollectionMessages
+      : filteredMessages;
+
+  // Flag to indicate if the messages are from a cross-collection search
+  const isCrossCollection = MessageStore.crossCollectionMessages.length > 0;
+
   return (
     <ErrorBoundary>
       <ThemeProvider defaultTheme="{ThemeStore.theme}" enableSystem={true}>
@@ -391,6 +421,7 @@ const App = observer(() => {
                 onChange={(e) => (MessageStore.searchContent = e.target.value)}
                 onKeyDown={MessageStore.handleContentKeyPress}
               />
+              <button onClick={handleSearchAll}>Search All</button>
               <Badge
                 variant="secondary"
                 className="py-1 text-sm leading-tight mr-10 min-w-[9rem] max-w-[300px]"
@@ -462,12 +493,12 @@ const App = observer(() => {
                     position: "relative",
                   }}
                 >
-                  {filteredMessages.length > 0 ? (
+                  {messagesToDisplay.length > 0 ? (
                     <AutoSizer>
                       {({ height, width }) => (
                         <List
                           height={height}
-                          itemCount={filteredMessages.length}
+                          itemCount={messagesToDisplay.length}
                           itemSize={(index) =>
                             (rowHeights.current[index] || 110) + 20
                           } // Add a 20px gap
@@ -476,14 +507,19 @@ const App = observer(() => {
                           scrollToAlignment="center"
                         >
                           {({ index, style }) => {
-                            const messageArray = filteredMessages[index];
-                            // console.log(
-                            //   "Sender Name:",
-                            //   messageArray.sender_name
-                            // );
-                            // console.log('Is Author:', author);
+                            const messageArray = messagesToDisplay[index];
+                            if (!messageArray || !messageArray.sender_name) {
+                              console.log(
+                                "Skipping message due to missing data:",
+                                messageArray
+                              ); // Debugging line
+                              return null; // Skip this iteration if data is missing
+                            }
                             const isLastMessage =
-                              index === filteredMessages.length - 1;
+                              index === messagesToDisplay.length - 1;
+                            const isAuthor =
+                              messageArray.sender_name.toLowerCase() ===
+                              "Tadeáš Fořt".toLowerCase();
                             return (
                               <div
                                 className="no-scrollbar"
@@ -492,9 +528,7 @@ const App = observer(() => {
                               >
                                 <Message
                                   message={messageArray}
-                                  author={
-                                    !!(messageArray.sender_name === author)
-                                  }
+                                  author={isAuthor}
                                   time={messageArray.timestamp_ms}
                                   key={messageArray.timestamp_ms}
                                   isLastMessage={isLastMessage}
@@ -505,6 +539,7 @@ const App = observer(() => {
                                   isHighlighted={
                                     index === highlightedMessageIndex
                                   }
+                                  isCrossCollection={isCrossCollection} // Pass the flag here
                                 />
                               </div>
                             );

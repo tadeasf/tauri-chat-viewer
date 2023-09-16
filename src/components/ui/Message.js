@@ -29,6 +29,7 @@ const Message = ({
   author,
   uuid,
   isHighlighted,
+  isCrossCollection,
 }) => {
   const [visibility, setVisibility] = useState(false);
   const messageContainerRef = useRef(null);
@@ -42,6 +43,10 @@ const Message = ({
   const errorFile = {
     fontWeight: "bold",
   };
+
+  useEffect(() => {
+    console.log("Author:", author);
+  }, [author, message]);
 
   const whatKindIs = () => {
     if (type === "Image") {
@@ -87,7 +92,7 @@ const Message = ({
     <>
       {whatKindIs() ? (
         <div
-          ref={messageContainerRef} // Added the ref here
+          ref={messageContainerRef}
           data-uuid={uuid}
           style={
             visibility ? { display: "flex", zIndex: 1000 } : { display: "flex" }
@@ -104,7 +109,7 @@ const Message = ({
             } ${
               isHighlighted ? "bg-destructive" : ""
             } rounded-lg p-r-5 max-w-4/5`}
-            style={{ fontSize: author ? "1.15rem" : "1.25rem" }} // Set different font sizes
+            style={{ fontSize: author ? "1.15rem" : "1.25rem" }}
             onClick={handleClick}
           >
             <div
@@ -122,8 +127,13 @@ const Message = ({
               }
             >
               {message.sender_name}
+              {/* Display collection name only for author messages in cross-collection search */}
+              {author && isCrossCollection
+                ? ` (from ${message.collectionName})`
+                : ""}
             </div>
             {whatKindIs()}
+
             <div
               className="time-ago"
               style={

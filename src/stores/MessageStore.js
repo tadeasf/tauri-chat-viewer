@@ -21,6 +21,7 @@ class MessageStore {
   currentResultIndex = 0;
   firstPress = true;
   scrollToIndex = -1;
+  crossCollectionMessages = [];
 
   constructor() {
     makeAutoObservable(this);
@@ -33,9 +34,14 @@ class MessageStore {
     this.highlightedMessageIndex = -1;
   }
 
+  setCrossCollectionMessages(messages) {
+    this.crossCollectionMessages = messages;
+  }
+
   // Handle key presses when searching for content
   handleContentKeyPress = (e) => {
     if (e.key === "Enter") {
+      this.setCrossCollectionMessages([]); // Updated this line
       if (this.firstPress) {
         this.scrollToContent(this.searchContent);
         this.firstPress = false;
@@ -91,7 +97,7 @@ class MessageStore {
   async handleSend(collectionName) {
     this.isLoading = true;
     this.user = null;
-
+    this.setCrossCollectionMessages([]);
     try {
       const response = await fetch(
         `https://server.kocouratko.eu/messages/${collectionName}`
@@ -184,6 +190,5 @@ class MessageStore {
     this.numberOfResultsContent = filteredMsgsByContent.length;
   }
 }
-
 const messageStore = new MessageStore();
 export default messageStore;
