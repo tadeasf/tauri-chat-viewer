@@ -28,6 +28,7 @@ import { ThemeProvider } from "./components/theme-provider";
 import { Input } from "./components/ui/input";
 import { Label } from "./components/ui/label";
 import { Badge } from "./components/ui/badge";
+import { Switch } from "./components/ui/switch";
 import {
   Command,
   CommandEmpty,
@@ -79,6 +80,7 @@ const App = observer(() => {
   const [isPhotoAvailable, setIsPhotoAvailable] = useState(false);
   const isPhotoAvailableRef = useRef(false);
   const rowHeights = useRef({});
+  const [showOnlyUserMessages, setShowOnlyUserMessages] = useState(false);
 
   const handleOnSelect = async (value) => {
     await hardReset();
@@ -422,6 +424,17 @@ const App = observer(() => {
                 onKeyDown={MessageStore.handleContentKeyPress}
               />
               <button onClick={handleSearchAll}>Search All</button>
+              <label>
+                <Switch
+                  checked={showOnlyUserMessages}
+                  onCheckedChange={() =>
+                    setShowOnlyUserMessages(!showOnlyUserMessages)
+                  }
+                  className={`${
+                    showOnlyUserMessages ? "bg-green-500" : "bg-gray-300"
+                  } transition-colors duration-300 ease-in-out`}
+                />
+              </label>
               <Badge
                 variant="secondary"
                 className="py-1 text-sm leading-tight mr-10 min-w-[9rem] max-w-[300px]"
@@ -493,12 +506,25 @@ const App = observer(() => {
                     position: "relative",
                   }}
                 >
-                  {messagesToDisplay.length > 0 ? (
+                  {isLoading ? (
+                    <div className="flex items-center justify-center">
+                      <div className="w-full h-1 bg-red-b70 animate-pulse opacity-70 rounded-xl" />
+                    </div>
+                  ) : (
                     <AutoSizer>
                       {({ height, width }) => (
                         <List
                           height={height}
-                          itemCount={messagesToDisplay.length}
+                          itemCount={
+                            showOnlyUserMessages
+                              ? messagesToDisplay.filter(
+                                  (message) =>
+                                    message.sender_name.toLowerCase() !==
+                                    "Tadeáš Fořt".toLowerCase()
+                                ).length
+                              : messagesToDisplay.length
+                          }
+                          // ... other List props ...
                           itemSize={(index) =>
                             (rowHeights.current[index] || 110) + 20
                           } // Add a 20px gap
@@ -507,7 +533,13 @@ const App = observer(() => {
                           scrollToAlignment="center"
                         >
                           {({ index, style }) => {
-                            const messageArray = messagesToDisplay[index];
+                            const messageArray = showOnlyUserMessages
+                              ? messagesToDisplay.filter(
+                                  (message) =>
+                                    message.sender_name.toLowerCase() !==
+                                    "Tadeáš Fořt".toLowerCase()
+                                )[index]
+                              : messagesToDisplay[index];
                             if (!messageArray || !messageArray.sender_name) {
                               console.log(
                                 "Skipping message due to missing data:",
@@ -547,8 +579,6 @@ const App = observer(() => {
                         </List>
                       )}
                     </AutoSizer>
-                  ) : (
-                    <p>No messages found</p>
                   )}
                 </div>
               )}
