@@ -2,7 +2,7 @@
 
 // src/stores/MessageStore.js
 
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, reaction } from "mobx";
 
 class MessageStore {
   // State Variables
@@ -25,6 +25,14 @@ class MessageStore {
 
   constructor() {
     makeAutoObservable(this);
+
+    // Add this reaction to reset firstPress when searchContent changes
+    reaction(
+      () => this.searchContent,
+      () => {
+        this.firstPress = true;
+      }
+    );
   }
 
   // Scroll to the top of the message list
