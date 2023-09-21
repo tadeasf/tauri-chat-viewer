@@ -104,12 +104,11 @@ const Message = ({
           <div
             className={`message ${
               author
-                ? "message-sent bg-backgroundsent hover:bg-backgroundreceived text-secondary-foreground max-w-[65%]"
-                : "message-received bg-backgroundreceived hover:bg-backgroundsent text-accent-foreground max-w-[85%]"
+                ? "message-sent text-lg bg-backgroundsent hover:bg-backgroundreceived text-secondary-foreground max-w-[85%]"
+                : "message-received text-xl bg-backgroundreceived hover:bg-backgroundsent text-accent-foreground max-w-[85%]"
             } ${
               isHighlighted ? "bg-destructive" : ""
-            } rounded-lg p-r-5 max-w-4/5`}
-            style={{ fontSize: author ? "1.15rem" : "1.25rem" }}
+            } rounded-lg p-5 max-w-4/5`}
             onClick={handleClick}
           >
             <div
