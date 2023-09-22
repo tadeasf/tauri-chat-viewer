@@ -392,13 +392,14 @@ const App = observer(() => {
       <ThemeProvider defaultTheme="{ThemeStore.theme}" enableSystem={true}>
         <div className="font-anonymous box-border bg-background">
           <Card className="flex flex-col h-screen bg-background">
-            <div className="w-full bg-background flex flex-wrap justify-center items-center mt-5 mb-5 gap-x-4 gap-y-4">
+            <div className="w-full bg-background flex flex-wrap justify-center items-center mt-1 mb-1 gap-x-2 gap-y-1">
+              <ModeToggle />
               <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" className="justify-start">
+                  <Button variant="outline" className="h-2 w-18 justify-start">
                     {collectionName
                       ? decodeURIComponent(collectionName)
-                      : "Select a collection"}
+                      : "Select"}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="p-0" side="right" align="start">
@@ -428,14 +429,14 @@ const App = observer(() => {
               </Popover>
 
               <Input
-                className="min-w-[10rem] max-w-[20rem] h-10"
+                className="w-24 h-8"
                 type="text"
-                placeholder="Search messages..."
+                placeholder="Search"
                 value={searchContent}
                 onChange={(e) => (MessageStore.searchContent = e.target.value)}
                 onKeyDown={MessageStore.handleContentKeyPress}
               />
-              <button onClick={handleSearchAll}>Search All</button>
+              <button onClick={handleSearchAll}>Find</button>
               <label>
                 <Switch
                   checked={showOnlyUserMessages}
@@ -449,15 +450,14 @@ const App = observer(() => {
               </label>
               <Badge
                 variant="secondary"
-                className="py-1 text-sm leading-tight mr-10 min-w-[9rem] max-w-[300px]"
+                className="py-1 text-xs leading-tight mr-0"
               >
                 {searchContent !== ""
-                  ? `Found ${
+                  ? `${
                       currentResultIndex + 1
-                    }/${numberOfResultsContent} of: ${searchContent}`
-                  : `Total number of messages: ${numberOfResults}`}
+                    }/${numberOfResultsContent} ${searchContent}`
+                  : `msgs #: ${numberOfResults}`}
               </Badge>
-              <ModeToggle />
             </div>
 
             <Card className="w-full max-h-[90%] flex flex-col overflow-auto">
@@ -468,7 +468,7 @@ const App = observer(() => {
                 onChange={handleFileChange}
                 accept="image/*"
               />
-              <div className="flex items-center justify-between p-1 bg-backgroundtranslucent">
+              <div className="flex items-center justify-between mb-1 p-1 bg-backgroundtranslucent">
                 <img
                   src={
                     MessageStore.isPhotoAvailable // <-- change here
@@ -476,7 +476,7 @@ const App = observer(() => {
                       : "https://placehold.co/1280x1280/black/white"
                   }
                   alt="user-profile"
-                  className="h-20 w-20 object-cover ml-12 mr-10 mt-0.5 rounded-full bg-secondary"
+                  className="my-responsive-image object-cover rounded-full bg-secondary"
                   onClick={() => {
                     if (MessageStore.isPhotoAvailable) {
                       // Open the delete confirmation dialog
@@ -487,7 +487,7 @@ const App = observer(() => {
                   }}
                 />
 
-                <p className="text-lg font text-popover-foreground hover:text-accent">
+                <p className="text-lg ml-32 font text-popover-foreground hover:text-accent">
                   {user ? user : "Select a collection..."}
                 </p>
                 <div className="flex items-center justify-rnd p-1 space-x-5 mr-5">
