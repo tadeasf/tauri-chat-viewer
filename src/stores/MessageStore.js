@@ -22,6 +22,7 @@ class MessageStore {
   firstPress = true;
   scrollToIndex = -1;
   crossCollectionMessages = [];
+  isPhotoAvailable = false;
 
   constructor() {
     makeAutoObservable(this);

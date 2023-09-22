@@ -77,7 +77,6 @@ const App = observer(() => {
   const [open, setOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const fileInputRef = useRef(null);
-  const [isPhotoAvailable, setIsPhotoAvailable] = useState(false);
   const isPhotoAvailableRef = useRef(false);
   const rowHeights = useRef({});
   const [showOnlyUserMessages, setShowOnlyUserMessages] = useState(false);
@@ -195,6 +194,7 @@ const App = observer(() => {
     MessageStore.numberOfResults = 0;
     MessageStore.firstPress = true;
     MessageStore.currentResultIndex = 0;
+    MessageStore.isPhotoAvailable = false; // <-- Reset state
     MessageStore.scrollToTop();
 
     // Reset collection and user
@@ -323,7 +323,7 @@ const App = observer(() => {
 
       const data = await response.json();
       if (data.message === "Photo uploaded successfully") {
-        setIsPhotoAvailable(true);
+        MessageStore.isPhotoAvailable = true;
       } else {
         console.error(data.message);
       }
@@ -333,8 +333,8 @@ const App = observer(() => {
   };
 
   useEffect(() => {
-    isPhotoAvailableRef.current = isPhotoAvailable;
-  }, [isPhotoAvailable]);
+    isPhotoAvailableRef.current = MessageStore.isPhotoAvailable; // <-- change here
+  }, [MessageStore.isPhotoAvailable]); // <-- change here
 
   // When the dialog is opened, set the current collection name
   function handleDialogOpen() {
@@ -374,6 +374,18 @@ const App = observer(() => {
 
   // Flag to indicate if the messages are from a cross-collection search
   const isCrossCollection = MessageStore.crossCollectionMessages.length > 0;
+
+  const sanitizeName = (name) => {
+    return name
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/\s+/g, "")
+      .replace(/[^a-zA-Z0-9]/g, "");
+  };
+
+  const sanitizedCollectionName = sanitizeName(
+    decodeURIComponent(collectionName)
+  );
 
   return (
     <ErrorBoundary>
@@ -459,14 +471,14 @@ const App = observer(() => {
               <div className="flex items-center justify-between p-1 bg-backgroundtranslucent">
                 <img
                   src={
-                    isPhotoAvailable
-                      ? `https://server.kocouratko.eu/serve/photo/${collectionName}`
+                    MessageStore.isPhotoAvailable // <-- change here
+                      ? `https://server.kocouratko.eu/serve/photo/${sanitizedCollectionName}`
                       : "https://placehold.co/1280x1280/black/white"
                   }
                   alt="user-profile"
-                  className="h-28 w-28 object-cover ml-12 mr-10 mt-3 mb-3 rounded-full p-2 bg-secondary"
+                  className="h-20 w-20 object-cover ml-12 mr-10 mt-0.5 rounded-full bg-secondary"
                   onClick={() => {
-                    if (isPhotoAvailable) {
+                    if (MessageStore.isPhotoAvailable) {
                       // Open the delete confirmation dialog
                       // openDeleteDialog();
                     } else if (collectionName) {
@@ -475,19 +487,19 @@ const App = observer(() => {
                   }}
                 />
 
-                <p className="text-xl font text-popover-foreground hover:text-accent">
+                <p className="text-lg font text-popover-foreground hover:text-accent">
                   {user ? user : "Select a collection..."}
                 </p>
                 <div className="flex items-center justify-rnd p-1 space-x-5 mr-5">
                   <Button
                     onClick={refresh}
-                    className="bg-secondary text-popover-foreground text-3xl rounded-full w-12 h-12 justify-center"
+                    className="bg-secondary text-popover-foreground text-3xl rounded-full w-8 h-8 justify-center"
                   >
                     &#8635;
                   </Button>
                   <Button
                     onClick={hardReset}
-                    className="bg-secondary text-destructive text-3xl rounded-full w-12 h-12 justify-center"
+                    className="bg-secondary text-destructive text-3xl rounded-full w-8 h-8 justify-center"
                   >
                     &#8635;
                   </Button>
