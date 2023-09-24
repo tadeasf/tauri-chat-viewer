@@ -387,6 +387,31 @@ const App = observer(() => {
     decodeURIComponent(collectionName)
   );
 
+  const handleDeletePhoto = async () => {
+    try {
+      const response = await fetch(
+        `https://server.kocouratko.eu/delete/photo/${sanitizedCollectionName}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (response.status === 200) {
+        const data = await response.json();
+        // You can handle the response here. For example, you might want to set some state to indicate that the photo was deleted.
+        alert(data.message); // Display the message
+        // Update the UI to indicate that the photo has been deleted
+        // For example, set MessageStore.isPhotoAvailable to false
+      } else {
+        // Handle errors
+        const data = await response.json();
+        alert(`Error: ${data.message}`);
+      }
+    } catch (error) {
+      console.error("There was an error deleting the photo:", error);
+    }
+  };
+
   return (
     <ErrorBoundary>
       <ThemeProvider defaultTheme="{ThemeStore.theme}" enableSystem={true}>
@@ -676,6 +701,9 @@ const App = observer(() => {
                   </DialogFooter>
                 </DialogContent>
               </Dialog>
+              <Button variant="outline" onClick={handleDeletePhoto}>
+                Delete Profile Image
+              </Button>
             </div>
           </Card>
         </div>
