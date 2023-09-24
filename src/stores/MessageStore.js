@@ -102,7 +102,6 @@ class MessageStore {
     }
   }
 
-  // Send a message
   async handleSend(collectionName) {
     this.isLoading = true;
     this.user = null;
@@ -113,7 +112,10 @@ class MessageStore {
       );
       console.log(collectionName);
       const data = await response.json();
-      this.uploadedMessages = data.map((message) => ({ ...message }));
+      this.uploadedMessages = data.map((message) => ({
+        ...message,
+        collectionName, // Add the collection name to each message
+      }));
 
       if (!this.author || !this.user) {
         const uniqueSenders = [
@@ -128,8 +130,6 @@ class MessageStore {
             this.user = sender;
           }
         });
-        // console.log("Author:", this.author);
-        // console.log("Unique Senders:", uniqueSenders);
       }
 
       const photoResponse = await fetch(
@@ -144,6 +144,8 @@ class MessageStore {
       }
 
       this.isLoading = false;
+      // print message.photos array
+      console.log(this.uploadedMessages[0].photos);
     } catch (error) {
       console.error(error);
       this.isLoading = false;

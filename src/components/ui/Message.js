@@ -1,21 +1,4 @@
-/**
- * This file is part of Kocouřátčí Messenger.
- *
- * Kocouřátčí Messenger is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Kocouřátčí Messenger is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Kocouřátčí Messenger. If not, see <https://www.gnu.org/licenses/>.
- *
- * @format
- */
+/** @format */
 
 import React, { useState, useEffect, useRef } from "react";
 import { DateTime } from "luxon";
@@ -31,45 +14,40 @@ const Message = ({
   isHighlighted,
   isCrossCollection,
 }) => {
+  const [clickCounter, setClickCounter] = useState(0);
   const [visibility, setVisibility] = useState(false);
   const messageContainerRef = useRef(null);
+
   useEffect(() => {
     if (messageContainerRef.current) {
       const height = messageContainerRef.current.offsetHeight;
       setRowHeight(index, height);
     }
-  }, [message, index, setRowHeight, visibility]); // Added visibility to the dependency array
+  }, [message, index, setRowHeight, visibility]);
 
   const errorFile = {
     fontWeight: "bold",
   };
 
-  useEffect(() => {
-    console.log("Author:", author);
-  }, [author, message]);
-
   const whatKindIs = () => {
-    if (type === "Image") {
-      return (
+    if (message.photos && message.photos.length > 0) {
+      return message.photos.map((photo, index) => (
         <img
-          src={`data:image/jpeg;base64,${message.content}`}
-          alt="Message content"
+          key={index}
+          src={`https://server.kocouratko.eu/${photo.uri.replace(
+            "messages/inbox/",
+            "inbox/"
+          )}`}
+          alt={`fb obrazek ${index + 1}`}
         />
-      );
+      ));
     }
-    if (type === "Generic" || type === null) {
-      if (message.content) return <p>{message.content}</p>;
-      else if (message.photos)
-        return <p style={errorFile}>Foto isn't available</p>;
-      else if (message.videos)
-        return <p style={errorFile}>Video isn't available</p>;
-      else if (message.audio_files)
-        return <p style={errorFile}>Audio isn't available</p>;
 
-      return false;
-    }
     if (message.content) return <p>{message.content}</p>;
-    else if (message.share)
+    if (message.videos) return <p style={errorFile}>Video isn't available</p>;
+    if (message.audio_files)
+      return <p style={errorFile}>Audio isn't available</p>;
+    if (message.share)
       return (
         <a
           href={message.share.link}
@@ -85,8 +63,16 @@ const Message = ({
   };
 
   const handleClick = () => {
-    setVisibility(!visibility);
+    setClickCounter((prevCounter) => prevCounter + 1);
+    if (clickCounter % 2 === 0) {
+      setVisibility(!visibility);
+    }
   };
+
+  useEffect(() => {
+    setClickCounter(0);
+    setVisibility(false);
+  }, [message]);
 
   return (
     <>
@@ -107,7 +93,7 @@ const Message = ({
                 ? "message-sent text-sm bg-backgroundsent hover:bg-backgroundreceived text-secondary-foreground max-w-[85%]"
                 : "message-received text-lg bg-backgroundreceived hover:bg-backgroundsent text-accent-foreground max-w-[85%]"
             } ${
-              isHighlighted ? "bg-destructive" : ""
+              clickCounter % 2 === 1 ? "bg-destructive" : ""
             } rounded-lg p-5 max-w-4/5`}
             onClick={handleClick}
           >
@@ -126,13 +112,11 @@ const Message = ({
               }
             >
               {message.sender_name}
-              {/* Display collection name only for author messages in cross-collection search */}
               {author && isCrossCollection
                 ? ` (from ${message.collectionName})`
                 : ""}
             </div>
             {whatKindIs()}
-
             <div
               className="time-ago"
               style={
