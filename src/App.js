@@ -158,9 +158,7 @@ const App = observer(() => {
 
     setIsLoading(true); // Set isLoading to true when refresh is triggered
     MessageStore.page = 1;
-    MessageStore.debouncedSearchTerm = "";
     MessageStore.contentSearchIndex = -1;
-    MessageStore.searchContent = "";
     MessageStore.highlightedMessageIndex = -1;
     MessageStore.currentResultIndex = 0;
     MessageStore.numberOfResultsContent = 0;

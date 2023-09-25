@@ -79,15 +79,14 @@ class MessageStore {
         (this.contentSearchIndex + i) % this.uploadedMessages.length;
       const currentMessage = this.uploadedMessages[currentIndex];
 
-      if (!currentMessage.content) {
-        continue;
-      }
+      const normalizedMessageContent = currentMessage.content
+        ? this.removeDiacritics(currentMessage.content.toLowerCase())
+        : "";
 
-      const normalizedMessageContent = this.removeDiacritics(
-        currentMessage.content.toLowerCase()
-      );
-
-      if (normalizedMessageContent.includes(normalizedContent)) {
+      if (
+        normalizedMessageContent.includes(normalizedContent) ||
+        (normalizedContent === "fotkyys" && currentMessage.photos)
+      ) {
         messageIndex = currentIndex;
         break;
       }
@@ -187,16 +186,16 @@ class MessageStore {
       this.searchContent.toLowerCase()
     );
 
-    let filteredMsgsByContent =
-      this.searchContent.length === 0
-        ? this.uploadedMessages
-        : this.uploadedMessages.filter((messageArray) => {
-            if (!messageArray.content) return false;
-            const normalizedContent = this.removeDiacritics(
-              messageArray.content.toLowerCase()
-            );
-            return normalizedContent.includes(normalizedSearchContent);
-          });
+    let filteredMsgsByContent = this.uploadedMessages.filter((messageArray) => {
+      if (normalizedSearchContent === "fotkyys") {
+        return messageArray.photos;
+      }
+      if (!messageArray.content) return false;
+      const normalizedContent = this.removeDiacritics(
+        messageArray.content.toLowerCase()
+      );
+      return normalizedContent.includes(normalizedSearchContent);
+    });
 
     this.numberOfResultsContent = filteredMsgsByContent.length;
   }
