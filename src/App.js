@@ -80,6 +80,7 @@ const App = observer(() => {
   const isPhotoAvailableRef = useRef(false);
   const rowHeights = useRef({});
   const [showOnlyUserMessages, setShowOnlyUserMessages] = useState(false);
+  const [sortByAlphabet, setSortByAlphabet] = useState(true);
 
   const handleOnSelect = async (value) => {
     await hardReset();
@@ -114,9 +115,11 @@ const App = observer(() => {
   useEffect(() => {
     const fetchCollections = async () => {
       try {
-        const response = await fetch(
-          "https://server.kocouratko.eu/collections"
-        );
+        const endpoint = sortByAlphabet
+          ? "https://server.kocouratko.eu/collections/alphabetical"
+          : "https://server.kocouratko.eu/collections";
+
+        const response = await fetch(endpoint);
         const data = await response.json();
 
         // Map the data to the required format
@@ -124,6 +127,7 @@ const App = observer(() => {
           name: collection.name,
           messageCount: collection.messageCount,
         }));
+
         setCollections(formattedCollections);
       } catch (error) {
         console.error(error);
@@ -131,7 +135,7 @@ const App = observer(() => {
     };
 
     fetchCollections();
-  }, []);
+  }, [sortByAlphabet]); // Added sortByAlphabet as a dependency
 
   useEffect(() => {
     MessageStore.filterMessagesBySearchTerm();
@@ -473,6 +477,16 @@ const App = observer(() => {
                   } transition-colors duration-300 ease-in-out`}
                 />
               </label>
+              <label>
+                <Switch
+                  checked={sortByAlphabet}
+                  onCheckedChange={() => setSortByAlphabet(!sortByAlphabet)}
+                  className={`${
+                    sortByAlphabet ? "bg-green-500" : "bg-gray-300"
+                  } transition-colors duration-300 ease-in-out`}
+                />
+              </label>
+
               <Badge
                 variant="secondary"
                 className="py-1 text-xs leading-tight mr-0"
