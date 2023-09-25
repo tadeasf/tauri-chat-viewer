@@ -75,6 +75,8 @@ const App = observer(() => {
   const [collections, setCollections] = useState([]);
   const listRef = useRef();
   const [open, setOpen] = useState(false);
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
   const [deleteOpen, setDeleteOpen] = useState(false);
   const fileInputRef = useRef(null);
   const isPhotoAvailableRef = useRef(false);
@@ -86,7 +88,10 @@ const App = observer(() => {
     await hardReset();
     const encodedCollectionName = encodeURIComponent(value);
     setCollectionName(encodedCollectionName);
-    MessageStore.handleSend(encodedCollectionName);
+
+    // Assume fromDate and toDate are state variables you have defined somewhere
+    MessageStore.handleSend(encodedCollectionName, fromDate, toDate);
+
     MessageStore.setCrossCollectionMessages([]);
   };
 
@@ -440,10 +445,7 @@ const App = observer(() => {
                         {collections.map((collection) => (
                           <CommandItem
                             key={collection.name}
-                            onSelect={() => {
-                              handleOnSelect(collection.name); // Pass only the name
-                              setOpen(false);
-                            }}
+                            onSelect={() => handleOnSelect(collection.name)}
                           >
                             {decodeURIComponent(collection.name)} (
                             {collection.messageCount} msgs)
@@ -451,6 +453,25 @@ const App = observer(() => {
                         ))}
                       </CommandGroup>
                     </CommandList>
+                    {/* Add date input fields */}
+                    <div className="grid grid-cols-3 gap-4 p-4">
+                      <Label htmlFor="fromDate">From Date</Label>
+                      <Input
+                        type="date"
+                        id="fromDate"
+                        value={fromDate}
+                        onChange={(e) => setFromDate(e.target.value)}
+                        className="col-span-2 h-8"
+                      />
+                      <Label htmlFor="toDate">To Date</Label>
+                      <Input
+                        type="date"
+                        id="toDate"
+                        value={toDate}
+                        onChange={(e) => setToDate(e.target.value)}
+                        className="col-span-2 h-8"
+                      />
+                    </div>
                   </Command>
                 </PopoverContent>
               </Popover>

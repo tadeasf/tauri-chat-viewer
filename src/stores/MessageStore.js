@@ -101,14 +101,21 @@ class MessageStore {
     }
   }
 
-  async handleSend(collectionName) {
+  async handleSend(collectionName, fromDate = null, toDate = null) {
     this.isLoading = true;
     this.user = null;
     this.setCrossCollectionMessages([]);
+
+    let apiUrl = `https://server.kocouratko.eu/messages/${collectionName}`;
+    if (fromDate || toDate) {
+      const queryParams = new URLSearchParams();
+      if (fromDate) queryParams.append("fromDate", fromDate);
+      if (toDate) queryParams.append("toDate", toDate);
+      apiUrl += `?${queryParams.toString()}`;
+    }
+    console.log("Fetching from URL:", apiUrl);
     try {
-      const response = await fetch(
-        `https://server.kocouratko.eu/messages/${collectionName}`
-      );
+      const response = await fetch(apiUrl);
       console.log(collectionName);
       const data = await response.json();
       this.uploadedMessages = data.map((message) => ({
@@ -143,8 +150,6 @@ class MessageStore {
       }
 
       this.isLoading = false;
-      // print message.photos array
-      console.log(this.uploadedMessages[0].photos);
     } catch (error) {
       console.error(error);
       this.isLoading = false;
