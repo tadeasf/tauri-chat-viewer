@@ -92,8 +92,8 @@ const Message = ({
               author
                 ? "message-sent text-sm bg-backgroundsent hover:bg-backgroundreceived text-secondary-foreground max-w-[85%]"
                 : "message-received text-lg bg-backgroundreceived hover:bg-backgroundsent text-accent-foreground max-w-[85%]"
-            } ${
-              clickCounter % 2 === 1 ? "bg-destructive" : ""
+            } ${clickCounter % 2 === 1 ? "bg-destructive" : ""} ${
+              isHighlighted ? "bg-red-500" : ""
             } rounded-lg p-5 max-w-4/5`}
             onClick={handleClick}
           >
