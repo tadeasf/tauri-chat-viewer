@@ -460,7 +460,10 @@ const App = observer(() => {
                         type="date"
                         id="fromDate"
                         value={fromDate}
-                        onChange={(e) => setFromDate(e.target.value)}
+                        onChange={(e) => {
+                          const [year, month] = e.target.value.split("-");
+                          setFromDate(`${year}-${month}-01`);
+                        }}
                         className="col-span-2 h-8"
                       />
                       <Label htmlFor="toDate">To Date</Label>
@@ -468,7 +471,10 @@ const App = observer(() => {
                         type="date"
                         id="toDate"
                         value={toDate}
-                        onChange={(e) => setToDate(e.target.value)}
+                        onChange={(e) => {
+                          const [year, month] = e.target.value.split("-");
+                          setToDate(`${year}-${month}-01`);
+                        }}
                         className="col-span-2 h-8"
                       />
                     </div>
