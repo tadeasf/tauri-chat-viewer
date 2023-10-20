@@ -106,7 +106,7 @@ class MessageStore {
     this.user = null;
     this.setCrossCollectionMessages([]);
 
-    let apiUrl = `https://server.kocouratko.eu/messages/${collectionName}`;
+    let apiUrl = `https://server.tadeasfort.com/messages/${collectionName}`;
     if (fromDate || toDate) {
       const queryParams = new URLSearchParams();
       if (fromDate) queryParams.append("fromDate", fromDate);
@@ -139,8 +139,8 @@ class MessageStore {
       }
 
       const photoResponse = await fetch(
-        `https://server.kocouratko.eu/messages/${collectionName}/photo`
-      );
+				`https://server.tadeasfort.com/messages/${collectionName}/photo`
+			);
       const photoData = await photoResponse.json();
 
       if (photoData && photoData.isPhotoAvailable) {

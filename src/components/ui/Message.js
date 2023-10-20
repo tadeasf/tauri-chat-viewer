@@ -32,15 +32,15 @@ const Message = ({
   const whatKindIs = () => {
     if (message.photos && message.photos.length > 0) {
       return message.photos.map((photo, index) => (
-        <img
-          key={index}
-          src={`https://server.kocouratko.eu/${photo.uri.replace(
-            "messages/inbox/",
-            "inbox/"
-          )}`}
-          alt={`fb obrazek ${index + 1}`}
-        />
-      ));
+				<img
+					key={index}
+					src={`https://server.tadeasfort.com/${photo.uri.replace(
+						"messages/inbox/",
+						"inbox/"
+					)}`}
+					alt={`fb obrazek ${index + 1}`}
+				/>
+			));
     }
 
     if (message.content) return <p>{message.content}</p>;
