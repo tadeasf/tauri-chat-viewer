@@ -121,8 +121,8 @@ const App = observer(() => {
     const fetchCollections = async () => {
       try {
         const endpoint = sortByAlphabet
-					? "https://server.tadeasfort.com/collections/alphabetical"
-					: "https://server.tadeasfort.com/collections";
+					? "https://secondary-dev.tadeasfort.com/collections/alphabetical"
+					: "https://secondary-dev.tadeasfort.com/collections";
 
         const response = await fetch(endpoint);
         const data = await response.json();
@@ -221,7 +221,7 @@ const App = observer(() => {
 
     try {
       const response = await fetch(
-				`https://server.tadeasfort.com/delete/${collectionName}`,
+				`https://secondary-dev.tadeasfort.com/delete/${collectionName}`,
 				{ method: "DELETE" }
 			);
 
@@ -261,7 +261,7 @@ const App = observer(() => {
         formData.append("files", files[i]);
       }
 
-      const response = await fetch("https://server.tadeasfort.com/upload", {
+      const response = await fetch("https://secondary-dev.tadeasfort.com/upload", {
 				method: "POST",
 				body: formData,
 			});
@@ -292,7 +292,7 @@ const App = observer(() => {
   // Function to refresh collections
   const refreshCollections = async () => {
     try {
-      const response = await fetch("https://server.tadeasfort.com/collections");
+      const response = await fetch("https://secondary-dev.tadeasfort.com/collections");
       const data = await response.json();
 
       // Map the data to the required format
@@ -320,7 +320,7 @@ const App = observer(() => {
 
     try {
       const response = await fetch(
-				`https://server.tadeasfort.com/upload/photo/${collectionName}`,
+				`https://secondary-dev.tadeasfort.com/upload/photo/${collectionName}`,
 				{
 					method: "POST",
 					body: formData,
@@ -357,7 +357,7 @@ const App = observer(() => {
     const query = MessageStore.searchContent;
 
     try {
-      const response = await fetch("https://server.tadeasfort.com/search", {
+      const response = await fetch("https://secondary-dev.tadeasfort.com/search", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -397,7 +397,7 @@ const App = observer(() => {
   const handleDeletePhoto = async () => {
     try {
       const response = await fetch(
-				`https://server.tadeasfort.com/delete/photo/${sanitizedCollectionName}`,
+				`https://secondary-dev.tadeasfort.com/delete/photo/${sanitizedCollectionName}`,
 				{
 					method: "DELETE",
 				}
@@ -536,7 +536,7 @@ const App = observer(() => {
 								<img
 									src={
 										MessageStore.isPhotoAvailable // <-- change here
-											? `https://server.tadeasfort.com/serve/photo/${sanitizedCollectionName}`
+											? `https://secondary-dev.tadeasfort.com/serve/photo/${sanitizedCollectionName}`
 											: "https://placehold.co/1280x1280/black/white"
 									}
 									alt="user-profile"
