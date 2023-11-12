@@ -34,7 +34,7 @@ const Message = ({
       return message.photos.map((photo, index) => (
 				<img
 					key={index}
-					src={`https://secondary-dev.tadeasfort.com/${photo.uri.replace(
+					src={`https://secondary.dev.tadeasfort.com/${photo.uri.replace(
 						"messages/inbox/",
 						"inbox/"
 					)}`}
