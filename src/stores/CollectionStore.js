@@ -41,7 +41,7 @@ class CollectionStore {
 
 		try {
 			const response = await fetch(
-				`https://secondary.dev.tadeasfort.com/rename/${this.currentCollectionName}`,
+				`https://server.tadeasfort.com/rename/${this.currentCollectionName}`,
 				{
 					method: "PUT",
 					headers: {
@@ -86,7 +86,7 @@ class CollectionStore {
 	// async handleDeletePhoto() {
 	//   try {
 	//     const response = await fetch(
-	//       `https://secondary.dev.tadeasfort.com/delete/photo/${collectionName}`,
+	//       `https://server.tadeasfort.com/delete/photo/${collectionName}`,
 	//       {
 	//         method: "DELETE",
 	//       }
