@@ -59,7 +59,8 @@
     "server": "nodemon server.js",
     "start": "concurrently \"npm run serve\" \"npm run server\"",
     "tauri": "tauri",
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "caddyServe": "serve -s build -l 31923"
   },
   "eslintConfig": {
     "extends": [
