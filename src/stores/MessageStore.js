@@ -70,7 +70,7 @@ class MessageStore {
   }
 
   // Scroll to a specific content in the message list
-  scrollToContent(content) {
+  scrollToContent = (content) => {
     const normalizedContent = this.removeDiacritics(content.toLowerCase());
     let messageIndex = -1;
 
@@ -99,7 +99,7 @@ class MessageStore {
     } else {
       console.error("No more messages with the given content found.");
     }
-  }
+  };
 
   async handleSend(collectionName, fromDate = null, toDate = null) {
     this.isLoading = true;
@@ -139,8 +139,8 @@ class MessageStore {
       }
 
       const photoResponse = await fetch(
-				`https://secondary.dev.tadeasfort.com/messages/${collectionName}/photo`
-			);
+        `https://secondary.dev.tadeasfort.com/messages/${collectionName}/photo`
+      );
       const photoData = await photoResponse.json();
 
       if (photoData && photoData.isPhotoAvailable) {

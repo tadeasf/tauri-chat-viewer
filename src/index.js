@@ -24,6 +24,7 @@ import { storesContext } from "./stores/storesContext";
 import collectionStore from "./stores/CollectionStore";
 import themeStore from "./stores/ThemeStore";
 import messageStore from "./stores/MessageStore";
+import collectionStore from "./stores/CollectionStore";
 
 const container = document.getElementById("root");
 const root = createRoot(container);
@@ -34,6 +35,7 @@ root.render(
       CollectionStore: collectionStore,
       ThemeStore: themeStore,
       MessageStore: messageStore,
+      CollectionStore: collectionStore,
     }}
   >
     <App />
