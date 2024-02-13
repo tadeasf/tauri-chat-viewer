@@ -23,15 +23,15 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 0 0% 100% 1%;
     --foreground: 20 14.3% 4.1%;
     --card: 0 0% 100%;
     --card-foreground: 20 14.3% 4.1%;
     --popover: 0 0% 100%;
     --popover-foreground: 20 14.3% 4.1%;
-    --primary: 24 9.8% 10%;
+    --primary: 24 9.8% 10% 1%;
     --primary-foreground: 60 9.1% 97.8%;
-    --secondary: 60 4.8% 95.9%;
+    --secondary: 60 4.8% 95.9% 1%;
     --secondary-foreground: 24 9.8% 10%;
     --muted: 60 4.8% 95.9%;
     --muted-foreground: 25 5.3% 44.7%;
@@ -48,15 +48,15 @@
   }
 
   .dark {
-    --background: 20 14.3% 4.1%;
+    --background: 20 14.3% 4.1% 1%;
     --foreground: 60 9.1% 97.8%;
     --card: 20 14.3% 4.1%;
     --card-foreground: 60 9.1% 97.8%;
     --popover: 20 14.3% 4.1%;
     --popover-foreground: 60 9.1% 97.8%;
-    --primary: 60 9.1% 97.8%;
+    --primary: 60 9.1% 97.8% 1%;
     --primary-foreground: 24 9.8% 10%;
-    --secondary: 12 6.5% 15.1%;
+    --secondary: 12 6.5% 15.1% 1%;
     --secondary-foreground: 60 9.1% 97.8%;
     --muted: 12 6.5% 15.1%;
     --muted-foreground: 24 5.4% 63.9%;
@@ -78,5 +78,29 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 10, "calt" 1;
+  }
+}
+
+/* Default style for width 670px and higher */
+.my-responsive-image {
+  height: 6rem; /* Equivalent to h-24 in Tailwind */
+  width: 6rem; /* Equivalent to w-24 in Tailwind */
+  position: absolute;
+  left: 1rem; /* Equivalent to left-4 in Tailwind */
+  top: 1rem; /* Equivalent to top-4 in Tailwind */
+  z-index: 10;
+}
+
+/* Style for width 670px and lower */
+@media (max-width: 670px) {
+  .my-responsive-image {
+    height: 5rem; /* Equivalent to h-20 in Tailwind */
+    width: 5rem; /* Equivalent to w-20 in Tailwind */
+    position: relative;
+    margin-left: 3rem; /* Equivalent to ml-12 in Tailwind */
+    margin-right: 2.5rem; /* Equivalent to mr-10 in Tailwind */
+    margin-top: 0.125rem; /* Equivalent to mt-0.5 in Tailwind */
+    left: auto;
+    top: auto;
   }
 }

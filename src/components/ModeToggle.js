@@ -38,9 +38,9 @@ export function ModeToggle() {
   return (
     <Button variant="outline" size="icon" onClick={toggleTheme}>
       {resolvedTheme === "dark" ? (
-        <MoonIcon className="h-[1.2rem] w-[1.2rem]" />
+        <MoonIcon className="h-[1rem] w-[1rem]" />
       ) : (
-        <SunIcon className="h-[1.2rem] w-[1.2rem]" />
+        <SunIcon className="h-[1rem] w-[1rem]" />
       )}
     </Button>
   );

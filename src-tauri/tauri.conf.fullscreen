@@ -8,7 +8,7 @@
   },
 
   "package": {
-    "productName": "Kocouřátčí Messenger",
+    "productName": "Kocouřátčí Messenger Fullscreen",
     "version": "1.0.0"
   },
   "tauri": {
@@ -59,8 +59,8 @@
     },
     "windows": [
       {
-        "title": "Kocouřátčí Messenger",
-        "fullscreen": false,
+        "title": "Kocouřátčí Messenger Fullscreen",
+        "fullscreen": true,
         "maximizable": true,
         "resizable": true,
         "center": true,
@@ -70,7 +70,7 @@
         "decorations": true,
         "alwaysOnTop": true,
         "transparent": false,
-        "tabbingIdentifier": "Kocouřátčí Messenger",
+        "tabbingIdentifier": "Kocouřátčí Messenger Fullscreen",
         "height": 1400,
         "width": 700,
         "minHeight": 400,

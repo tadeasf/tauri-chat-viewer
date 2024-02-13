@@ -2,16 +2,7 @@
 
 // src/stores/MessageStore.js
 
-import { makeAutoObservable } from "mobx";
-import collectionStore from "./CollectionStore";
-function debounce(func, wait) {
-  let timeout;
-  return function (...args) {
-    const context = this;
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func.apply(context, args), wait);
-  };
-}
+import { makeAutoObservable, reaction } from "mobx";
 
 class MessageStore {
   // State Variables
@@ -30,9 +21,19 @@ class MessageStore {
   currentResultIndex = 0;
   firstPress = true;
   scrollToIndex = -1;
+  crossCollectionMessages = [];
+  isPhotoAvailable = false;
 
   constructor() {
     makeAutoObservable(this);
+
+    // Add this reaction to reset firstPress when searchContent changes
+    reaction(
+      () => this.searchContent,
+      () => {
+        this.firstPress = true;
+      }
+    );
   }
 
   // Scroll to the top of the message list
@@ -42,20 +43,14 @@ class MessageStore {
     this.highlightedMessageIndex = -1;
   }
 
-  setSearchTerm = (value) => {
-    this.searchTerm = value; // This will immediately update the input value
-    this.debouncedSetSearchTerm(value); // Pass the value to the debounced function
-  };
-
-  debouncedSetSearchTerm = debounce(function (value) {
-    this.debouncedSearchTerm = value;
-  }, 300); // 300ms delay
+  setCrossCollectionMessages(messages) {
+    this.crossCollectionMessages = messages;
+  }
 
   // Handle key presses when searching for content
   handleContentKeyPress = (e) => {
     if (e.key === "Enter") {
-      this.debouncedSearchTerm = this.searchTerm; // Set the debouncedSearchTerm to the current searchTerm value
-
+      this.setCrossCollectionMessages([]); // Updated this line
       if (this.firstPress) {
         this.scrollToContent(this.searchContent);
         this.firstPress = false;
@@ -84,15 +79,14 @@ class MessageStore {
         (this.contentSearchIndex + i) % this.uploadedMessages.length;
       const currentMessage = this.uploadedMessages[currentIndex];
 
-      if (!currentMessage.content) {
-        continue;
-      }
+      const normalizedMessageContent = currentMessage.content
+        ? this.removeDiacritics(currentMessage.content.toLowerCase())
+        : "";
 
-      const normalizedMessageContent = this.removeDiacritics(
-        currentMessage.content.toLowerCase()
-      );
-
-      if (normalizedMessageContent.includes(normalizedContent)) {
+      if (
+        normalizedMessageContent.includes(normalizedContent) ||
+        (normalizedContent === "fotkyys" && currentMessage.photos)
+      ) {
         messageIndex = currentIndex;
         break;
       }
@@ -107,34 +101,36 @@ class MessageStore {
     }
   };
 
-  // Send a message
-  async handleSend(collectionName) {
+  async handleSend(collectionName, fromDate = null, toDate = null) {
     this.isLoading = true;
     this.user = null;
+    this.setCrossCollectionMessages([]);
 
+    let apiUrl = `https://secondary.dev.tadeasfort.com/messages/${collectionName}`;
+    if (fromDate || toDate) {
+      const queryParams = new URLSearchParams();
+      if (fromDate) queryParams.append("fromDate", fromDate);
+      if (toDate) queryParams.append("toDate", toDate);
+      apiUrl += `?${queryParams.toString()}`;
+    }
+    console.log("Fetching from URL:", apiUrl);
     try {
-      const response = await fetch(
-        `https://server.kocouratko.eu/messages/${collectionName}`
-      );
+      const response = await fetch(apiUrl);
+      console.log(collectionName);
       const data = await response.json();
-
-      // Store the original messages
       this.uploadedMessages = data.map((message) => ({
         ...message,
-      }));
-
-      // Store the normalized messages for search purposes
-      this.normalizedMessages = data.map((message) => ({
-        ...message,
-        content: this.removeDiacritics(message.content?.toLowerCase() || ""),
+        collectionName, // Add the collection name to each message
       }));
 
       if (!this.author || !this.user) {
         const uniqueSenders = [
           ...new Set(data.map((message) => message.sender_name)),
         ];
+        const authorRegex = /tade/i; // Case-insensitive regex to match any form containing "tade"
+
         uniqueSenders.forEach((sender) => {
-          if (sender === "Tadeáš Fořt" || sender === "Tadeáš") {
+          if (authorRegex.test(sender)) {
             this.author = sender;
           } else {
             this.user = sender;
@@ -143,7 +139,7 @@ class MessageStore {
       }
 
       const photoResponse = await fetch(
-        `https://server.kocouratko.eu/messages/${collectionName}/photo`
+        `https://secondary.dev.tadeasfort.com/messages/${collectionName}/photo`
       );
       const photoData = await photoResponse.json();
 
@@ -165,40 +161,49 @@ class MessageStore {
     const normalizedSearchTerm = this.removeDiacritics(
       this.debouncedSearchTerm.toLowerCase()
     );
+    const messagesPerPage = 500000;
+    let messagesSorted = [...this.uploadedMessages];
+    messagesSorted.sort((a, b) => b.timestamp - a.timestamp);
 
-    const firstMatchingMessageIndex = this.uploadedMessages.findIndex(
-      (message) => {
-        if (!message.normalizedContent) return false;
-        return message.normalizedContent.includes(normalizedSearchTerm);
-      }
+    let filteredMsgs =
+      this.debouncedSearchTerm.length === 0
+        ? messagesSorted
+        : messagesSorted.filter((messageArray) => {
+            if (!messageArray.content) return false;
+            const normalizedContent = this.removeDiacritics(
+              messageArray.content.toLowerCase()
+            );
+            return normalizedContent.includes(normalizedSearchTerm);
+          });
+
+    this.numberOfResults = filteredMsgs.length;
+    filteredMsgs = filteredMsgs.slice(
+      Math.max(this.page - 2, 0) * messagesPerPage,
+      this.page * messagesPerPage
     );
 
-    if (firstMatchingMessageIndex !== -1) {
-      this.scrollToIndex = firstMatchingMessageIndex;
-      this.highlightedMessageIndex = firstMatchingMessageIndex;
-    } else {
-      console.error("No messages with the given content found.");
-    }
+    this.filteredMessages = filteredMsgs;
   }
 
+  // Filter messages based on content
   filterMessagesByContent() {
     const normalizedSearchContent = this.removeDiacritics(
       this.searchContent.toLowerCase()
     );
 
-    let filteredMsgsByContent =
-      this.searchContent.length === 0
-        ? this.uploadedMessages
-        : this.uploadedMessages.filter((messageArray) => {
-            if (!messageArray.normalizedContent) return false;
-            return messageArray.normalizedContent.includes(
-              normalizedSearchContent
-            );
-          });
+    let filteredMsgsByContent = this.uploadedMessages.filter((messageArray) => {
+      if (normalizedSearchContent === "fotkyys") {
+        return messageArray.photos;
+      }
+      if (!messageArray.content) return false;
+      const normalizedContent = this.removeDiacritics(
+        messageArray.content.toLowerCase()
+      );
+      return normalizedContent.includes(normalizedSearchContent);
+    });
 
     this.numberOfResultsContent = filteredMsgsByContent.length;
   }
 }
-
 const messageStore = new MessageStore();
 export default messageStore;

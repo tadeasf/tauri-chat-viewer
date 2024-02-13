@@ -7,7 +7,7 @@ build or development build.
 
 ## Development
 
-    With development workflow you need react-scripts to start dev server.
+    With development workflow you need react-scripts to start dev secondary.dev.
 
     ``` bash
     npm run dev-react

@@ -23,20 +23,27 @@ module.exports = {
       fontFamily: {
         anonymous: ['"Anonymous Pro"', "monospace"],
       },
+      fontSize: {
+        "r-lg": "1.1vw", // Responsive large
+        "r-xl": "1vw", // Responsive extra large
+      },
+      padding: {
+        "r-5": "1.75vw", // Responsive padding
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
+        background: "hsla(var(--background))",
         foreground: "hsl(var(--foreground))",
-        backgroundreceived: "hsl(var(--backgroundreceived))",
-        backgroundsent: "hsl(var(--backgroundsent))",
+        backgroundreceived: "hsla(var(--backgroundreceived))",
+        backgroundsent: "hsla(var(--backgroundsent))",
         primary: {
-          DEFAULT: "hsl(var(--primary))",
+          DEFAULT: "hsla(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
-          DEFAULT: "hsl(var(--secondary))",
+          DEFAULT: "hsla(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
         },
         destructive: {

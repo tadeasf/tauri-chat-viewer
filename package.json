@@ -10,11 +10,14 @@
     "@radix-ui/react-label": "^2.0.2",
     "@radix-ui/react-popover": "^1.0.6",
     "@radix-ui/react-slot": "^1.0.2",
+    "@radix-ui/react-switch": "^1.0.3",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
+    "@vendia/serverless-express": "^4.10.4",
     "add": "^2.0.6",
     "autoprefixer": "^10.4.14",
+    "aws-sdk": "^2.1478.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "cmdk": "^0.2.0",
@@ -53,10 +56,11 @@
     "dev": "react-scripts start",
     "build": "GENERATE_SOURCEMAP=false react-scripts build",
     "serve": "serve -s build",
-    "server": "nodemon server.js",
+    "server": "nodemon secondary.dev.js",
     "start": "concurrently \"npm run serve\" \"npm run server\"",
     "tauri": "tauri",
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "caddyServe": "serve -s build -l 31923"
   },
   "eslintConfig": {
     "extends": [

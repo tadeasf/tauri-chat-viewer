@@ -1,54 +1,53 @@
-/**
- * This file is part of Kocouřátčí Messenger.
- *
- * Kocouřátčí Messenger is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Kocouřátčí Messenger is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Kocouřátčí Messenger. If not, see <https://www.gnu.org/licenses/>.
- *
- * @format
- */
+/** @format */
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { DateTime } from "luxon";
 
-const Message = ({ message, time, type, author, uuid, isHighlighted }) => {
+const Message = ({
+  message,
+  time,
+  type,
+  index,
+  setRowHeight,
+  author,
+  uuid,
+  isHighlighted,
+  isCrossCollection,
+}) => {
+  const [clickCounter, setClickCounter] = useState(0);
   const [visibility, setVisibility] = useState(false);
+  const messageContainerRef = useRef(null);
+
+  useEffect(() => {
+    if (messageContainerRef.current) {
+      const height = messageContainerRef.current.offsetHeight;
+      setRowHeight(index, height);
+    }
+  }, [message, index, setRowHeight, visibility]);
 
   const errorFile = {
     fontWeight: "bold",
   };
 
   const whatKindIs = () => {
-    if (type === "Image") {
-      return (
-        <img
-          src={`data:image/jpeg;base64,${message.content}`}
-          alt="Message content"
-        />
-      );
+    if (message.photos && message.photos.length > 0) {
+      return message.photos.map((photo, index) => (
+				<img
+					key={index}
+					src={`https://secondary.dev.tadeasfort.com/${photo.uri.replace(
+						"messages/inbox/",
+						"inbox/"
+					)}`}
+					alt={`fb obrazek ${index + 1}`}
+				/>
+			));
     }
-    if (type === "Generic" || type === null) {
-      if (message.content) return <p>{message.content}</p>;
-      else if (message.photos)
-        return <p style={errorFile}>Foto isn't available</p>;
-      else if (message.videos)
-        return <p style={errorFile}>Video isn't available</p>;
-      else if (message.audio_files)
-        return <p style={errorFile}>Audio isn't available</p>;
 
-      return false;
-    }
     if (message.content) return <p>{message.content}</p>;
-    else if (message.share)
+    if (message.videos) return <p style={errorFile}>Video isn't available</p>;
+    if (message.audio_files)
+      return <p style={errorFile}>Audio isn't available</p>;
+    if (message.share)
       return (
         <a
           href={message.share.link}
@@ -64,13 +63,22 @@ const Message = ({ message, time, type, author, uuid, isHighlighted }) => {
   };
 
   const handleClick = () => {
-    setVisibility(!visibility);
+    setClickCounter((prevCounter) => prevCounter + 1);
+    if (clickCounter % 2 === 0) {
+      setVisibility(!visibility);
+    }
   };
+
+  useEffect(() => {
+    setClickCounter(0);
+    setVisibility(false);
+  }, [message]);
 
   return (
     <>
       {whatKindIs() ? (
         <div
+          ref={messageContainerRef}
           data-uuid={uuid}
           style={
             visibility ? { display: "flex", zIndex: 1000 } : { display: "flex" }
@@ -82,10 +90,10 @@ const Message = ({ message, time, type, author, uuid, isHighlighted }) => {
           <div
             className={`message ${
               author
-                ? "message-sent bg-backgroundsent hover:bg-backgroundreceived text-secondary-foreground max-w-[85%]"
-                : "message-received bg-backgroundreceived hover:bg-backgroundsent text-accent-foreground max-w-[85%]"
-            } ${
-              isHighlighted ? "bg-destructive" : ""
+                ? "message-sent text-sm bg-backgroundsent hover:bg-backgroundreceived text-secondary-foreground max-w-[85%]"
+                : "message-received text-lg bg-backgroundreceived hover:bg-backgroundsent text-accent-foreground max-w-[85%]"
+            } ${clickCounter % 2 === 1 ? "bg-destructive" : ""} ${
+              isHighlighted ? "bg-red-500" : ""
             } rounded-lg p-5 max-w-4/5`}
             onClick={handleClick}
           >
@@ -104,6 +112,9 @@ const Message = ({ message, time, type, author, uuid, isHighlighted }) => {
               }
             >
               {message.sender_name}
+              {author && isCrossCollection
+                ? ` (from ${message.collectionName})`
+                : ""}
             </div>
             {whatKindIs()}
             <div
