@@ -51,25 +51,18 @@ class MessageStore {
   handleContentKeyPress = (e) => {
     if (e.key === "Enter") {
       this.setCrossCollectionMessages([]); // Reset cross-collection messages
-      if (e.shiftKey) {
-        // If shift is held down, scroll to the previous result
+      const direction = e.shiftKey ? -1 : 1; // Determine direction based on Shift key
+      if (direction === -1 || this.firstPress) {
+        this.scrollToContent(this.searchContent, direction);
+        this.firstPress = false;
+      } else {
         this.currentResultIndex =
-          this.currentResultIndex - 1 >= 0
+          direction === 1
+            ? (this.currentResultIndex + 1) % this.numberOfResultsContent
+            : this.currentResultIndex - 1 >= 0
             ? this.currentResultIndex - 1
             : this.numberOfResultsContent - 1; // Wrap to the last index if going below 0
-        this.scrollToContent(this.searchContent, this.currentResultIndex);
-      } else {
-        // Regular behavior for Enter without shift
-        if (this.firstPress) {
-          this.scrollToContent(this.searchContent);
-          this.firstPress = false;
-        } else {
-          this.currentResultIndex =
-            this.currentResultIndex + 1 < this.numberOfResultsContent
-              ? this.currentResultIndex + 1
-              : 0; // Wrap to 0 if exceeding the number of results
-          this.scrollToContent(this.searchContent, this.currentResultIndex);
-        }
+        this.scrollToContent(this.searchContent, direction);
       }
     }
   };
@@ -80,24 +73,34 @@ class MessageStore {
   }
 
   // Scroll to a specific content in the message list
-  scrollToContent = (content) => {
+  scrollToContent = (content, direction = 1) => {
     const normalizedContent = this.removeDiacritics(content.toLowerCase());
     let messageIndex = -1;
 
     for (let i = 1; i <= this.uploadedMessages.length; i++) {
-      const currentIndex =
-        (this.contentSearchIndex + i) % this.uploadedMessages.length;
+      let currentIndex;
+      if (direction === 1) {
+        // Forward
+        currentIndex =
+          (this.contentSearchIndex + i) % this.uploadedMessages.length;
+      } else {
+        // Backward
+        currentIndex = this.contentSearchIndex - i;
+        if (currentIndex < 0) {
+          currentIndex = this.uploadedMessages.length + currentIndex; // Wrap around to the end of the array
+        }
+      }
       const currentMessage = this.uploadedMessages[currentIndex];
 
       const normalizedMessageContent = currentMessage.content
         ? this.removeDiacritics(currentMessage.content.toLowerCase())
         : "";
 
-      // Check for the "photo" keyword but exclude messages from "Tadeáš Fořt"
       if (
-        (normalizedMessageContent.includes(normalizedContent) ||
-          (normalizedContent === "photo" && currentMessage.photos)) &&
-        currentMessage.sender_name !== "Tadeáš Fořt" // Exclude Tadeáš Fořt's messages for "photo"
+        normalizedMessageContent.includes(normalizedContent) ||
+        (normalizedContent === "photo" &&
+          currentMessage.photos &&
+          currentMessage.sender_name !== "Tadeáš Fořt")
       ) {
         messageIndex = currentIndex;
         break;
