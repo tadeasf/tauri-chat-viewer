@@ -2,6 +2,23 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { DateTime } from "luxon";
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import "react-lazy-load-image-component/src/effects/blur.css";
+
+const fetchImage = async (uri) => {
+  try {
+    const response = await fetch(
+      `https://secondary.dev.tadeasfort.com/${uri.replace(
+        "messages/inbox/",
+        "inbox/"
+      )}`
+    );
+    const blob = await response.blob();
+    return URL.createObjectURL(blob);
+  } catch (error) {
+    console.error(error);
+  }
+};
 
 const Message = ({
   message,
@@ -17,30 +34,33 @@ const Message = ({
   const [clickCounter, setClickCounter] = useState(0);
   const [visibility, setVisibility] = useState(false);
   const messageContainerRef = useRef(null);
+  const [imageSrc, setImageSrc] = useState(null);
+  const placeholderStyle = { width: "20em", height: "15em" }; // Adjust this to your needs
+
+  useEffect(() => {
+    if (message.photos && message.photos.length > 0) {
+      fetchImage(message.photos[0].uri).then(setImageSrc);
+    }
+  }, [message.photos]);
 
   useEffect(() => {
     if (messageContainerRef.current) {
       const height = messageContainerRef.current.offsetHeight;
       setRowHeight(index, height);
     }
-  }, [message, index, setRowHeight, visibility]);
+  }, [message, index, setRowHeight, visibility, imageSrc]);
 
   const errorFile = {
     fontWeight: "bold",
   };
 
   const whatKindIs = () => {
+    if (imageSrc) {
+      return <LazyLoadImage effect="blur" src={imageSrc} alt={`fb obrazek`} />;
+    }
+
     if (message.photos && message.photos.length > 0) {
-      return message.photos.map((photo, index) => (
-				<img
-					key={index}
-					src={`https://secondary.dev.tadeasfort.com/${photo.uri.replace(
-						"messages/inbox/",
-						"inbox/"
-					)}`}
-					alt={`fb obrazek ${index + 1}`}
-				/>
-			));
+      return <div style={placeholderStyle} />;
     }
 
     if (message.content) return <p>{message.content}</p>;
@@ -64,15 +84,16 @@ const Message = ({
 
   const handleClick = () => {
     setClickCounter((prevCounter) => prevCounter + 1);
-    if (clickCounter % 2 === 0) {
-      setVisibility(!visibility);
+    if (!isCrossCollection) {
+      if (clickCounter % 2 === 0) {
+        setVisibility(!visibility);
+      }
     }
   };
-
   useEffect(() => {
     setClickCounter(0);
-    setVisibility(false);
-  }, [message]);
+    setVisibility(isCrossCollection ? true : false);
+  }, [message, isCrossCollection]);
 
   return (
     <>
@@ -99,17 +120,10 @@ const Message = ({
           >
             <div
               className="sender-name"
-              style={
-                visibility
-                  ? {
-                      display: "block",
-                      fontSize: "1em",
-                      padding: "1em",
-                      justifyContent: "center",
-                      fontStyle: "italic",
-                    }
-                  : { display: "none" }
-              }
+              style={{
+                display: isCrossCollection || visibility ? "block" : "none", // Always show if isCrossCollection is true
+                // other styles
+              }}
             >
               {message.sender_name}
               {author && isCrossCollection

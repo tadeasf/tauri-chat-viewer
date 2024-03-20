@@ -18,13 +18,13 @@
  */
 import { observer } from "mobx-react-lite";
 import { useContext, useEffect, useState, useRef } from "react";
+import Message from "./components/ui/Message";
 import { ErrorBoundary } from "react-error-boundary";
-import { storesContext } from "./stores/storesContext";
 import { ModeToggle } from "./components/ModeToggle";
+import { storesContext } from "./stores/storesContext";
 import { VariableSizeList as List } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { ThemeProvider } from "./components/theme-provider";
-import Message from "./components/ui/Message";
 import { Input } from "./components/ui/input";
 import { Label } from "./components/ui/label";
 import { Badge } from "./components/ui/badge";
@@ -69,19 +69,10 @@ const App = observer(() => {
     numberOfResultsContent,
     currentResultIndex,
   } = MessageStore;
-  const {
-    isLoading,
-    collections,
-    collectionName,
-    isPhotoAvailable,
-    handleDelete,
-    uploadFile,
-    refreshCollections,
-    refresh,
-    handleFileChange,
-  } = CollectionStore;
-
+  const [isLoading, setIsLoading] = useState(false);
+  const [collectionName, setCollectionName] = useState("");
   const chatBodyRef = useRef();
+  const [collections, setCollections] = useState([]);
   const listRef = useRef();
   const [open, setOpen] = useState(false);
   const [fromDate, setFromDate] = useState("");

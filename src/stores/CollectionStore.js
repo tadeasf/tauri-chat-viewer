@@ -78,35 +78,6 @@ class CollectionStore {
       this.isLoading = false;
     }
   };
-
-  // openDeleteDialog() {
-  //   // Logic to open the delete confirmation dialog
-  // }
-  // // Delete the profile picture of the current collection
-  // async handleDeletePhoto() {
-  //   try {
-  //     const response = await fetch(
-  //       `https://secondary.dev.tadeasfort.com/delete/photo/${collectionName}`,
-  //       {
-  //         method: "DELETE",
-  //       }
-  //     );
-
-  //     const data = await response.json();
-
-  //     if (response.ok) {
-  //       // Update the UI to reflect the deletion
-  //       this.isPhotoAvailable = false;
-  //       alert("Photo deleted successfully");
-  //     } else {
-  //       console.error(data.message);
-  //       alert(data.message);
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //     alert("Error deleting photo:", error.message);
-  //   }
-  // }
 }
 
 const collectionStore = new CollectionStore();

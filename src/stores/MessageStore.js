@@ -205,5 +205,6 @@ class MessageStore {
     this.numberOfResultsContent = filteredMsgsByContent.length;
   }
 }
+
 const messageStore = new MessageStore();
 export default messageStore;
