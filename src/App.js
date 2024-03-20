@@ -114,7 +114,7 @@ const App = observer(() => {
             fetchCurrentDb(); // Re-fetch the current database name after switching
             refreshCollections(); // Refresh the collections to reflect the database change
             setDbSwitchLoading(false); // Stop loading after everything is done
-          }, 30000); // Adjust the timeout as necessary
+          }, 15000); // Adjust the timeout as necessary
         } else {
           console.error("There was an error switching the database");
           setDbSwitchLoading(false); // Ensure loading is stopped in case of an error
