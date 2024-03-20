@@ -39,7 +39,10 @@ const Message = ({
 
   useEffect(() => {
     if (message.photos && message.photos.length > 0) {
-      fetchImage(message.photos[0].uri).then(setImageSrc);
+      fetchImage(message.photos[0].uri).then((src) => {
+        setImageSrc(src);
+        // No need to call updateHeight here directly, it will be called after image load
+      });
     }
   }, [message.photos]);
 
@@ -54,9 +57,23 @@ const Message = ({
     fontWeight: "bold",
   };
 
+  const updateHeight = () => {
+    if (messageContainerRef.current) {
+      const height = messageContainerRef.current.offsetHeight;
+      setRowHeight(index, height);
+    }
+  };
+
   const whatKindIs = () => {
     if (imageSrc) {
-      return <LazyLoadImage effect="blur" src={imageSrc} alt={`fb obrazek`} />;
+      return (
+        <LazyLoadImage
+          effect="blur"
+          src={imageSrc}
+          alt={`Message Image`}
+          afterLoad={() => updateHeight()} // This is a new function to calculate and update height
+        />
+      );
     }
 
     if (message.photos && message.photos.length > 0) {
