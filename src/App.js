@@ -83,6 +83,8 @@ const App = observer(() => {
   const rowHeights = useRef({});
   const [showOnlyUserMessages, setShowOnlyUserMessages] = useState(false);
   const [sortByAlphabet, setSortByAlphabet] = useState(true);
+  const [galleryPhotos, setGalleryPhotos] = useState([]);
+  const [isGalleryOpen, setIsGalleryOpen] = useState(false);
 
   const handleOnSelect = async (value) => {
     await hardReset();
@@ -427,6 +429,37 @@ const App = observer(() => {
     }
   };
 
+  async function handleShowAllPhotos() {
+    if (!collectionName) return; // Guard clause
+
+    const photoDataUri = `https://secondary.dev.tadeasfort.com/photos/${encodeURIComponent(
+      collectionName
+    )}`;
+    try {
+      const response = await fetch(photoDataUri);
+      const photoData = await response.json();
+
+      // Generate photo URLs and add an index based on creation_timestamp
+      const photoUrls = photoData
+        .flatMap((msg) =>
+          msg.photos.map((photo) => ({
+            ...photo,
+            url: `https://secondary.dev.tadeasfort.com/inbox/${photo.uri.replace(
+              "messages/inbox/",
+              ""
+            )}`,
+          }))
+        )
+        .sort((a, b) => a.creation_timestamp - b.creation_timestamp)
+        .map((photo, index) => ({ ...photo, index: index + 1 })); // Assigning an index starting from 1
+
+      setGalleryPhotos(photoUrls);
+      setIsGalleryOpen(true);
+    } catch (error) {
+      console.error("Failed to fetch photo data:", error);
+    }
+  }
+
   return (
     <ErrorBoundary>
       <ThemeProvider defaultTheme="{ThemeStore.theme}" enableSystem={true}>
@@ -715,6 +748,13 @@ const App = observer(() => {
                   />
                 </Label>
               </div>
+              <Button
+                variant="outline"
+                disabled={!collectionName} // Disabled if no collection name is set
+                onClick={handleShowAllPhotos}
+              >
+                Show All Photos
+              </Button>
               <Dialog>
                 <DialogTrigger asChild onClick={handleDialogOpen}>
                   <Button variant="secondary">Rename Collection</Button>
@@ -753,6 +793,34 @@ const App = observer(() => {
               </Button>
             </div>
           </Card>
+          {/* Gallery Overlay */}
+          {isGalleryOpen && (
+            <div className="fixed inset-0 bg-black bg-opacity-75 z-50 flex justify-center items-center">
+              <button
+                onClick={() => setIsGalleryOpen(false)}
+                className="absolute top-0 right-0 m-4 text-white font-bold text-2xl"
+              >
+                &times;
+              </button>
+              <div
+                className="overflow-auto p-4 max-h-full w-full"
+                style={{ maxHeight: "90%" }}
+              >
+                <div className="grid grid-cols-3 gap-4">
+                  {galleryPhotos.map((photo) => (
+                    <div
+                      key={photo.creation_timestamp}
+                      className="gallery-photo"
+                    >
+                      <img src={photo.url} alt="Gallery" className="max-w-xs" />
+                      {/* Displaying the index under each photo */}
+                      <p className="text-white text-sm">Photo #{photo.index}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </ThemeProvider>
     </ErrorBoundary>
