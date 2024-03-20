@@ -806,15 +806,19 @@ const App = observer(() => {
                 className="overflow-auto p-4 max-h-full w-full"
                 style={{ maxHeight: "90%" }}
               >
-                <div className="grid grid-cols-3 gap-4">
-                  {galleryPhotos.map((photo) => (
-                    <div
-                      key={photo.creation_timestamp}
-                      className="gallery-photo"
-                    >
-                      <img src={photo.url} alt="Gallery" className="max-w-xs" />
-                      {/* Displaying the index under each photo */}
-                      <p className="text-white text-sm">Photo #{photo.index}</p>
+                {/* Adjusted to a grid layout, consider using JavaScript for a masonry layout */}
+                <div className="grid grid-cols-3 gap-0">
+                  {galleryPhotos.map((photo, index) => (
+                    <div key={photo.creation_timestamp} className="relative">
+                      <img
+                        src={photo.url}
+                        alt={`Gallery ${index + 1}`}
+                        className="max-w-xs w-full h-auto"
+                      />
+                      {/* Overlay with index */}
+                      <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-sm p-1 text-center">
+                        Photo #{photo.index}
+                      </div>
                     </div>
                   ))}
                 </div>
