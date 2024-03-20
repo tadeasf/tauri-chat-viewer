@@ -85,7 +85,7 @@ class MessageStore {
 
       if (
         normalizedMessageContent.includes(normalizedContent) ||
-        (normalizedContent === "fotkyys" && currentMessage.photos)
+        (normalizedContent === "photo" && currentMessage.photos)
       ) {
         messageIndex = currentIndex;
         break;
@@ -192,7 +192,7 @@ class MessageStore {
     );
 
     let filteredMsgsByContent = this.uploadedMessages.filter((messageArray) => {
-      if (normalizedSearchContent === "fotkyys") {
+      if (normalizedSearchContent === "photo") {
         return messageArray.photos;
       }
       if (!messageArray.content) return false;
