@@ -185,7 +185,7 @@ declare class HttpRequest extends BaseHttpRequest {
  */
 declare class HttpConnection extends BaseHttpRequest {
   /**
-   * Open connection to secondary.dev.
+   * Open connection to server.
    *
    * @returns {HttpConnection} - The HttpConnection.
    */
@@ -195,7 +195,7 @@ declare class HttpConnection extends BaseHttpRequest {
 /**
  * Create a HTTP connection.
  *
- * @param {string} url - Url of secondary.dev.
+ * @param {string} url - Url of server.
  * @param {Options} options - Optional options object.
  * @returns {HttpConnection} - The HttpConnection.
  */
@@ -210,7 +210,7 @@ declare class Http2Connection extends HttpConnection {
 /**
  * Create a HTTP2 connection.
  *
- * @param {string} url - Url of secondary.dev.
+ * @param {string} url - Url of server.
  * @param {Options} options - Optional options object.
  * @returns {Http2Connection} - The Http2Connection.
  */
@@ -252,7 +252,7 @@ declare class WebSocketConnection {
 /**
  * Create a WebSocket connection.
  *
- * @param {string} url - Url of secondary.dev.
+ * @param {string} url - Url of server.
  * @param {Options} options - Optional options object.
  * @returns {WebSocketConnection} - The WebSocketConnection.
  */
