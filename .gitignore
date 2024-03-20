@@ -26,3 +26,6 @@ yarn-error.log*
 /express-server/node_modules
 /express-server/package-lock.json
 /express-server/.env
+
+favicon_old.ico
+logo_old.png
