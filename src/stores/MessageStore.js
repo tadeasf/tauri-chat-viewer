@@ -50,20 +50,24 @@ class MessageStore {
   // Handle key presses when searching for content
   handleContentKeyPress = (e) => {
     if (e.key === "Enter") {
-      this.setCrossCollectionMessages([]); // Reset cross-collection messages
       const direction = e.shiftKey ? -1 : 1; // Determine direction based on Shift key
-      if (direction === -1 || this.firstPress) {
-        this.scrollToContent(this.searchContent, direction);
-        this.firstPress = false;
-      } else {
-        this.currentResultIndex =
-          direction === 1
-            ? (this.currentResultIndex + 1) % this.numberOfResultsContent
-            : this.currentResultIndex - 1 >= 0
-            ? this.currentResultIndex - 1
-            : this.numberOfResultsContent - 1; // Wrap to the last index if going below 0
-        this.scrollToContent(this.searchContent, direction);
-      }
+      this.handleSearchDirection(direction);
+    }
+  };
+
+  handleSearchDirection = (direction) => {
+    this.setCrossCollectionMessages([]); // Reset cross-collection messages
+    if (direction === -1 || this.firstPress) {
+      this.scrollToContent(this.searchContent, direction);
+      this.firstPress = false;
+    } else {
+      this.currentResultIndex =
+        direction === 1
+          ? (this.currentResultIndex + 1) % this.numberOfResultsContent
+          : this.currentResultIndex - 1 >= 0
+          ? this.currentResultIndex - 1
+          : this.numberOfResultsContent - 1; // Wrap to the last index if going below 0
+      this.scrollToContent(this.searchContent, direction);
     }
   };
 

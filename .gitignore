@@ -29,3 +29,5 @@ yarn-error.log*
 
 favicon_old.ico
 logo_old.png
+.env
+.env

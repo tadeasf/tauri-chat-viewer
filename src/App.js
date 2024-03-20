@@ -86,6 +86,41 @@ const App = observer(() => {
   const [galleryPhotos, setGalleryPhotos] = useState([]);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
   const [galleryLoading, setGalleryLoading] = useState(false);
+  const [currentDb, setCurrentDb] = useState("Loading...");
+
+  // Function to fetch the current database name
+  const fetchCurrentDb = () => {
+    fetch("https://secondary.dev.tadeasfort.com/current_db")
+      .then((response) => response.text()) // Assuming the endpoint returns plain text
+      .then((data) => {
+        setCurrentDb(data);
+      })
+      .catch((error) =>
+        console.error(
+          "There was an error fetching the current database name:",
+          error
+        )
+      );
+  };
+
+  // Function to switch the database and then fetch the new current database name
+  const switchDbAndFetch = () => {
+    fetch("https://secondary.dev.tadeasfort.com/switch_db", { method: "GET" }) // Assuming GET request is sufficient for switching
+      .then((response) => {
+        if (response.ok) {
+          fetchCurrentDb(); // Re-fetch the current database name after switching
+        } else {
+          console.error("There was an error switching the database");
+        }
+      })
+      .catch((error) =>
+        console.error("There was an error switching the database:", error)
+      );
+  };
+
+  useEffect(() => {
+    fetchCurrentDb();
+  }, []);
 
   const handleOnSelect = async (value) => {
     await hardReset();
@@ -546,6 +581,20 @@ const App = observer(() => {
                 onChange={(e) => (MessageStore.searchContent = e.target.value)}
                 onKeyDown={MessageStore.handleContentKeyPress}
               />
+              {/* Add Previous and Next buttons */}
+              <Button
+                onClick={() => MessageStore.handleSearchDirection(-1)} // Trigger search in the previous direction
+                className="text-white rounded"
+              >
+                Previous
+              </Button>
+              <Button
+                onClick={() => MessageStore.handleSearchDirection(1)} // Trigger search in the next direction
+                className="text-white rounded"
+              >
+                Next
+              </Button>
+
               <button onClick={handleSearchAll}>Find</button>
               <label>
                 <Switch
@@ -769,6 +818,11 @@ const App = observer(() => {
                 onClick={handleShowAllPhotos}
               >
                 Show All Photos
+              </Button>
+              {/* New Button for switching the database */}
+              <Button variant="outline" onClick={switchDbAndFetch}>
+                {currentDb}{" "}
+                {/* Display the current database name as the button label */}
               </Button>
               <Dialog>
                 <DialogTrigger asChild onClick={handleDialogOpen}>
