@@ -87,6 +87,7 @@ const App = observer(() => {
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
   const [galleryLoading, setGalleryLoading] = useState(false);
   const [currentDb, setCurrentDb] = useState("Loading...");
+  const [dbSwitchLoading, setDbSwitchLoading] = useState(false);
 
   // Function to fetch the current database name
   const fetchCurrentDb = () => {
@@ -103,19 +104,26 @@ const App = observer(() => {
       );
   };
 
-  // Function to switch the database and then fetch the new current database name
   const switchDbAndFetch = () => {
+    setDbSwitchLoading(true); // Start loading
     fetch("https://secondary.dev.tadeasfort.com/switch_db", { method: "GET" }) // Assuming GET request is sufficient for switching
       .then((response) => {
         if (response.ok) {
-          fetchCurrentDb(); // Re-fetch the current database name after switching
+          setTimeout(() => {
+            // Add a delay to simulate loading time
+            fetchCurrentDb(); // Re-fetch the current database name after switching
+            refreshCollections(); // Refresh the collections to reflect the database change
+            setDbSwitchLoading(false); // Stop loading after everything is done
+          }, 30000); // Adjust the timeout as necessary
         } else {
           console.error("There was an error switching the database");
+          setDbSwitchLoading(false); // Ensure loading is stopped in case of an error
         }
       })
-      .catch((error) =>
-        console.error("There was an error switching the database:", error)
-      );
+      .catch((error) => {
+        console.error("There was an error switching the database:", error);
+        setDbSwitchLoading(false); // Ensure loading is stopped in case of an error
+      });
   };
 
   useEffect(() => {
@@ -820,9 +828,21 @@ const App = observer(() => {
                 Show All Photos
               </Button>
               {/* New Button for switching the database */}
-              <Button variant="outline" onClick={switchDbAndFetch}>
-                {currentDb}{" "}
-                {/* Display the current database name as the button label */}
+              <Button
+                variant="outline"
+                onClick={switchDbAndFetch}
+                disabled={dbSwitchLoading}
+              >
+                {dbSwitchLoading ? (
+                  <div
+                    className="spinner-border animate-spin inline-block w-4 h-4 border-4 rounded-full"
+                    role="status"
+                  >
+                    <span className="visually-hidden">Loading...</span>
+                  </div>
+                ) : (
+                  currentDb
+                )}
               </Button>
               <Dialog>
                 <DialogTrigger asChild onClick={handleDialogOpen}>

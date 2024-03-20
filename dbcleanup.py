@@ -56,11 +56,13 @@ def copy_and_delete_collection(collection_name):
 def main():
     collections = src_db.list_collection_names()
     # First, handle collections with "_" in their names automatically
-    for collection_name in collections:
-        if "_" in collection_name:
-            print(f"Automatically processing collection '{collection_name}' due to '_' in the name.")
-            copy_and_delete_collection(collection_name)
-    
+    if user_input_db == 'k':
+        for collection_name in collections:
+            if "_" in collection_name:
+                print(f"Automatically processing collection '{collection_name}' due to '_' in the name.")
+                copy_and_delete_collection(collection_name)
+    else:
+        print("Skipping collections with '_' in the name due to being in the 'messages' database.")    
     # Refresh the list of collections after automatic processing
     remaining_collections = src_db.list_collection_names()
     # Sort the remaining collections alphabetically A-Z
