@@ -10,10 +10,15 @@ uri = os.getenv("MONGO_URI")
 client = MongoClient(uri)
 
 # Accessing the kocouratciMessenger database
-src_db = client.kocouratciMessenger
-
-# Target database for copied collections
-target_db = client.messages
+kocouratciMessenger = client.kocouratciMessenger
+messages = client.message
+user_input_db = input("Do you want to copy and delete collections from 'kocouratciMessenger' or 'messages' database? (k/m): ").strip().lower()
+if user_input_db == 'k':
+    src_db = kocouratciMessenger
+    target_db = messages
+elif user_input_db == 'm':
+    src_db = messages
+    target_db = kocouratciMessenger
 
 def copy_and_delete_collection(collection_name):
     """
