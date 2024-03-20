@@ -83,9 +83,11 @@ class MessageStore {
         ? this.removeDiacritics(currentMessage.content.toLowerCase())
         : "";
 
+      // Check for the "photo" keyword but exclude messages from "Tadeáš Fořt"
       if (
-        normalizedMessageContent.includes(normalizedContent) ||
-        (normalizedContent === "photo" && currentMessage.photos)
+        (normalizedMessageContent.includes(normalizedContent) ||
+          (normalizedContent === "photo" && currentMessage.photos)) &&
+        currentMessage.sender_name !== "Tadeáš Fořt" // Exclude Tadeáš Fořt's messages for "photo"
       ) {
         messageIndex = currentIndex;
         break;
@@ -192,7 +194,10 @@ class MessageStore {
     );
 
     let filteredMsgsByContent = this.uploadedMessages.filter((messageArray) => {
-      if (normalizedSearchContent === "photo") {
+      if (
+        normalizedSearchContent === "photo" &&
+        messageArray.sender_name !== "Tadeáš Fořt"
+      ) {
         return messageArray.photos;
       }
       if (!messageArray.content) return false;

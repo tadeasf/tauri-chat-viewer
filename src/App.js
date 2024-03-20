@@ -85,6 +85,7 @@ const App = observer(() => {
   const [sortByAlphabet, setSortByAlphabet] = useState(true);
   const [galleryPhotos, setGalleryPhotos] = useState([]);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
+  const [galleryLoading, setGalleryLoading] = useState(false);
 
   const handleOnSelect = async (value) => {
     await hardReset();
@@ -432,6 +433,9 @@ const App = observer(() => {
   async function handleShowAllPhotos() {
     if (!collectionName) return; // Guard clause
 
+    setIsGalleryOpen(false); // Initially, don't show the gallery
+    setGalleryLoading(true); // Start loading
+
     const photoDataUri = `https://secondary.dev.tadeasfort.com/photos/${encodeURIComponent(
       collectionName
     )}`;
@@ -439,7 +443,6 @@ const App = observer(() => {
       const response = await fetch(photoDataUri);
       const photoData = await response.json();
 
-      // Generate photo URLs and add an index based on creation_timestamp
       const photoUrls = photoData
         .flatMap((msg) =>
           msg.photos.map((photo) => ({
@@ -451,12 +454,24 @@ const App = observer(() => {
           }))
         )
         .sort((a, b) => a.creation_timestamp - b.creation_timestamp)
-        .map((photo, index) => ({ ...photo, index: index + 1 })); // Assigning an index starting from 1
+        .map((photo, index) => ({ ...photo, index: index + 1 }));
+
+      const imagePromises = photoUrls.map((photo) => {
+        return new Promise((resolve) => {
+          const img = new Image();
+          img.src = photo.url;
+          img.onload = () => resolve();
+        });
+      });
+
+      await Promise.all(imagePromises); // Wait for all images to load
 
       setGalleryPhotos(photoUrls);
-      setIsGalleryOpen(true);
+      setGalleryLoading(false); // Loading done
+      setIsGalleryOpen(true); // Now show the gallery
     } catch (error) {
       console.error("Failed to fetch photo data:", error);
+      setGalleryLoading(false); // Ensure loading is stopped in case of an error
     }
   }
 
@@ -794,7 +809,7 @@ const App = observer(() => {
             </div>
           </Card>
           {/* Gallery Overlay */}
-          {isGalleryOpen && (
+          {isGalleryOpen && !galleryLoading && (
             <div className="fixed inset-0 bg-black bg-opacity-75 z-50 flex justify-center items-center">
               <button
                 onClick={() => setIsGalleryOpen(false)}
@@ -806,15 +821,20 @@ const App = observer(() => {
                 className="overflow-auto p-4 max-h-full w-full"
                 style={{ maxHeight: "90%" }}
               >
-                {/* Adjusted to a grid layout, consider using JavaScript for a masonry layout */}
                 <div className="grid grid-cols-3 gap-0">
                   {galleryPhotos.map((photo, index) => (
-                    <div key={photo.creation_timestamp} className="relative">
-                      <img
-                        src={photo.url}
-                        alt={`Gallery ${index + 1}`}
-                        className="max-w-xs w-full h-auto"
-                      />
+                    <div
+                      key={photo.creation_timestamp}
+                      className="flex justify-center items-center border border-white border-opacity-50 relative"
+                    >
+                      {/* Container to ensure the photo is centered and has a border */}
+                      <div className="flex justify-center items-center p-1 w-full h-full">
+                        <img
+                          src={photo.url}
+                          alt={`Gallery ${index + 1}`}
+                          className="max-w-xs max-h-[calc(100%-2rem)] w-auto h-auto"
+                        />
+                      </div>
                       {/* Overlay with index */}
                       <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-sm p-1 text-center">
                         Photo #{photo.index}
@@ -823,6 +843,30 @@ const App = observer(() => {
                   ))}
                 </div>
               </div>
+            </div>
+          )}
+          {galleryLoading && (
+            <div className="fixed inset-0 bg-black bg-opacity-75 z-50 flex justify-center items-center">
+              <svg
+                className="animate-spin h-8 w-8 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
             </div>
           )}
         </div>
