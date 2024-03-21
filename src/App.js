@@ -676,7 +676,7 @@ const App = observer(() => {
                 src={
                   MessageStore.isPhotoAvailable
                     ? `https://secondary.dev.tadeasfort.com/serve/photo/${sanitizedCollectionName}`
-                    : "https://placehold.co/1280x1280/black/white"
+                    : "https://secondary.dev.tadeasfort.com/inbox/placeholder/photos/placeholder.jpg"
                 }
                 alt="user-profile"
                 className="my-responsive-image object-cover rounded-full bg-secondary"
