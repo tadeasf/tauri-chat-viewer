@@ -68,7 +68,7 @@
         "skipTaskbar": true,
         "hiddenTitle": false,
         "decorations": true,
-        "alwaysOnTop": true,
+        "alwaysOnTop": false,
         "transparent": false,
         "tabbingIdentifier": "Kocouřátčí Messenger",
         "height": 1400,

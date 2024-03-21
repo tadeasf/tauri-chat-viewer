@@ -83,24 +83,22 @@
 
 /* Default style for width 670px and higher */
 .my-responsive-image {
-  height: 6rem; /* Equivalent to h-24 in Tailwind */
-  width: 6rem; /* Equivalent to w-24 in Tailwind */
+  height: 12rem; /* Equivalent to h-24 in Tailwind */
+  width: 12em; /* Equivalent to w-24 in Tailwind */
   position: absolute;
-  left: 1rem; /* Equivalent to left-4 in Tailwind */
+  right: 1rem; /* Adjusted to align to the right, equivalent to right-4 in Tailwind */
   top: 1rem; /* Equivalent to top-4 in Tailwind */
   z-index: 10;
 }
 
 /* Style for width 670px and lower */
-@media (max-width: 670px) {
+@media (max-width: 735px) {
   .my-responsive-image {
-    height: 5rem; /* Equivalent to h-20 in Tailwind */
-    width: 5rem; /* Equivalent to w-20 in Tailwind */
-    position: relative;
-    margin-left: 3rem; /* Equivalent to ml-12 in Tailwind */
-    margin-right: 2.5rem; /* Equivalent to mr-10 in Tailwind */
-    margin-top: 0.125rem; /* Equivalent to mt-0.5 in Tailwind */
-    left: auto;
-    top: auto;
+    height: 7rem; /* Equivalent to h-20 in Tailwind */
+    width: 7rem; /* Equivalent to w-20 in Tailwind */
+    position: absolute;
+    right: 1rem; /* Adjusted to align to the right, equivalent to right-4 in Tailwind */
+    top: 3rem; /* Equivalent to top-4 in Tailwind */
+    z-index: 10;  
   }
 }

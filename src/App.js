@@ -551,7 +551,7 @@ const App = observer(() => {
       <ThemeProvider defaultTheme="{ThemeStore.theme}" enableSystem={true}>
         <div className="font-anonymous box-border bg-background">
           <Card className="flex flex-col h-screen bg-background">
-            <div className="w-full bg-background flex flex-wrap justify-center items-center gap-x-1">
+            <div className="w-full bg-background flex flex-wrap justify-left items-center gap-x-1 ml-5 mb-1">
               {/* <ModeToggle /> */}
               <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
@@ -679,7 +679,7 @@ const App = observer(() => {
                     : "https://secondary.dev.tadeasfort.com/inbox/placeholder/photos/placeholder.jpg"
                 }
                 alt="user-profile"
-                className="my-responsive-image object-cover rounded-full bg-secondary"
+                className="my-responsive-image rounded-full"
                 onClick={() => {
                   if (MessageStore.isPhotoAvailable) {
                     // Open the delete confirmation dialog
@@ -829,7 +829,7 @@ const App = observer(() => {
                 disabled={!collectionName} // Disabled if no collection name is set
                 onClick={handleShowAllPhotos}
               >
-                Show All Photos
+                Photos
               </Button>
               {/* <Dialog>
                 <DialogTrigger asChild onClick={handleDialogOpen}>
@@ -865,7 +865,7 @@ const App = observer(() => {
                 </DialogContent>
               </Dialog> */}
               <Button variant="outline" onClick={handleDeletePhoto}>
-                Delete Profile Image
+                Delete
               </Button>
               <Button
                 onClick={hardReset}
