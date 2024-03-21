@@ -439,6 +439,23 @@ const App = observer(() => {
     }
   };
 
+  useEffect(() => {
+    // Define the function to handle key press
+    const handleKeyPress = (event) => {
+      if (event.ctrlKey && event.key === "Enter") {
+        handleSearchAll();
+      }
+    };
+
+    // Attach event listener
+    document.addEventListener("keydown", handleKeyPress);
+
+    // Cleanup function to remove event listener
+    return () => {
+      document.removeEventListener("keydown", handleKeyPress);
+    };
+  });
+
   const messagesToDisplay =
     MessageStore.crossCollectionMessages.length > 0
       ? MessageStore.crossCollectionMessages
@@ -613,6 +630,7 @@ const App = observer(() => {
                 <FontAwesomeIcon icon={faMagnifyingGlass} />{" "}
                 {/* Magnifying glass icon */}
               </button>
+
               <Button
                 onClick={() => MessageStore.handleSearchDirection(-1)}
                 className="text-white rounded"
