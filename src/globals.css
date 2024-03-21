@@ -89,6 +89,8 @@
   right: 1rem; /* Adjusted to align to the right, equivalent to right-4 in Tailwind */
   top: 1rem; /* Equivalent to top-4 in Tailwind */
   z-index: 10;
+  object-fit: cover; /* Ensures the image covers the area without distortion */
+
 }
 
 /* Style for width 670px and lower */
@@ -100,5 +102,7 @@
     right: 1rem; /* Adjusted to align to the right, equivalent to right-4 in Tailwind */
     top: 3rem; /* Equivalent to top-4 in Tailwind */
     z-index: 10;  
+    object-fit: cover; /* Ensures the image covers the area without distortion */
+
   }
 }
