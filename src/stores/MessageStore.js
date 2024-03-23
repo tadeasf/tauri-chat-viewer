@@ -49,9 +49,25 @@ class MessageStore {
 
   // Handle key presses when searching for content
   handleContentKeyPress = (e) => {
-    if (e.key === "Enter") {
-      const direction = e.shiftKey ? -1 : 1; // Determine direction based on Shift key
-      this.handleSearchDirection(direction);
+    // Enter key without Shift: move in the default direction once
+    if (e.key === "Enter" && !e.shiftKey) {
+      this.handleSearchDirection(1);
+    }
+    // Enter key with Shift: move in the opposite direction once
+    else if (e.key === "Enter" && e.shiftKey) {
+      this.handleSearchDirection(-1);
+    }
+    // Arrow Down: mimic Enter key behavior 10 times
+    else if (e.key === "ArrowDown") {
+      for (let i = 0; i < 10; i++) {
+        this.handleSearchDirection(1);
+      }
+    }
+    // Arrow Up: mimic Shift+Enter key behavior 10 times
+    else if (e.key === "ArrowUp") {
+      for (let i = 0; i < 10; i++) {
+        this.handleSearchDirection(-1);
+      }
     }
   };
 
