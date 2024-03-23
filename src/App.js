@@ -658,7 +658,9 @@ const App = observer(() => {
               <input
                 type="file"
                 ref={fileInputRef}
-                style={{ display: "none" }}
+                className={`${
+                  MessageStore.isPhotoAvailable ? "hidden" : "block"
+                } cursor-pointer`}
                 onChange={handleFileChange}
                 accept="image/*"
               />
@@ -671,10 +673,7 @@ const App = observer(() => {
                 alt="user-profile"
                 className="my-responsive-image rounded-full"
                 onClick={() => {
-                  if (MessageStore.isPhotoAvailable) {
-                    // Open the delete confirmation dialog
-                    // openDeleteDialog();
-                  } else if (collectionName) {
+                  if (!MessageStore.isPhotoAvailable && collectionName) {
                     fileInputRef.current.click();
                   }
                 }}
