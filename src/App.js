@@ -504,8 +504,8 @@ const App = observer(() => {
   async function handleShowAllPhotos() {
     if (!collectionName) return; // Guard clause
 
-    setIsGalleryOpen(false); // Initially, don't show the gallery
-    setGalleryLoading(true); // Start loading
+    setIsGalleryOpen(false);
+    setGalleryLoading(true);
 
     const photoDataUri = `https://secondary.dev.tadeasfort.com/photos/${encodeURIComponent(
       collectionName
@@ -527,22 +527,12 @@ const App = observer(() => {
         .sort((a, b) => a.creation_timestamp - b.creation_timestamp)
         .map((photo, index) => ({ ...photo, index: index + 1 }));
 
-      const imagePromises = photoUrls.map((photo) => {
-        return new Promise((resolve) => {
-          const img = new Image();
-          img.src = photo.url;
-          img.onload = () => resolve();
-        });
-      });
-
-      await Promise.all(imagePromises); // Wait for all images to load
-
-      setGalleryPhotos(photoUrls);
-      setGalleryLoading(false); // Loading done
-      setIsGalleryOpen(true); // Now show the gallery
+      setGalleryPhotos(photoUrls); // Directly set gallery photos without waiting for image loading
+      setIsGalleryOpen(true);
+      setGalleryLoading(false);
     } catch (error) {
       console.error("Failed to fetch photo data:", error);
-      setGalleryLoading(false); // Ensure loading is stopped in case of an error
+      setGalleryLoading(false);
     }
   }
 
@@ -899,6 +889,7 @@ const App = observer(() => {
                         <img
                           src={photo.url}
                           alt={`Gallery ${index + 1}`}
+                          loading="lazy"
                           className="max-w-xs max-h-[calc(100%-2rem)] w-auto h-auto"
                         />
                       </div>
