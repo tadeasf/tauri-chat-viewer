@@ -51,8 +51,8 @@ async def fetch_current_db():
             return None
 
 
-async def fetch_url(collection_name, url_type, db):
-    semaphore = messages_semaphore if url_type == "messages" else photos_semaphore
+async def fetch_url(collection_name, url_type, db, semaphore):
+    # Directly use the semaphore that's passed in.
     async with semaphore, httpx.AsyncClient() as client:
         start = time.perf_counter()
         try:
@@ -90,8 +90,22 @@ def format_time(seconds):
 
 
 @click.command()
-def cli():
-    """CLI interface that decides whether to switch the database or flush the Redis cache before running."""
+@click.option(
+    "--semaphore", default=2, help="Semaphore value for limiting concurrency.", type=int
+)
+@click.option(
+    "--collection",
+    default=None,
+    help="Specific collection name to operate on.",
+    type=str,
+)
+@click.option(
+    "--runs",
+    default=1,
+    help="Number of times to call the endpoint for the given collection.",
+    type=int,
+)
+def cli(semaphore, collection, runs):
     should_switch_db = click.confirm(
         "Do you want to switch the database before running?", default=False
     )
@@ -101,13 +115,20 @@ def cli():
         flush_cache = click.confirm(
             "Do you want to flush the Redis cache before running?", default=False
         )
-    asyncio.run(main(flush_cache, should_switch_db))
+
+    asyncio.run(main(flush_cache, should_switch_db, semaphore, collection, runs))
 
 
-async def main(flush_cache, should_switch_db):
+async def main(
+    flush_cache, should_switch_db, semaphore_value, collection_name=None, runs=1
+):
+    # Semaphores are now correctly initialized within main and passed to fetch_url.
+    messages_semaphore = asyncio.Semaphore(semaphore_value)
+    photos_semaphore = asyncio.Semaphore(semaphore_value)
+
     if should_switch_db:
         await switch_database()
-    elif flush_cache:  # Only ask about flushing cache if not switching DB
+    elif flush_cache:
         await flush_redis_cache()
 
     start_time = time.time()
@@ -121,11 +142,24 @@ async def main(flush_cache, should_switch_db):
         logger.error("Current database could not be fetched. Exiting...")
         return
     db = client[current_db]
-    collection_names = db.list_collection_names()
 
-    tasks = [fetch_url(name, "messages", db) for name in collection_names] + [
-        fetch_url(name, "photos", db) for name in collection_names
-    ]
+    tasks = []
+    if collection_name:
+        # When a specific collection is specified
+        for _ in range(runs):
+            tasks += [
+                fetch_url(collection_name, "messages", db, messages_semaphore),
+                fetch_url(collection_name, "photos", db, photos_semaphore),
+            ]
+    else:
+        # The original behavior for all collections
+        collection_names = db.list_collection_names()
+        tasks = [
+            fetch_url(name, "messages", db, messages_semaphore)
+            for name in collection_names
+        ] + [
+            fetch_url(name, "photos", db, photos_semaphore) for name in collection_names
+        ]
 
     responses = await asyncio.gather(*tasks)
 
@@ -151,35 +185,30 @@ async def main(flush_cache, should_switch_db):
     messages_per_doc_times = np.nan_to_num(messages_per_doc_times, nan=0.0)
     photos_per_doc_times = np.nan_to_num(photos_per_doc_times, nan=0.0)
 
-    median_response_time_per_50k_docs = np.nanmedian(messages_per_doc_times) * 50000
-    median_response_time_per_1000_photos = np.nanmedian(photos_per_doc_times) * 1000
+    median_response_time_per_10k_docs = np.nanmedian(messages_per_doc_times) * 10000
+    median_response_time_per_10k_photos = np.nanmedian(photos_per_doc_times) * 10000
 
     total_runtime = time.time() - start_time
     logger.info(f"Total run time: {format_time(total_runtime)} \n")
-    logger.info("------------MESSAGES endpoint------------\n")
+    logger.info("-----------------------------------------\n")
     logger.info(
-        f"Median response time per 50000 documents: {format_time(median_response_time_per_50k_docs)}\n"
+        f"Average message response time per collection: {format_time(np.mean(messages_times))}\n"
     )
     logger.info("-----------------------------------------\n")
     logger.info(
-        f"Average response time per collection: {format_time(np.mean(messages_times))}\n"
+        f"Average photo response time per collection: {format_time(np.mean(photos_times))}\n"
     )
-    logger.info(f"Average collection length: {np.nanmean(collection_lengths)}\n")
-
-    logger.info("------------PHOTOS endpoint------------\n")
     logger.info(
-        f"Median response time per 1000 photos: {format_time(median_response_time_per_1000_photos)}\n"
+        f"Average number of photos per collection: {np.nanmean(photo_collection_lengths)}\n"
     )
     logger.info("-----------------------------------------\n")
     logger.info(
-        f"Average response time per collection: {format_time(np.mean(photos_times))}\n"
+        f"Median response time per 10000 messages: {format_time(median_response_time_per_10k_docs)}\n"
     )
-    logger.info(f"Average photo length: {np.nanmean(photo_collection_lengths)}\n")
+    logger.info(
+        f"Median response time per 10000 photos: {format_time(median_response_time_per_10k_photos)}\n"
+    )
 
-
-# Initialize semaphores
-messages_semaphore = asyncio.Semaphore(1)
-photos_semaphore = asyncio.Semaphore(1)
 
 if __name__ == "__main__":
     cli()
