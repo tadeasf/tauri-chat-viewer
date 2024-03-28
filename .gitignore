@@ -32,3 +32,4 @@ logo_old.png
 .env
 .env
 .vscode/
+*.log
