@@ -178,8 +178,8 @@ async def main(flush_cache, should_switch_db):
 
 
 # Initialize semaphores
-messages_semaphore = asyncio.Semaphore(2)
-photos_semaphore = asyncio.Semaphore(2)
+messages_semaphore = asyncio.Semaphore(1)
+photos_semaphore = asyncio.Semaphore(1)
 
 if __name__ == "__main__":
     cli()
