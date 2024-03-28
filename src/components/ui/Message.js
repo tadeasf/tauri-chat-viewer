@@ -128,8 +128,8 @@ const Message = ({
           <div
             className={`message ${
               author
-                ? "message-sent text-sm bg-backgroundsent hover:bg-backgroundreceived text-secondary-foreground max-w-[85%]"
-                : "message-received text-base bg-backgroundreceived hover:bg-backgroundsent text-accent-foreground max-w-[85%]"
+                ? "message-sent text-xl bg-backgroundsent hover:bg-backgroundreceived text-secondary-foreground max-w-[95%]"
+                : "message-received text-xl bg-backgroundreceived hover:bg-backgroundsent text-accent-foreground max-w-[95%]"
             } ${clickCounter % 2 === 1 ? "bg-destructive" : ""} ${
               isHighlighted ? "bg-red-500" : ""
             } rounded-lg p-5 max-w-4/5`}

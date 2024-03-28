@@ -94,15 +94,16 @@
 }
 
 /* Style for width 670px and lower */
-@media (max-width: 735px) {
+@media (max-width: 700px) {
   .my-responsive-image {
-    height: 7rem; /* Equivalent to h-20 in Tailwind */
-    width: 7rem; /* Equivalent to w-20 in Tailwind */
+    height: 12rem; /* Equivalent to h-20 in Tailwind */
+    width: 12rem; /* Equivalent to w-20 in Tailwind */
     position: absolute;
-    right: 1rem; /* Adjusted to align to the right, equivalent to right-4 in Tailwind */
-    top: 3rem; /* Equivalent to top-4 in Tailwind */
+    left: 70%; /* Adjusted to align to the right, equivalent to right-4 in Tailwind */
+    top: 2rem; /* Equivalent to top-4 in Tailwind */
     z-index: 10;  
     object-fit: cover; /* Ensures the image covers the area without distortion */
+    opacity: 0.85; /* Reduced opacity for smaller screens */
 
   }
 }
