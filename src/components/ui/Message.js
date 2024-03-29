@@ -7,9 +7,7 @@ import "react-lazy-load-image-component/src/effects/blur.css";
 
 const fetchImage = async (uri) => {
   try {
-    // Find the position of "/inbox/" and extract everything after it
-    const inboxIndex = uri.indexOf("/inbox/") + 7; // +7 to skip "/inbox/" itself
-    const processedUri = uri.substring(inboxIndex);
+    const processedUri = uri.replace("messages/inbox/", "");
     const response = await fetch(
       `https://secondary.dev.tadeasfort.com/inbox/${processedUri}`
     );
@@ -19,6 +17,7 @@ const fetchImage = async (uri) => {
     console.error(error);
   }
 };
+
 const Message = ({
   message,
   time,

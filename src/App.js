@@ -517,9 +517,7 @@ const App = observer(() => {
       const photoUrls = photoData
         .flatMap((msg) =>
           msg.photos.map((photo) => {
-            // Find the position of "/inbox/" and extract everything after it
-            const inboxIndex = photo.uri.indexOf("/inbox/") + 7; // +7 to skip "/inbox/" itself
-            const processedUri = photo.uri.substring(inboxIndex);
+            const processedUri = photo.uri.replace("messages/inbox/", "");
             return {
               ...photo,
               url: `https://secondary.dev.tadeasfort.com/inbox/${processedUri}`,
