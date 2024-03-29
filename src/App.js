@@ -517,10 +517,10 @@ const App = observer(() => {
       const photoUrls = photoData
         .flatMap((msg) =>
           msg.photos.map((photo) => {
-            const inboxPath = photo.uri.split("/messages/inbox/")[1];
+            const processedUri = photo.uri.replace("messages/inbox/", "");
             return {
               ...photo,
-              url: `https://secondary.dev.tadeasfort.com/inbox/${inboxPath}`,
+              url: `https://secondary.dev.tadeasfort.com/inbox/${processedUri}`,
             };
           })
         )
