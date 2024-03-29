@@ -7,11 +7,10 @@ import "react-lazy-load-image-component/src/effects/blur.css";
 
 const fetchImage = async (uri) => {
   try {
-    const processedUri = uri.replace("messages/inbox/", "");
+    const inboxPath = uri.split("/messages/inbox/")[1];
     const response = await fetch(
-      `https://secondary.dev.tadeasfort.com/inbox/${processedUri}`
+      `https://secondary.dev.tadeasfort.com/inbox/${inboxPath}`
     );
-    console.log(`https://secondary.dev.tadeasfort.com/inbox/${processedUri}`);
     const blob = await response.blob();
     return URL.createObjectURL(blob);
   } catch (error) {
