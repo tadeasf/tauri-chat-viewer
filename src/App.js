@@ -516,18 +516,20 @@ const App = observer(() => {
 
       const photoUrls = photoData
         .flatMap((msg) =>
-          msg.photos.map((photo) => ({
-            ...photo,
-            url: `https://secondary.dev.tadeasfort.com/inbox/${photo.uri.replace(
-              "messages/inbox/",
-              ""
-            )}`,
-          }))
+          msg.photos.map((photo) => {
+            // Find the position of "/inbox/" and extract everything after it
+            const inboxIndex = photo.uri.indexOf("/inbox/") + 7; // +7 to skip "/inbox/" itself
+            const processedUri = photo.uri.substring(inboxIndex);
+            return {
+              ...photo,
+              url: `https://secondary.dev.tadeasfort.com/inbox/${processedUri}`,
+            };
+          })
         )
         .sort((a, b) => a.creation_timestamp - b.creation_timestamp)
         .map((photo, index) => ({ ...photo, index: index + 1 }));
 
-      setGalleryPhotos(photoUrls); // Directly set gallery photos without waiting for image loading
+      setGalleryPhotos(photoUrls);
       setIsGalleryOpen(true);
       setGalleryLoading(false);
     } catch (error) {
