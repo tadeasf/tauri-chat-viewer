@@ -11,6 +11,7 @@ const fetchImage = async (uri) => {
     const response = await fetch(
       `https://secondary.dev.tadeasfort.com/inbox/${processedUri}`
     );
+    console.log(`https://secondary.dev.tadeasfort.com/inbox/${processedUri}`);
     const blob = await response.blob();
     return URL.createObjectURL(blob);
   } catch (error) {
