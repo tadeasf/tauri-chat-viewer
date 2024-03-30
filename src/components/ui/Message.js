@@ -24,6 +24,7 @@ const Message = ({
   time,
   type,
   index,
+  is_geoblocked_for_viewer,
   setRowHeight,
   author,
   uuid,
@@ -61,6 +62,35 @@ const Message = ({
       const height = messageContainerRef.current.offsetHeight;
       setRowHeight(index, height);
     }
+  };
+
+  const getMessageClasses = () => {
+    // Initial base classes without the background color
+    let baseClasses = `message text-xl rounded-lg p-5 max-w-4/5 ${
+      author
+        ? "text-secondary-foreground max-w-[75%]"
+        : "text-accent-foreground max-w-[95%]"
+    }`;
+
+    // Conditional styling based on message source and author
+    if (typeof is_geoblocked_for_viewer !== "undefined") {
+      // Instagram messages
+      baseClasses += author ? " bg-rose-900/25" : " bg-rose-500/50";
+    } else {
+      // Facebook messages
+      baseClasses += author ? " bg-gray-800/50" : " bg-gray-500/50";
+    }
+
+    // Apply destructive background on every other click
+    if (clickCounter % 2 === 1) baseClasses += " bg-destructive";
+
+    // Highlight messages if isHighlighted is true
+    if (isHighlighted) {
+      // Overrides other background styles when isHighlighted is true
+      baseClasses = baseClasses.replace(/bg-\S+/g, "") + " bg-cyan-500/50";
+    }
+
+    return baseClasses.trim();
   };
 
   const whatKindIs = () => {
@@ -125,20 +155,13 @@ const Message = ({
           }`}
         >
           <div
-            className={`message ${
-              author
-                ? "message-sent text-xl bg-backgroundsent hover:bg-backgroundreceived text-secondary-foreground max-w-[75%]"
-                : "message-received text-xl bg-backgroundreceived hover:bg-backgroundsent text-accent-foreground max-w-[95%]"
-            } ${clickCounter % 2 === 1 ? "bg-destructive" : ""} ${
-              isHighlighted ? "bg-red-500" : ""
-            } rounded-lg p-5 max-w-4/5`}
+            className={getMessageClasses()} // Dynamically apply classes
             onClick={handleClick}
           >
             <div
               className="sender-name"
               style={{
-                display: isCrossCollection || visibility ? "block" : "none", // Always show if isCrossCollection is true
-                // other styles
+                display: isCrossCollection || visibility ? "block" : "none",
               }}
             >
               {message.sender_name}

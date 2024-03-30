@@ -753,6 +753,9 @@ const App = observer(() => {
                                   searchTerm={searchTerm}
                                   setRowHeight={setRowHeight}
                                   index={index}
+                                  is_geoblocked_for_viewer={
+                                    messageArray.is_geoblocked_for_viewer
+                                  }
                                   isHighlighted={
                                     index === highlightedMessageIndex
                                   }
