@@ -10,15 +10,15 @@ uri = os.getenv("MONGO_URI")
 client = MongoClient(uri)
 
 # Accessing the kocouratciMessenger database
-kocouratciMessenger = client.kocouratciMessenger
-messages = client.message
-user_input_db = input("Do you want to copy and delete collections from 'kocouratciMessenger' or 'messages' database? (k/m): ").strip().lower()
-if user_input_db == 'k':
-    src_db = kocouratciMessenger
-    target_db = messages
-elif user_input_db == 'm':
+messages = client.messages
+message_backup = client.message_backup
+user_input_db = input("Do you want to copy and delete collections from 'messages' or 'message_backup' database?: ").strip().lower()
+if user_input_db == 'messages':
     src_db = messages
-    target_db = kocouratciMessenger
+    target_db = message_backup
+elif user_input_db == 'message_backup':
+    src_db = message_backup
+    target_db = messages
 
 def copy_and_delete_collection(collection_name):
     """
@@ -36,42 +36,42 @@ def copy_and_delete_collection(collection_name):
         target_collection.insert_many(documents)
 
     # Copying indexes from the source collection to the target collection
-    for index in src_collection.list_indexes():
-        # Skip the _id index
-        if index['name'] == '_id_':
-            continue
+    # for index in src_collection.list_indexes():
+    #     # Skip the _id index
+    #     if index['name'] == '_id_':
+    #         continue
 
-        # Reformat index keys from index['key'] (a dict) to the format expected by create_index
-        keys = [(field, value) for field, value in index['key'].items()]
+        # # Reformat index keys from index['key'] (a dict) to the format expected by create_index
+        # keys = [(field, value) for field, value in index['key'].items()]
 
-        # Recreating the index in the target collection
-        # 'unique' field is conditionally included based on its presence
-        index_options = {'unique': index['unique']} if 'unique' in index else {}
-        target_collection.create_index(keys, **index_options)
+        # # Recreating the index in the target collection
+        # # 'unique' field is conditionally included based on its presence
+        # index_options = {'unique': index['unique']} if 'unique' in index else {}
+        # target_collection.create_index(keys, **index_options)
 
     # Deleting the collection from the source database
     src_db.drop_collection(collection_name)
-    print(f"Collection '{collection_name}' copied to 'messages' database with indexes and removed from 'kocouratciMessenger'.")
+    print(f"Collection '{collection_name}' copied to 'message_backup' database with indexes and removed from 'messages'.")
 
 def main():
     collections = src_db.list_collection_names()
-    # First, handle collections with "_" in their names automatically
-    for collection_name in collections:
-        if "_" in collection_name:
-            print(f"Automatically processing collection '{collection_name}' due to '_' in the name.")
-            copy_and_delete_collection(collection_name)
+    # # First, handle collections with "_" in their names automatically
+    # for collection_name in collections:
+    #     if "_" in collection_name:
+    #         print(f"Automatically processing collection '{collection_name}' due to '_' in the name.")
+    #         copy_and_delete_collection(collection_name)
     
     # Refresh the list of collections after automatic processing
-    remaining_collections = src_db.list_collection_names()
+    # remaining_collections = src_db.list_collection_names()
     # Sort the remaining collections alphabetically A-Z
-    sorted_remaining_collections = sorted(remaining_collections)
+    sorted_remaining_collections = sorted(collections)
 
     # Then, prompt for user input for the rest
     for collection_name in sorted_remaining_collections:
         user_input = input(f"Do you want to copy and delete the collection '{collection_name}'? (y/n): ").strip().lower()
         if user_input == 'y' or user_input == '':
             copy_and_delete_collection(collection_name)
-        elif user_input == 'n':
+        elif user_input == '§':
             print(f"Skipping collection '{collection_name}'.")
         else:
             print("Invalid input. Skipping this collection.")

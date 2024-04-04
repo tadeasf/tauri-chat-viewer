@@ -420,7 +420,7 @@ const App = observer(() => {
 
     try {
       const response = await fetch(
-        "https://secondary.dev.tadeasfort.com/search",
+        "https://fastapi.tadeasfort.com/search",
         {
           method: "POST",
           headers: {
