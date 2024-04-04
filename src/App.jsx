@@ -1,29 +1,9 @@
-/**
- * This file is part of Kocouřátčí Messenger.
- *
- * Kocouřátčí Messenger is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Kocouřátčí Messenger is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Kocouřátčí Messenger. If not, see <https://www.gnu.org/licenses/>.
- *
- * @format
- */
 import { observer } from "mobx-react-lite";
 import { useContext, useEffect, useState, useRef } from "react";
 import Message from "./components/ui/Message";
 import { ErrorBoundary } from "react-error-boundary";
-// import { ModeToggle } from "./components/ModeToggle";
 import { storesContext } from "./stores/storesContext";
-import { VariableSizeList as List } from "react-window";
-import AutoSizer from "react-virtualized-auto-sizer";
+import { Virtuoso } from "react-virtuoso";
 import { ThemeProvider } from "./components/theme-provider";
 import { Input } from "./components/ui/input";
 import { Label } from "./components/ui/label";
@@ -37,7 +17,6 @@ import {
   faSort,
   faMessage,
   faArrowsRotate,
-  // faRotateRight,
   faEyeSlash,
 } from "@fortawesome/free-solid-svg-icons";
 import {
@@ -53,26 +32,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "./components/ui/popover";
-// import {
-//   Dialog,
-//   DialogContent,
-//   DialogTrigger,
-//   DialogFooter,
-//   DialogHeader,
-//   DialogTitle,
-//   DialogDescription,
-// } from "./components/ui/dialog";
 import { Button } from "./components/ui/button";
 import { Card } from "./components/ui/card";
-// import collectionStore from "./stores/CollectionStore";
 
 const App = observer(() => {
   const { MessageStore } = useContext(storesContext);
   const {
-    // user,
     filteredMessages,
     searchTerm,
-    // uploadedMessages,
     numberOfResults,
     scrollToIndex,
     searchContent,
@@ -99,11 +66,11 @@ const App = observer(() => {
   const [galleryLoading, setGalleryLoading] = useState(false);
   const [currentDb, setCurrentDb] = useState("Loading...");
   const [dbSwitchLoading, setDbSwitchLoading] = useState(false);
+  const virtuosoRef = useRef(null);
 
-  // Function to fetch the current database name
   const fetchCurrentDb = () => {
     fetch("https://secondary.dev.tadeasfort.com/current_db")
-      .then((response) => response.text()) // Assuming the endpoint returns plain text
+      .then((response) => response.text())
       .then((data) => {
         setCurrentDb(data);
       })
@@ -153,11 +120,14 @@ const App = observer(() => {
   };
 
   useEffect(() => {
-    if (scrollToIndex !== -1 && listRef.current) {
-      listRef.current.scrollToItem(scrollToIndex, "center");
-      MessageStore.scrollToIndex = -1;
+    if (scrollToIndex !== -1 && virtuosoRef.current) {
+      virtuosoRef.current.scrollToIndex({
+        index: scrollToIndex,
+        behavior: "smooth",
+        align: "start",
+      });
     }
-  }, [MessageStore, scrollToIndex]);
+  }, [scrollToIndex]);
 
   useEffect(() => {
     // Reset row heights
@@ -166,13 +136,6 @@ const App = observer(() => {
       listRef.current.resetAfterIndex(0);
     }
   }, [filteredMessages, collectionName]);
-
-  const setRowHeight = (index, height) => {
-    rowHeights.current[index] = height;
-    if (listRef.current) {
-      listRef.current.resetAfterIndex(index);
-    }
-  };
 
   useEffect(() => {
     const fetchCollections = async () => {
@@ -207,41 +170,6 @@ const App = observer(() => {
     MessageStore.page,
     MessageStore,
   ]);
-
-  // const refresh = async () => {
-  //   // Check if there's no collection and no uploaded messages
-  //   if (!collectionName && uploadedMessages.length === 0) {
-  //     console.warn(
-  //       "No collection selected and no messages uploaded. Cannot refresh."
-  //     );
-  //     setIsLoading(false);
-  //     return;
-  //   }
-
-  //   setIsLoading(true); // Set isLoading to true when refresh is triggered
-  //   MessageStore.page = 1;
-  //   MessageStore.contentSearchIndex = -1;
-  //   MessageStore.highlightedMessageIndex = -1;
-  //   MessageStore.currentResultIndex = 0;
-  //   MessageStore.numberOfResultsContent = 0;
-  //   MessageStore.scrollToIndex = -1;
-  //   MessageStore.numberOfResults = 0;
-  //   MessageStore.firstPress = true;
-  //   MessageStore.currentResultIndex = 0;
-  //   MessageStore.scrollToTop();
-
-  //   if (uploadedMessages.length > 0) {
-  //     MessageStore.filteredMessages = uploadedMessages;
-  //     MessageStore.numberOfResults = uploadedMessages.length;
-  //     MessageStore.searchTerm = "";
-  //     setIsLoading(false); // Set isLoading to false when the messages are updated
-  //   } else if (collectionName) {
-  //     await MessageStore.handleSend(collectionName);
-  //     setIsLoading(false); // Set isLoading to false after handleSend is completed
-  //   } else {
-  //     setIsLoading(false); // Set isLoading to false if no messages and no collectionName
-  //   }
-  // };
 
   const hardReset = async () => {
     setIsLoading(true);
@@ -302,52 +230,6 @@ const App = observer(() => {
       setIsLoading(false);
     }
   };
-
-  // const uploadFile = async (files) => {
-  //   if (!files || files.length === 0) {
-  //     return;
-  //   }
-
-  //   setIsLoading(true);
-
-  //   try {
-  //     const formData = new FormData();
-
-  //     // Loop through the files and append them to the FormData
-  //     for (let i = 0; i < files.length; i++) {
-  //       formData.append("files", files[i]);
-  //     }
-
-  //     const response = await fetch(
-  //       "https://secondary.dev.tadeasfort.com/upload",
-  //       {
-  //         method: "POST",
-  //         body: formData,
-  //       }
-  //     );
-
-  //     const responseData = await response.json();
-
-  //     if (response.status === 200) {
-  //       // Fix the typo here
-  //       alert(
-  //         `Files uploaded successfully!\nCollection name: ${responseData.collectionName}\nMessage count: ${responseData.messageCount}`
-  //       );
-
-  //       // Refresh collections after the files have been uploaded
-  //       refreshCollections();
-  //     } else if (response.status === 409) {
-  //       alert(responseData.message);
-  //     } else {
-  //       alert(`Error uploading files: ${responseData.message}`);
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //     alert(`Error: ${error.message}`);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
 
   // Function to refresh collections
   const refreshCollections = async () => {
@@ -695,77 +577,37 @@ const App = observer(() => {
                       <div className="w-full h-1 bg-red-b70 animate-pulse opacity-70 rounded-xl" />
                     </div>
                   ) : (
-                    <AutoSizer>
-                      {({ height, width }) => (
-                        <List
-                          height={height}
-                          itemCount={
-                            showOnlyUserMessages
-                              ? messagesToDisplay.filter(
-                                  (message) =>
-                                    message.sender_name.toLowerCase() !==
-                                    "Tadeáš Fořt".toLowerCase()
-                                ).length
-                              : messagesToDisplay.length
-                          }
-                          // ... other List props ...
-                          itemSize={(index) =>
-                            (rowHeights.current[index] || 110) + 20
-                          } // Add a 20px gap
-                          width={width}
-                          ref={listRef}
-                          scrollToAlignment="center"
-                        >
-                          {({ index, style }) => {
-                            const messageArray = showOnlyUserMessages
-                              ? messagesToDisplay.filter(
-                                  (message) =>
-                                    message.sender_name.toLowerCase() !==
-                                    "Tadeáš Fořt".toLowerCase()
-                                )[index]
-                              : messagesToDisplay[index];
-                            if (!messageArray || !messageArray.sender_name) {
-                              console.log(
-                                "Skipping message due to missing data:",
-                                messageArray
-                              ); // Debugging line
-                              return null; // Skip this iteration if data is missing
+                    <Virtuoso
+                      ref={virtuosoRef}
+                      data={messagesToDisplay}
+                      itemContent={(index, message) => {
+                        const isLastMessage =
+                          index === messagesToDisplay.length - 1;
+                        const isAuthor =
+                          message.sender_name.toLowerCase() ===
+                          "Tadeáš Fořt".toLowerCase();
+                        return (
+                          <Message
+                            message={message}
+                            author={isAuthor}
+                            time={message.timestamp_ms}
+                            key={message.timestamp_ms}
+                            isLastMessage={isLastMessage}
+                            type={message.type}
+                            searchTerm={searchTerm}
+                            index={index}
+                            is_geoblocked_for_viewer={
+                              message.is_geoblocked_for_viewer
                             }
-                            const isLastMessage =
-                              index === messagesToDisplay.length - 1;
-                            const isAuthor =
-                              messageArray.sender_name.toLowerCase() ===
-                              "Tadeáš Fořt".toLowerCase();
-                            return (
-                              <div
-                                className="no-scrollbar"
-                                style={{ ...style }}
-                                key={index}
-                              >
-                                <Message
-                                  message={messageArray}
-                                  author={isAuthor}
-                                  time={messageArray.timestamp_ms}
-                                  key={messageArray.timestamp_ms}
-                                  isLastMessage={isLastMessage}
-                                  type={messageArray.type}
-                                  searchTerm={searchTerm}
-                                  setRowHeight={setRowHeight}
-                                  index={index}
-                                  is_geoblocked_for_viewer={
-                                    messageArray.is_geoblocked_for_viewer
-                                  }
-                                  isHighlighted={
-                                    index === highlightedMessageIndex
-                                  }
-                                  isCrossCollection={isCrossCollection} // Pass the flag here
-                                />
-                              </div>
-                            );
-                          }}
-                        </List>
-                      )}
-                    </AutoSizer>
+                            isHighlighted={index === highlightedMessageIndex}
+                            isCrossCollection={isCrossCollection}
+                          />
+                        );
+                      }}
+                      style={{ height: "100%" }} // You may need to adjust this
+                      alignToBottom
+                      // followOutput="smooth" // This ensures smooth scrolling to the bottom
+                    />
                   )}
                 </div>
               )}

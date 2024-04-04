@@ -22,10 +22,7 @@ const fetchImage = async (uri) => {
 const Message = ({
   message,
   time,
-  type,
-  index,
   is_geoblocked_for_viewer,
-  setRowHeight,
   author,
   uuid,
   isHighlighted,
@@ -35,33 +32,18 @@ const Message = ({
   const [visibility, setVisibility] = useState(false);
   const messageContainerRef = useRef(null);
   const [imageSrc, setImageSrc] = useState(null);
-  const placeholderStyle = { width: "20em", height: "15em" }; // Adjust this to your needs
+  const placeholderStyle = { width: "20em", height: "20em" }; // Adjust this to your needs
 
   useEffect(() => {
     if (message.photos && message.photos.length > 0) {
       fetchImage(message.photos[0].uri).then((src) => {
         setImageSrc(src);
-        // No need to call updateHeight here directly, it will be called after image load
       });
     }
   }, [message.photos]);
 
-  useEffect(() => {
-    if (messageContainerRef.current) {
-      const height = messageContainerRef.current.offsetHeight;
-      setRowHeight(index, height);
-    }
-  }, [message, index, setRowHeight, visibility, imageSrc]);
-
   const errorFile = {
     fontWeight: "bold",
-  };
-
-  const updateHeight = () => {
-    if (messageContainerRef.current) {
-      const height = messageContainerRef.current.offsetHeight;
-      setRowHeight(index, height);
-    }
   };
 
   const getMessageClasses = () => {
@@ -69,7 +51,7 @@ const Message = ({
     let baseClasses = `message text-xl rounded-lg p-5 max-w-4/5 ${
       author
         ? "text-secondary-foreground max-w-[75%]"
-        : "text-accent-foreground max-w-[95%]"
+        : "text-accent-foreground max-w-[75%]"
     }`;
 
     // Conditional styling based on message source and author
@@ -96,12 +78,7 @@ const Message = ({
   const whatKindIs = () => {
     if (imageSrc) {
       return (
-        <LazyLoadImage
-          effect="blur"
-          src={imageSrc}
-          alt={`Message Image`}
-          afterLoad={() => updateHeight()} // This is a new function to calculate and update height
-        />
+        <LazyLoadImage effect="blur" src={imageSrc} alt={`Message Image`} />
       );
     }
 

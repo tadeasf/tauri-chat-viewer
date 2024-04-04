@@ -107,3 +107,39 @@
 
   }
 }
+
+ /* Basic styling for message */
+ .message-container {
+  margin-bottom: 1rem; /* Default spacing */
+}
+
+.text-message {
+  /* Additional styles specific to text messages */
+}
+
+.photo-message {
+  /* Styles for messages with photos */
+  margin-bottom: 2rem; /* Larger bottom margin */
+}
+
+.large-photo {
+  /* Specific styles for large photos */
+  margin-bottom: 2.5rem;
+}
+
+/* Adjust spacing for larger screens */
+@media (min-width: 768px) {
+  .message-container {
+    margin-bottom: 1.25rem; /* Increased spacing */
+  }
+
+  .photo-message {
+    margin-bottom: 2.5rem; /* Larger bottom margin for larger screens */
+  }
+
+  .large-photo {
+    margin-bottom: 3rem;
+  }
+}
+
+
