@@ -47,17 +47,8 @@
     "caddyBuild": "GENERATE_SOURCEMAP=false vite build && ./restart-caddy.sh",
     "build": "GENERATE_SOURCEMAP=false vite build",
     "serve": "vite preview",
-    "server": "nodemon secondary.dev.js",
-    "start": "concurrently \"npm run serve\" \"npm run server\"",
-    "tauri": "tauri",
-    "lint": "eslint src",
-    "caddyServe": "serve -s build -l 31923"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+    "start": "vite preview",
+    "tauri": "tauri"
   },
   "browserslist": {
     "production": [
