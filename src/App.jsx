@@ -419,17 +419,16 @@ const App = observer(() => {
     const query = MessageStore.searchContent;
 
     try {
-      const response = await fetch(
-        "https://fastapi.tadeasfort.com/search",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ query }),
-        }
-      );
+      const response = await fetch("https://fastapi.tadeasfort.com/search", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ query }),
+      });
 
+      // print the request for debugging
+      console.log("Request:", JSON.stringify({ query }));
       const data = await response.json();
 
       // Update the MobX store
