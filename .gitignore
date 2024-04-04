@@ -16,10 +16,16 @@ package-lock.json
 .DS_Store
 .env.local
 .env.development.local
+index.html
 .env.test.local
 .env.production.local
 npm-debug.log*
 yarn-debug.log*
+dist
+.idea
+.vscode
+.eslintrc.json
+.eslintignore
 yarn-error.log*
 yarn.lock
 /src-tauri/target/
