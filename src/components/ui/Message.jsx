@@ -4,6 +4,14 @@ import React, { useState, useEffect, useRef } from "react";
 import { DateTime } from "luxon";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
+import {
+  Credenza,
+  CredenzaTrigger,
+  CredenzaClose,
+  CredenzaContent,
+  CredenzaBody,
+} from "./credenza";
+
 
 const fetchImage = async (uri) => {
   try {
@@ -42,6 +50,7 @@ const Message = ({
     }
   }, [message.photos]);
 
+
   const errorFile = {
     fontWeight: "bold",
   };
@@ -78,9 +87,27 @@ const Message = ({
   const whatKindIs = () => {
     if (imageSrc) {
       return (
-        <LazyLoadImage effect="blur" src={imageSrc} alt={`Message Image`} />
+        <Credenza>
+          <CredenzaTrigger asChild>
+            <div>
+              <LazyLoadImage effect="blur" src={imageSrc}/>
+            </div>
+          </CredenzaTrigger>
+          <CredenzaContent>
+            <CredenzaBody>
+              <img src={imageSrc}
+               className="max-w-full max-h-full"
+                alt="message"
+              />
+            </CredenzaBody>
+            <CredenzaClose asChild>
+              <button>Close</button>
+            </CredenzaClose>
+          </CredenzaContent>
+        </Credenza>
       );
     }
+
 
     if (message.photos && message.photos.length > 0) {
       return <div style={placeholderStyle} />;
