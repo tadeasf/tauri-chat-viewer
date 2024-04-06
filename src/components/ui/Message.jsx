@@ -108,7 +108,7 @@ const Message = ({
   const handleClick = () => {
     setClickCounter((prevCounter) => prevCounter + 1);
     if (!isCrossCollection) {
-      if (clickCounter % 2 === 0) {
+      if (clickCounter % 5 === 0) {
         setVisibility(!visibility);
       }
     }
