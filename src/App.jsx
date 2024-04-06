@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import { useContext, useEffect, useState, useRef } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import Message from "./components/ui/Message";
 import { ErrorBoundary } from "react-error-boundary";
 import { storesContext } from "./stores/storesContext";
@@ -75,8 +75,8 @@ const App = observer(() => {
       .catch((error) =>
         console.error(
           "There was an error fetching the current database name:",
-          error
-        )
+          error,
+        ),
       );
   };
 
@@ -197,7 +197,7 @@ const App = observer(() => {
     try {
       const response = await fetch(
         `https://secondary.dev.tadeasfort.com/delete/${collectionName}`,
-        { method: "DELETE" }
+        { method: "DELETE" },
       );
 
       const responseData = await response.json();
@@ -205,10 +205,10 @@ const App = observer(() => {
       if (response.status === 200) {
         // Use response.status instead of response
         setCollections(
-          collections.filter((col) => col.value !== collectionName)
+          collections.filter((col) => col.value !== collectionName),
         );
         alert(
-          `Collection deleted successfully!\nCollection name: ${responseData.collectionName}`
+          `Collection deleted successfully!\nCollection name: ${responseData.collectionName}`,
         );
       } else {
         console.error("Error deleting collection");
@@ -225,7 +225,7 @@ const App = observer(() => {
   const refreshCollections = async () => {
     try {
       const response = await fetch(
-        "https://secondary.dev.tadeasfort.com/collections"
+        "https://secondary.dev.tadeasfort.com/collections",
       );
       const data = await response.json();
 
@@ -258,7 +258,7 @@ const App = observer(() => {
         {
           method: "POST",
           body: formData,
-        }
+        },
       );
       console.log(collectionName);
 
@@ -344,7 +344,7 @@ const App = observer(() => {
   };
 
   const sanitizedCollectionName = sanitizeName(
-    decodeURIComponent(collectionName)
+    decodeURIComponent(collectionName),
   );
 
   const handleDeletePhoto = async () => {
@@ -353,7 +353,7 @@ const App = observer(() => {
         `https://secondary.dev.tadeasfort.com/delete/photo/${sanitizedCollectionName}`,
         {
           method: "DELETE",
-        }
+        },
       );
 
       if (response.status === 200) {
@@ -379,7 +379,7 @@ const App = observer(() => {
     setGalleryLoading(true);
 
     const photoDataUri = `https://secondary.dev.tadeasfort.com/photos/${encodeURIComponent(
-      collectionName
+      collectionName,
     )}`;
     try {
       const response = await fetch(photoDataUri);
@@ -393,7 +393,7 @@ const App = observer(() => {
               ...photo,
               url: `https://secondary.dev.tadeasfort.com/inbox/${processedUri}`,
             };
-          })
+          }),
         )
         .sort((a, b) => a.creation_timestamp - b.creation_timestamp)
         .map((photo, index) => ({ ...photo, index: index + 1 }));
@@ -512,8 +512,8 @@ const App = observer(() => {
                 {searchContent !== ""
                   ? `${
                       currentResultIndex + 1
-                    }/${numberOfResultsContent} ${searchContent}`
-                  : `${numberOfResults} `}
+                    }/${numberOfResultsContent} ${searchContent} (${MessageStore.searchContent}: ${MessageStore.crossCollectionMessages.length})`
+                  : `${numberOfResults} (${MessageStore.crossCollectionMessages.length})`}
                 <FontAwesomeIcon icon={faMessage} className="ml-1" />
               </Badge>
               <Switch
@@ -630,7 +630,6 @@ const App = observer(() => {
                   </Command>
                 </PopoverContent>
               </Popover>
-               {/* New Button for switching the database */}
               <Button
                 variant="outline"
                 onClick={switchDbAndFetch}
