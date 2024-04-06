@@ -51,14 +51,12 @@ const App = observer(() => {
   const [collectionName, setCollectionName] = useState("");
   const chatBodyRef = useRef();
   const [collections, setCollections] = useState([]);
-  const listRef = useRef();
   const [open, setOpen] = useState(false);
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [deleteOpen, setDeleteOpen] = useState(false);
   const fileInputRef = useRef(null);
   const isPhotoAvailableRef = useRef(false);
-  const rowHeights = useRef({});
   const [showOnlyUserMessages, setShowOnlyUserMessages] = useState(false);
   const [sortByAlphabet, setSortByAlphabet] = useState(true);
   const [galleryPhotos, setGalleryPhotos] = useState([]);
@@ -128,14 +126,6 @@ const App = observer(() => {
       });
     }
   }, [scrollToIndex]);
-
-  useEffect(() => {
-    // Reset row heights
-    rowHeights.current = {};
-    if (listRef.current) {
-      listRef.current.resetAfterIndex(0);
-    }
-  }, [filteredMessages, collectionName]);
 
   useEffect(() => {
     const fetchCollections = async () => {
