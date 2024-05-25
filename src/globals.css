@@ -94,7 +94,7 @@
 }
 
 /* Style for width 670px and lower */
-@media (max-width: 700px) {
+@media (max-width: 1090px) {
   .my-responsive-image {
     height: 12rem; /* Equivalent to h-20 in Tailwind */
     width: 12rem; /* Equivalent to w-20 in Tailwind */
@@ -128,7 +128,7 @@
 }
 
 /* Adjust spacing for larger screens */
-@media (min-width: 768px) {
+@media (min-width: 1090px) {
   .message-container {
     margin-bottom: 1.25rem; /* Increased spacing */
   }

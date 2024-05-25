@@ -412,10 +412,10 @@ const App = observer(() => {
       <ThemeProvider defaultTheme="{ThemeStore.theme}" enableSystem={true}>
         <div className="font-anonymous box-border bg-background">
           <Card className="flex flex-col h-screen bg-background">
-            <div className="w-full bg-background flex flex-wrap justify-left items-center gap-x-1 ml-5 mb-1">
+    <div className="w-full bg-background flex flex-wrap justify-left items-center gap-x-1 ml-5 mb-1">
               {/* <ModeToggle /> */}
               <Popover open={open} onOpenChange={setOpen}>
-                <PopoverTrigger asChild>
+                <PopoverTrigger asC>
                   <Button variant="outline" className="h-2 w-18 justify-start">
                     {collectionName
                       ? decodeURIComponent(collectionName)
