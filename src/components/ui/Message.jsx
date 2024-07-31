@@ -17,9 +17,9 @@ const fetchImage = async (uri) => {
   try {
     const processedUri = uri.replace("messages/inbox/", "");
     const response = await fetch(
-      `https://secondary.dev.tadeasfort.com/inbox/${processedUri}`
+      `https://backend.jevrej.cz/inbox/${processedUri}`
     );
-    console.log(`https://secondary.dev.tadeasfort.com/inbox/${processedUri}`);
+    console.log(`https://backend.jevrej.cz/inbox/${processedUri}`);
     const blob = await response.blob();
     return URL.createObjectURL(blob);
   } catch (error) {

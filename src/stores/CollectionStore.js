@@ -41,7 +41,7 @@ class CollectionStore {
 
     try {
       const response = await fetch(
-        `https://secondary.dev.tadeasfort.com/rename/${this.currentCollectionName}`,
+        `https://backend.jevrej.cz/rename/${this.currentCollectionName}`,
         {
           method: "PUT",
           headers: {

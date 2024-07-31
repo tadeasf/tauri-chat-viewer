@@ -141,7 +141,7 @@ class MessageStore {
     this.user = null;
     this.setCrossCollectionMessages([]);
 
-    let apiUrl = `https://secondary.dev.tadeasfort.com/messages/${collectionName}`;
+    let apiUrl = `https://backend.jevrej.cz/messages/${collectionName}`;
     if (fromDate || toDate) {
       const queryParams = new URLSearchParams();
       if (fromDate) queryParams.append("fromDate", fromDate);
@@ -174,7 +174,7 @@ class MessageStore {
       }
 
       const photoResponse = await fetch(
-        `https://secondary.dev.tadeasfort.com/messages/${collectionName}/photo`
+        `https://backend.jevrej.cz/messages/${collectionName}/photo`
       );
       const photoData = await photoResponse.json();
 

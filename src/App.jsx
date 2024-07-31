@@ -67,7 +67,7 @@ const App = observer(() => {
   const virtuosoRef = useRef(null);
 
   const fetchCurrentDb = () => {
-    fetch("https://secondary.dev.tadeasfort.com/current_db")
+    fetch("https://backend.jevrej.cz/current_db")
       .then((response) => response.text())
       .then((data) => {
         setCurrentDb(data);
@@ -82,7 +82,7 @@ const App = observer(() => {
 
   const switchDbAndFetch = () => {
     setDbSwitchLoading(true); // Start loading
-    fetch("https://secondary.dev.tadeasfort.com/switch_db", { method: "GET" }) // Assuming GET request is sufficient for switching
+    fetch("https://backend.jevrej.cz/switch_db", { method: "GET" }) // Assuming GET request is sufficient for switching
       .then((response) => {
         if (response.ok) {
           setTimeout(() => {
@@ -131,8 +131,8 @@ const App = observer(() => {
     const fetchCollections = async () => {
       try {
         const endpoint = sortByAlphabet
-          ? "https://secondary.dev.tadeasfort.com/collections/alphabetical"
-          : "https://secondary.dev.tadeasfort.com/collections";
+          ? "https://backend.jevrej.cz/collections/alphabetical"
+          : "https://backend.jevrej.cz/collections";
 
         const response = await fetch(endpoint);
         const data = await response.json();
@@ -196,7 +196,7 @@ const App = observer(() => {
 
     try {
       const response = await fetch(
-        `https://secondary.dev.tadeasfort.com/delete/${collectionName}`,
+        `https://backend.jevrej.cz/delete/${collectionName}`,
         { method: "DELETE" },
       );
 
@@ -225,7 +225,7 @@ const App = observer(() => {
   const refreshCollections = async () => {
     try {
       const response = await fetch(
-        "https://secondary.dev.tadeasfort.com/collections",
+        "https://backend.jevrej.cz/collections",
       );
       const data = await response.json();
 
@@ -254,7 +254,7 @@ const App = observer(() => {
 
     try {
       const response = await fetch(
-        `https://secondary.dev.tadeasfort.com/upload/photo/${collectionName}`,
+        `https://backend.jevrej.cz/upload/photo/${collectionName}`,
         {
           method: "POST",
           body: formData,
@@ -350,7 +350,7 @@ const App = observer(() => {
   const handleDeletePhoto = async () => {
     try {
       const response = await fetch(
-        `https://secondary.dev.tadeasfort.com/delete/photo/${sanitizedCollectionName}`,
+        `https://backend.jevrej.cz/delete/photo/${sanitizedCollectionName}`,
         {
           method: "DELETE",
         },
@@ -378,7 +378,7 @@ const App = observer(() => {
     setIsGalleryOpen(false);
     setGalleryLoading(true);
 
-    const photoDataUri = `https://secondary.dev.tadeasfort.com/photos/${encodeURIComponent(
+    const photoDataUri = `https://backend.jevrej.cz/photos/${encodeURIComponent(
       collectionName,
     )}`;
     try {
@@ -391,7 +391,7 @@ const App = observer(() => {
             const processedUri = photo.uri.replace("messages/inbox/", "");
             return {
               ...photo,
-              url: `https://secondary.dev.tadeasfort.com/inbox/${processedUri}`,
+              url: `https://backend.jevrej.cz/inbox/${processedUri}`,
             };
           }),
         )
@@ -538,8 +538,8 @@ const App = observer(() => {
               <img
                 src={
                   MessageStore.isPhotoAvailable
-                    ? `https://secondary.dev.tadeasfort.com/serve/photo/${sanitizedCollectionName}`
-                    : "https://secondary.dev.tadeasfort.com/inbox/placeholder/photos/placeholder.jpg"
+                    ? `https://backend.jevrej.cz/serve/photo/${sanitizedCollectionName}`
+                    : "https://backend.jevrej.cz/inbox/placeholder/photos/placeholder.jpg"
                 }
                 alt="user-profile"
                 className="my-responsive-image rounded-full"

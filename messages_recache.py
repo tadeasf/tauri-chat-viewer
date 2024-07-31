@@ -17,7 +17,7 @@ client = MongoClient(uri)
 
 
 async def flush_redis_cache():
-    flush_endpoint = "https://secondary.dev.tadeasfort.com/flush_redis"
+    flush_endpoint = "https://backend.jevrej.cz/flush_redis"
     async with httpx.AsyncClient() as client:
         response = await client.get(flush_endpoint)
         if response.status_code == 200:
@@ -27,7 +27,7 @@ async def flush_redis_cache():
 
 
 async def switch_database():
-    switch_endpoint = "https://secondary.dev.tadeasfort.com/switch_db"
+    switch_endpoint = "https://backend.jevrej.cz/switch_db"
     async with httpx.AsyncClient() as client:
         response = await client.get(switch_endpoint)
         if response.status_code == 200:
@@ -38,7 +38,7 @@ async def switch_database():
 
 
 async def fetch_current_db():
-    db_endpoint = "https://secondary.dev.tadeasfort.com/current_db"
+    db_endpoint = "https://backend.jevrej.cz/current_db"
     async with httpx.AsyncClient() as client:
         response = await client.get(db_endpoint)
         if response.status_code == 200:
@@ -56,7 +56,7 @@ async def fetch_url(collection_name, url_type, db, semaphore):
     async with semaphore, httpx.AsyncClient() as client:
         start = time.perf_counter()
         try:
-            url = f"https://secondary.dev.tadeasfort.com/{url_type}/{collection_name}"
+            url = f"https://backend.jevrej.cz/{url_type}/{collection_name}"
             response = await client.get(url)
             elapsed = time.perf_counter() - start
             if response.status_code in range(200, 300):
